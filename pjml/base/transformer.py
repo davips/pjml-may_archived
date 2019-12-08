@@ -15,11 +15,28 @@ class Transformer(Identifyable):
             algorithm location
             (e.g. python module that contains the class)
         config
-            dictionary with algorithm arguments
+            dictionary with algorithm parameters
         """
         self.name = name
         self.path = path
         self.config = config
 
+    def create_object(self):
+        """Incarnate the respective component for this transformer.
+
+        Returns
+        -------
+        A ready to use component.
+        """
+        class_ = self._get_class(self.path, self.name)
+        return class_(**self.config)
+
     def _uuid_impl(self):
         return self.name + self.path + json.dumps(self.config, sort_keys=True)
+
+    @staticmethod
+    def _get_class(module, class_name):
+        import importlib
+        module = importlib.import_module(module)
+        class_ = getattr(module, class_name)
+        return class_
