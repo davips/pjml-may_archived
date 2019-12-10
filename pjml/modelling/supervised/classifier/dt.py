@@ -28,4 +28,4 @@ class DT(Predictor):
             'min_weight_fraction_leaf': RealP(uniform, low=0.0, high=0.3),
             'min_impurity_decrease': RealP(uniform, low=0.0, high=0.2)
         }
-        return ConfigSpace(params)
+        return ConfigSpace(params=params)

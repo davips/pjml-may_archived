@@ -130,7 +130,7 @@ class Component(ABC, Timers, ExceptionHandler):
             Tree representing all the possible parameter spaces.
         """
         cs_ = cls._cs_impl()
-        params = cs_.params.copy()
+        params = None if cs_.params is None else cs_.params.copy()
         name, path = cls.__name__, cls.__module__
 
         # Freeze args passed via kwargs

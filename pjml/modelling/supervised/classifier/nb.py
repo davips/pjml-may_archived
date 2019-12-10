@@ -26,4 +26,4 @@ class NB(Predictor):
         params = {
             'distribution': CatP(choice, items=['gaussian', 'bernoulli'])
         }
-        return ConfigSpace(params)
+        return ConfigSpace(params=params)

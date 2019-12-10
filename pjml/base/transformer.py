@@ -41,5 +41,6 @@ class Transformer(Identifyable):
         class_ = getattr(module, class_name)
         return class_
 
-    def __str__(self):
-        return f'{self.name} "{self.path}" {self.config}'
+    def __str__(self, depth=''):
+        rows = '\n'.join([f'  {k}: {v}' for k, v in self.config.items()])
+        return f'{self.name} "{self.path}" [\n{rows}\n]'

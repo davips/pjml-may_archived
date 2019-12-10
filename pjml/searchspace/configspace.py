@@ -25,8 +25,8 @@ class ConfigSpace:
                  children=None):
         self.name = name
         self.path = path
-        self.params = params
-        self.nested = nested
+        self.params = {} if params is None else params
+        self.nested = [] if nested is None else nested
         self.children = [] if children is None else children
 
     def updated(self, **kwargs):
@@ -44,40 +44,36 @@ class ConfigSpace:
         """Choose a path from tree and set values to parameters according to
         the given sampling functions.
 
-        Sampling will return a tuple if it has children.
+        Sampling will return a list if it has children.
         """
-        config = {}
+        if self.iscomplete():
+            config = {}
 
-        # First, fill args with values from nested nodes.
-        if self.nested:
-            nested_node = choice(self.nested)
-            config = nested_node.sample()
-            config.update(config)
+            # First, fill args with values from nested nodes.
+            if self.nested:
+                nested_node = choice(self.nested)
+                config = nested_node.sample()
+                config.update(config)
 
-        # After, fill args with values from child nodes.
-        child_node = self
-        while child_node.children:
-            child_node = choice(child_node.children)
-            config = child_node.sample()
-            config.update(config)
+            # After, fill args with values from child nodes.
+            child_node = self
+            while child_node.children:
+                child_node = choice(child_node.children)
+                config = child_node.sample()
+                config.update(config)
 
-        # Then complete args with current node values, possibly overriding
-        # some values from children/nested nodes (this happens with frozen cs())
-        for name, param in self.params.items():
-            try:
+            # Then complete args with current node values, possibly overriding
+            # some values from children/nested nodes (this happens with
+            # frozen arguments given to cs(...)).
+            for name, param in self.params.items():
                 config[name] = param.sample()
-            except Exception as e:
-                traceback.print_exc()
-                print(e)
-                print('Problems sampling: ', param.name, param)
-                exit(0)
-
-        if self.ispartial():
-            return config
         elif self.isethereal():
-            return []
+            lst = self.sample_ethereal()
+            return lst
         else:
-            return Transformer(self.name, self.path, config)
+            config = self.sample_partial()
+
+        return Transformer(self.name, self.path, config)
 
     def iscomplete(self):
         """Whether this Config Space is enough to sample an entire component
@@ -87,7 +83,30 @@ class ConfigSpace:
     def isethereal(self):
         """Whether this Config Space is a result of CS operations like 'any',
         'seq' and 'shuffle' (and 'any'-like ones: 'rnd', 'ga', 'mtl', ...?)."""
-        return None in [self.name, self.path] and self.params is None
+        return None in [self.name, self.path] and len(self.params) > 0
+
+    def sample_ethereal(self):
+        """Sample from a node that is a result from a CS operation.
+
+        Returns
+        -------
+        Nested lists of transformers.
+        """
+        lst = []
+
+        # Fill list with transformers/lists from nested nodes.
+        nested_node = self
+        while nested_node.nested:
+            nested_node = choice(nested_node.nested)
+            lst.append(nested_node.sample())
+
+        # Fill list with transformers/lists from child nodes.
+        child_node = self
+        while child_node.children:
+            child_node = choice(child_node.children)
+            lst.append(child_node.sample())
+
+        return lst
 
     def sample_partial(self):
         """Sample from a node that is not a complete CS.
@@ -112,11 +131,8 @@ class ConfigSpace:
         return config
 
     def __str__(self, depth=''):
-        rows = [str(self.params)]
-        for child in self.children:
-            rows.append(child.__str__(depth + '   '))
-        return depth + self.__class__.__name__ + '\n'.join(rows) \
-               + str(self.nested)
+        rows = '\n'.join([f'  {k}: {v}' for k, v in self.params.items()])
+        return f'{self.name}[\n{rows}\n]'
 
     __repr__ = __str__
 
