@@ -1,8 +1,9 @@
+import traceback
 from functools import partial
 
 import numpy
 
-from searchspace.distributions import choice
+from pjml.searchspace.distributions import choice
 
 
 class Param:
@@ -13,7 +14,13 @@ class Param:
         self.kwargs = kwargs
 
     def sample(self):
-        return self.func()
+        try:
+            return self.func()
+        except Exception as e:
+            traceback.print_exc()
+            print(e)
+            print('Problems sampling: ', param.name, param)
+            exit(0)
 
     def __str__(self):
         return str(self.kwargs)
@@ -32,7 +39,13 @@ class RealP(Param):
 
 class IntP(Param):
     def sample(self):
-        return numpy.round(self.func())
+        try:
+            return numpy.round(self.func())
+        except Exception as e:
+            traceback.print_exc()
+            print(e)
+            print('Problems sampling: ', param.name, param)
+            exit(0)
 
 
 class FixedP(Param):

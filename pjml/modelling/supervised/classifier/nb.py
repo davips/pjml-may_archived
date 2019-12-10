@@ -1,7 +1,7 @@
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.naive_bayes import GaussianNB
 
-from modelling.supervised.predictor import Predictor
+from pjml.modelling.supervised.predictor import Predictor
 from pjml.searchspace.configspace import ConfigSpace
 from pjml.searchspace.distributions import choice
 from pjml.searchspace.parameters import CatP

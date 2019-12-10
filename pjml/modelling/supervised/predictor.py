@@ -1,6 +1,6 @@
 from abc import ABC
 
-from base.component import Component
+from pjml.base.component import Component
 
 
 class Predictor(Component, ABC):

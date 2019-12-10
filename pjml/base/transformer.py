@@ -1,6 +1,6 @@
 import json
 
-from aux.identifyable import Identifyable
+from pjdata.aux.identifyable import Identifyable
 
 
 class Transformer(Identifyable):
@@ -40,3 +40,6 @@ class Transformer(Identifyable):
         module = importlib.import_module(module)
         class_ = getattr(module, class_name)
         return class_
+
+    def __str__(self):
+        return f'{self.name} "{self.path}" {self.config}'

@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from sklearn.metrics import accuracy_score
 
-from base.component import Component
+from pjml.base.component import Component
 from pjml.searchspace.configspace import ConfigSpace
 from pjml.searchspace.distributions import choice
 from pjml.searchspace.parameters import CatP

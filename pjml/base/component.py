@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
 
-from base.aux.exceptionhandler import ExceptionHandler, BadComponent, NoModel
-from base.aux.timers import Timers
-from base.transformer import Transformer
-from searchspace.parameters import FixedP
+from pjml.base.aux.exceptionhandler import ExceptionHandler, BadComponent, NoModel
+from pjml.base.aux.timers import Timers
+from pjml.base.transformer import Transformer
+from pjml.searchspace.parameters import FixedP
 
 
 class Component(ABC, Timers, ExceptionHandler):
