@@ -4,26 +4,26 @@ from sklearn.naive_bayes import GaussianNB
 from modelling.supervised.predictor import Predictor
 from pjml.searchspace.configspace import ConfigSpace
 from pjml.searchspace.distributions import choice
-from pjml.searchspace.parameters import CatHP
+from pjml.searchspace.parameters import CatP
 
 
 class NB(Predictor):
-    """Naive Bayes implementations: GaussianNB and BernoulliNB."""
+    """Naive Bayes implementations: gaussian, bernoulli."""
 
-    def __init__(self, **kwargs):
-        self.config = kwargs
-        self.nb_type = self.config['@nb_type']
+    def __init__(self, distribution="gaussian"):
+        self.config = locals()
+        self.distribution = distribution
 
-        if self.nb_type == "GaussianNB":
+        if self.distribution == "gaussian":
             self.algorithm = GaussianNB()
-        elif self.nb_type == "BernoulliNB":
+        elif self.distribution == "bernoulli":
             self.algorithm = BernoulliNB()
         else:
-            raise Exception('Wrong NB!')
+            raise Exception('Wrong distribution:', distribution)
 
     @classmethod
     def _cs_impl(cls):
         params = {
-            '@nb_type': CatHP(choice, items=['GaussianNB', 'BernoulliNB'])
+            'distribution': CatP(choice, items=['gaussian', 'bernoulli'])
         }
         return ConfigSpace(params)

@@ -1,6 +1,6 @@
 import json
 
-from pjdata.identifyable import Identifyable
+from aux.identifyable import Identifyable
 
 
 class Transformer(Identifyable):

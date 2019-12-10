@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+from functools import lru_cache
 
-from base.exceptionhandler import ExceptionHandler, BadComponent, NoModel
-from base.timers import Timers
+from base.aux.exceptionhandler import ExceptionHandler, BadComponent, NoModel
+from base.aux.timers import Timers
 from base.transformer import Transformer
-from searchspace.parameters import FixedHP
+from searchspace.parameters import FixedP
 
 
 class Component(ABC, Timers, ExceptionHandler):
@@ -46,7 +47,7 @@ class Component(ABC, Timers, ExceptionHandler):
 
     @classmethod
     @abstractmethod
-    def _cs_impl(cls, **kwargs):
+    def _cs_impl(cls):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
@@ -134,7 +135,7 @@ class Component(ABC, Timers, ExceptionHandler):
 
         # Freeze args passed via kwargs
         for k, v in kwargs.items():
-            params[k] = FixedHP(v)
+            params[k] = FixedP(v)
 
         return cs_.updated(name=name, path=path, params=params)
 

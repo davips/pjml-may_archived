@@ -2,8 +2,12 @@ from functools import partial
 
 import numpy
 
+from searchspace.distributions import choice
 
-class Parameter:
+
+class Param:
+    """Base class for all kinds of algorithm (hyper)parameters."""
+
     def __init__(self, func, **kwargs):
         self.func = partial(func, **kwargs)
         self.kwargs = kwargs
@@ -18,19 +22,19 @@ class Parameter:
     __repr__ = __str__
 
 
-class CatHP(Parameter):
+class CatP(Param):
     pass
 
 
-class RealHP(Parameter):
+class RealP(Param):
     pass
 
 
-class IntHP(Parameter):
+class IntP(Param):
     def sample(self):
         return numpy.round(self.func())
 
 
-class FixedHP(Parameter):
+class FixedP(Param):
     def __init__(self, value):
         super().__init__(lambda _: value)
