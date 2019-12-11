@@ -2,9 +2,9 @@ from numpy.random.mtrand import uniform
 from sklearn.svm import SVC
 
 from pjml.modelling.supervised.predictor import Predictor
-from pjml.searchspace.configspace import ConfigSpace
-from pjml.searchspace.distributions import choice
-from pjml.searchspace.parameters import RealP, CatP, OrdP, IntP
+from pjml.config.configspace import ConfigSpace
+from pjml.config.distributions import choice
+from pjml.config.parameters import RealP, CatP, OrdP, IntP
 
 
 class SVMC(Predictor):

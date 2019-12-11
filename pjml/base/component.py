@@ -6,7 +6,7 @@ from pjml.base.aux.exceptionhandler import ExceptionHandler, BadComponent, \
     NoModel
 from pjml.base.aux.timers import Timers
 from pjml.base.transformer import Transformer
-from pjml.searchspace.parameters import FixedP
+from pjml.config.parameters import FixedP
 
 
 class Component(ABC, Timers, ExceptionHandler):
@@ -37,6 +37,7 @@ class Component(ABC, Timers, ExceptionHandler):
     model = None
 
     _apply_failure = None
+    last_operation = None
 
     @abstractmethod
     def _apply_impl(self, data):

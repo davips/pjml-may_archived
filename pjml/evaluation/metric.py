@@ -2,13 +2,14 @@ from functools import lru_cache
 
 from sklearn.metrics import accuracy_score
 
+from pjml.base.aux.functioninspector import FunctionInspector
 from pjml.base.component import Component
-from pjml.searchspace.configspace import ConfigSpace
-from pjml.searchspace.distributions import choice
-from pjml.searchspace.parameters import CatP
+from pjml.config.configspace import ConfigSpace
+from pjml.config.distributions import choice
+from pjml.config.parameters import CatP
 
 
-class Metric(Component):
+class Metric(Component, FunctionInspector):
     """Metric to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
@@ -39,17 +40,11 @@ class Metric(Component):
 
     @classmethod
     def _cs_impl(cls):
+        # TODO target and prediction
         params = {
             'function': CatP(choice, items=cls.functions.keys())
         }
         return ConfigSpace(params=params)
-
-    @property
-    @lru_cache()
-    def functions(self):
-        """Map each metric to its corresponding function."""
-        return {name.split('_fun_')[1]: getattr(self, name)
-                for name in dir(self) if '_fun' in name}
 
     def _fun_error(self, data):
         return 1 - accuracy_score(

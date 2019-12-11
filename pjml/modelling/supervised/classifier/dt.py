@@ -2,8 +2,8 @@ from numpy.random import choice, uniform
 from sklearn.tree import DecisionTreeClassifier
 
 from pjml.modelling.supervised.predictor import Predictor
-from pjml.searchspace.configspace import ConfigSpace
-from pjml.searchspace.parameters import CatP, IntP, RealP
+from pjml.config.configspace import ConfigSpace
+from pjml.config.parameters import CatP, IntP, RealP
 
 
 class DT(Predictor):

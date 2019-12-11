@@ -1,24 +1,24 @@
 import traceback
 
 from pjml.base.transformer import Transformer
-from pjml.searchspace.distributions import choice
+from pjml.config.distributions import choice
 
 
 class ConfigSpace:
-    """Tree representing a set of (hyper)parameter spaces.
+    """Tree representing a (probably infinite) set of (hyper)parameter spaces.
 
-        Parameters
-        ----------
-        name
-            Name (usually the Python class) of the component.
-        path
-            Path (usually the Python module) of the component.
-        params
-            Dictionary like {'param1': Param(...), 'param2': Param(...), ...}.
-        nested
-            List of internal nodes. Only one is sampled.
-        children
-            List of the next nodes. Only one is sampled.
+    Parameters
+    ----------
+    name
+        Name (usually the Python class) of the component.
+    path
+        Path (usually the Python module) of the component.
+    params
+        Dictionary like {'param1': Param(...), 'param2': Param(...), ...}.
+    nested
+        List of internal nodes. Only one is sampled.
+    children
+        List of the next nodes. Only one is sampled.
     """
 
     def __init__(self, name=None, path=None, params=None, nested=None,
@@ -135,7 +135,3 @@ class ConfigSpace:
         return f'{self.name}[\n{rows}\n]'
 
     __repr__ = __str__
-
-
-class UnidentifiedConfigSpace(Exception):
-    pass

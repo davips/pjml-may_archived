@@ -2,9 +2,9 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn.naive_bayes import GaussianNB
 
 from pjml.modelling.supervised.predictor import Predictor
-from pjml.searchspace.configspace import ConfigSpace
-from pjml.searchspace.distributions import choice
-from pjml.searchspace.parameters import CatP
+from pjml.config.configspace import ConfigSpace
+from pjml.config.distributions import choice
+from pjml.config.parameters import CatP
 
 
 class NB(Predictor):

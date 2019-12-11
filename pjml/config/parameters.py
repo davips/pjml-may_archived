@@ -3,7 +3,7 @@ from functools import partial
 
 import numpy
 
-from pjml.searchspace.distributions import choice
+from pjml.config.distributions import choice
 
 
 class Param:
