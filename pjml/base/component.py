@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
 
-from pjml.base.aux.exceptionhandler import ExceptionHandler, BadComponent, NoModel
+from pjdata.transformation import Transformation
+from pjml.base.aux.exceptionhandler import ExceptionHandler, BadComponent, \
+    NoModel
 from pjml.base.aux.timers import Timers
 from pjml.base.transformer import Transformer
 from pjml.searchspace.parameters import FixedP
@@ -34,7 +36,6 @@ class Component(ABC, Timers, ExceptionHandler):
     algorithm = None
     model = None
 
-    _trasformer = None  # lazy cache for trasformer
     _apply_failure = None
 
     @abstractmethod
@@ -51,16 +52,23 @@ class Component(ABC, Timers, ExceptionHandler):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
+    @property
+    @lru_cache()
     def transformer(self):
         """
         Returns
         -------
             A Transformer object able to recreate this component from scratch.
         """
-        if self._trasformer is None:
-            name, path = self.__class__.__name__, self.__module__
-            self._trasformer = Transformer(name, path, self.config)
-        return self._trasformer
+        name, path = self.__class__.__name__, self.__module__
+        return Transformer(name, path, self.config)
+
+    def transformation(self):
+        if self.last_operation is None:
+            raise Exception(
+                'transformation() should be called only after apply() or use()'
+                ' operations!')
+        return Transformation(self.transformer, self.last_operation)
 
     def apply(self, data):
         """Training step (usually).
@@ -81,8 +89,9 @@ class Component(ABC, Timers, ExceptionHandler):
         if data is None:
             return None
         if self.algorithm is None or self.config is None:
-            raise BadComponent(f"{self.transformer()} didn't set up"
+            raise BadComponent(f"{self.transformer} didn't set up"
                                f"an algorithm or a config at __init__")
+        self.last_operation = 'a'
         return self._run(self._apply_impl, data)
 
     def use(self, data):
@@ -106,8 +115,9 @@ class Component(ABC, Timers, ExceptionHandler):
         if self._apply_failure is not None:
             return data.updated(failure=self._apply_failure)
         if self.model is None:
-            raise NoModel(f"{self.transformer()} didn't set up a model yet."
+            raise NoModel(f"{self.transformer} didn't set up a model yet."
                           f" Method apply() should be called before use()!")
+        self.last_operation = 'u'
         return self._run(self._use_impl, data)
 
     @classmethod
@@ -133,7 +143,7 @@ class Component(ABC, Timers, ExceptionHandler):
         params = None if cs_.params is None else cs_.params.copy()
         name, path = cls.__name__, cls.__module__
 
-        # Freeze args passed via kwargs
+        # Freeze args passed via kwargs # TODO: make real freeze inside the tree
         for k, v in kwargs.items():
             params[k] = FixedP(v)
 

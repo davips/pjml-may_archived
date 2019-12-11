@@ -32,6 +32,9 @@ class Param:
 class CatP(Param):
     pass
 
+class OrdP(Param):
+    pass
+
 
 class RealP(Param):
     pass

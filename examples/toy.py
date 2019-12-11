@@ -1,9 +1,10 @@
-from pjml.base.pipeline import Pipeline
 from pjdata.data_creation import read_arff
+from pjml.base.pipeline import Pipeline
 from pjml.evaluation.metric import Metric
 from pjml.flow.report import Report
 from pjml.modelling.supervised.classifier.dt import DT
 from pjml.modelling.supervised.classifier.nb import NB
+from pjml.modelling.supervised.classifier.svmc import SVMC
 from pjml.processing.instance.sampler.over.rnd_over_sampler import \
     RndOverSampler
 
@@ -13,17 +14,24 @@ pipe = Pipeline(
 
     NB('bernoulli'),
     Metric(function='accuracy'),
-    Report('Accuracy: $r'),
+    Report('Accuracy: $r {history}'),
 
     DT(max_depth=2),
     Metric(function='accuracy'),
     Report('Accuracy: $r'),
+
+    SVMC(kernel='linear'),
+    Metric(function='accuracy'),
+    Report('Accuracy: $r'),
 )
 print(datain)
-pipe.apply(datain)
-dataout = pipe.use(datain)
-print(dataout.r)
-print('------------------')
-print(DT.cs())
-print('------------------')
-print(DT.cs().sample())
+dataout = pipe.apply(datain)
+dataout2 = pipe.use(datain)
+
+print(dataout.history)
+print(dataout2.history)
+# print('------------------')
+# print(SVMC.cs())
+#
+# print('------------------')
+# print(SVMC.cs().sample())

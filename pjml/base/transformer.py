@@ -21,7 +21,7 @@ class Transformer(Identifyable):
         self.path = path
         self.config = config
 
-    def create_object(self):
+    def materialize(self):
         """Incarnate the respective component for this transformer.
 
         Returns
