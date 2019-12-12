@@ -1,10 +1,11 @@
-from functools import lru_cache
+import json
 
-from sklearn.metrics import accuracy_score
+import numpy
+from sklearn.model_selection import StratifiedShuffleSplit as HO, \
+    StratifiedKFold as SKF, LeaveOneOut as LOO
 
 from pjml.base.aux.functioninspector import FunctionInspector
 from pjml.base.component import Component
-from pjml.config.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameters import CatP
 
@@ -25,25 +26,40 @@ class Split(Component, FunctionInspector):
         Name of the matrices to be modified.
     """
 
-    def __init__(self, train_indexes, test_indexes, fields=None):
+    def __init__(self, split_type='cv', steps=10, partition=0, test=0.3, seed=0,
+                 fields=None):
         if fields is None:
             fields = ['X', 'Y']
-        self.config = locals()
-        self.isdeterministic = True
-        self.algorithm = fields
-        self.train_indexes = train_indexes
-        self.test_indexes = test_indexes
-
-    def _core(self, data, idxs):
-        new_dic = {f: data.get_matrix(f)[idxs] for f in self.algorithm}
-        return data.updated(self.transformation(), **new_dic)
+        self._configure(locals())
+        if split_type == "cv":
+            algorithm = SKF(shuffle=True, n_splits=steps, random_state=seed)
+        elif split_type == "loo":
+            algorithm = LOO()
+        elif split_type == 'holdout':
+            algorithm = HO(n_splits=steps, test_size=test, random_state=seed)
+        else:
+            raise Exception('Wrong split_type: ', split_type)
+        self.algorithm = algorithm
+        self.steps = steps
+        self.partition = partition
+        self.test = test
+        self.seed = seed
+        self.fields = fields
 
     def _apply_impl(self, data):
-        self.model = self.algorithm
-        return self._core(data, self.train_indexes)
+        # TODO: Profile and if needed somehow optimize this without breaking
+        #  pajé architecture.
+        zeros = numpy.zeros(data.matrices[self.fields[0]].shape[0])
+        partitions = list(self.algorithm.split(X=zeros, y=zeros))
+        self.model = partitions[self.partition][1]
+        return self._core(data, partitions[self.partition][0])
 
     def _use_impl(self, data):
-        return self._core(data, self.test_indexes)
+        return self._core(data, self.model[self.partition][1])
+
+    def _core(self, data, idxs):
+        new_dic = {f: data.matrices[f][idxs] for f in self.fields}
+        return data.updated(self.transformation(), **new_dic)
 
     @classmethod
     def _cs_impl(cls):
@@ -53,3 +69,26 @@ class Split(Component, FunctionInspector):
         }
         raise Exception('Split is not for external use for now!')
         # return ConfigSpace(params=params)
+
+    # Version that would break the archtecture, because of the need for a
+    # super component Sampler that is expand + container + finiteconfigspace.
+
+    # def __init__(self, train_indexes, test_indexes, fields=None):
+    #     if fields is None:
+    #         fields = ['X', 'Y']
+    #     self.config = locals()
+    #     self.isdeterministic = True
+    #     self.algorithm = fields
+    #     self.train_indexes = train_indexes
+    #     self.test_indexes = test_indexes
+    #
+    # def _core(self, data, idxs):
+    #     new_dic = {f: data.get_matrix(f)[idxs] for f in self.algorithm}
+    #     return data.updated(self.transformation(), **new_dic)
+    #
+    # def _apply_impl(self, data):
+    #     self.model = self.algorithm
+    #     return self._core(data, self.train_indexes)
+    #
+    # def _use_impl(self, data):
+    #     return self._core(data, self.test_indexes)

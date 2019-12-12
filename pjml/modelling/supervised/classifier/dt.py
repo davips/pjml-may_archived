@@ -10,7 +10,7 @@ class DT(Predictor):
     """Decision Tree."""
 
     def __init__(self, **kwargs):
-        self.config = kwargs
+        self._configure(kwargs)
         self.algorithm = DecisionTreeClassifier(**kwargs)
 
     @classmethod

@@ -26,8 +26,7 @@ class Metric(Component, FunctionInspector):
     """
 
     def __init__(self, function, target='Y', prediction='Z'):
-        self.config = locals()
-        self.isdeterministic = True
+        self._configure(locals(), True)
         self.algorithm = self.functions[function]
         self.target, self.prediction = target, prediction
 

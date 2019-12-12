@@ -39,6 +39,13 @@ class Component(ABC, Timers, ExceptionHandler):
     _apply_failure = None
     last_operation = None
 
+    def _configure(self, args, isdeterministic=False):
+        self.config = args.copy()
+        for keyword in ['self','args','kwargs']:
+            if keyword in self.config:
+                del self.config[keyword]
+        self.isdeterministic = isdeterministic
+
     @abstractmethod
     def _apply_impl(self, data):
         """Each component should implement its core 'apply' functionality."""
@@ -90,7 +97,7 @@ class Component(ABC, Timers, ExceptionHandler):
         if data is None:
             return None
         if self.algorithm is None or self.config is None:
-            raise BadComponent(f"{self.transformer} didn't set up"
+            raise BadComponent(f"{self.transformer} didn't set up "
                                f"an algorithm or a config at __init__")
         self.last_operation = 'a'
         return self._run(self._apply_impl, data)

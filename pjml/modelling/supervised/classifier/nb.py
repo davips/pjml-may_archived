@@ -11,7 +11,7 @@ class NB(Predictor):
     """Naive Bayes implementations: gaussian, bernoulli."""
 
     def __init__(self, distribution="gaussian"):
-        self.config = locals()
+        self._configure(locals())
         self.distribution = distribution
 
         if self.distribution == "gaussian":

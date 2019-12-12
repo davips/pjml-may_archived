@@ -18,7 +18,7 @@ class FiniteConfigSpace(ConfigSpace):
 
     def __next__(self):
         self.current_index += 1
-        if self.current_index > len(self.nested):
+        if self.current_index >= self.size:
             self.current_index = 0
             raise StopIteration('No more Data objects left.')
         return self.nested[self.current_index]

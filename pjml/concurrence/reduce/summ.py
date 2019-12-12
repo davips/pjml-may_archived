@@ -1,6 +1,7 @@
 from numpy import mean
 
-from pjml.concurrence.reduce import Reduce
+from pjdata.data import Data
+from pjml.concurrence.reduce.reduce import Reduce
 from pjml.config.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameters import CatP
@@ -17,12 +18,17 @@ class Summ(Reduce):
     """
 
     def __init__(self, field='r', function='mean'):
-        self.config = locals()
+        self._configure(locals())
         self.algorithm = self.functions[function]
         self.field = field
 
-    def _use_impl(self, data):
-        return data.updated(self.transformation(), s=self.algorithm(data))
+    def _use_impl(self, collection):
+        return Data(
+            dataset=collection.dataset,
+            history=collection.history.extended(self.transformation()),
+            failure=collection.failure,
+            s=self.algorithm(collection)
+        )
 
     @classmethod
     def _cs_impl(cls):
@@ -32,5 +38,5 @@ class Summ(Reduce):
         }
         return ConfigSpace(params=params)
 
-    def _fun_mean(self, data):
-        return 1 - mean(data.matrices[self.field])
+    def _fun_mean(self, collection):
+        return mean([data.fields[self.field] for data in collection])

@@ -1,5 +1,3 @@
-import traceback
-
 from pjml.base.transformer import Transformer
 from pjml.config.distributions import choice
 
@@ -28,6 +26,11 @@ class ConfigSpace:
         self.params = {} if params is None else params
         self.nested = [] if nested is None else nested
         self.children = [] if children is None else children
+        from pjml.config.finiteconfigspace import FiniteConfigSpace
+        if isinstance(self, FiniteConfigSpace):
+            self.size = len(self.nested)
+        else:
+            self.size = None
 
     def updated(self, **kwargs):
         dic = {

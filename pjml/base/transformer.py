@@ -32,6 +32,7 @@ class Transformer(Identifyable):
         return class_(**self.config)
 
     def _uuid_impl(self):
+        # TODO self.config é jasonizavel? Resolver aqui?
         return self.name + self.path + json.dumps(self.config, sort_keys=True)
 
     @staticmethod

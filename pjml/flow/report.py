@@ -13,8 +13,7 @@ class Report(Component):
     """
 
     def __init__(self, text):
-        self.config = locals()
-        self.isdeterministic = True
+        self._configure(locals(), True)
         self.algorithm = text
 
     def _apply_impl(self, data):
@@ -41,6 +40,7 @@ class Report(Component):
     def _interpolate(cls, text, data):
         segments = text.split('$')
         start = segments[0]
+        print(999999999, data.fields)
         rest = [str(data.fields[seg[0]]) + seg[1:] for seg in segments[1:]]
         return cls._eval(start + ''.join(rest), data)
 
@@ -48,7 +48,7 @@ class Report(Component):
     def _eval(cls, text, data):
         txt = ''
         run = False
-        expanded=[w.split('}') for w in ('_' + text + '_').split('{')]
+        expanded = [w.split('}') for w in ('_' + text + '_').split('{')]
         for seg in cls._flatten(expanded):
             if run:
                 txt += str(eval('data.' + seg))
