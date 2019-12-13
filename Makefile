@@ -23,17 +23,17 @@ code-check: ## Execute the code check with flake8, pylint, mypy.
 	pylint pymfe -d 'C0103, R0913, R0902, R0914, C0302, R0904, R0801, E1101'
 	mypy pymfe --ignore-missing-imports
 
-pypi: clean ## Send pymfe to pypi.
+pypi: clean ## Send pjml to pypi.
 	python3 setup.py sdist bdist_wheel
 	twine upload dist/*
 
-install-dev: ## Install pymfe for developers using pip.
+install-dev: ## Install pjml for developers using pip.
 	pip install -e .
 	pip install -U -r requirements.txt
 	pip install -U -r requirements-dev.txt
 	pip install -U -r requirements-docs.txt
 
-install: ## Install pymfe using pip.
+install: ## Install pjml using pip.
 	pip install .
 
 html: ## Create the online documentation.
