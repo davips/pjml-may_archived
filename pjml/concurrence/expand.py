@@ -8,8 +8,7 @@ class NoAlgorithm:
 
 class Expand(Component):
     def __init__(self):
-        self._configure({}, True)
-        self.algorithm = NoAlgorithm()
+        super().__init__({}, NoAlgorithm, isdeterministic=True)
 
     def _apply_impl(self, data):
         self.model = self.algorithm

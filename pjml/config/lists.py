@@ -1,19 +1,19 @@
-import json
-
-import numpy
-from sklearn.model_selection import StratifiedKFold, LeaveOneOut, \
-    StratifiedShuffleSplit
-
 from pjml.config.finiteconfigspace import FiniteConfigSpace
 from pjml.evaluation.split import Split
 
 
-def bag(transformers):
+def bag(*transformers):
     """Make a FiniteConfigSpace from a sequence of transformers."""
     return FiniteConfigSpace(nested=transformers)
 
+def concat(*transformers):
+    """Make a FiniteConfigSpace from a sequence of transformers."""
+    return FiniteConfigSpace(nested=transformers)
 
-def fetch():
+def seq():
+    return Seq().cs()
+
+def fetch(path):
     pass
 
 

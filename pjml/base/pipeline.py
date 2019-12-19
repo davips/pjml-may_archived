@@ -7,7 +7,7 @@ class Pipeline:
     def apply(self, data):
         for component in self.components:
             data = component.apply(data)
-            if data.failure is not None:
+            if data and (data.failure is not None):
                 raise Exception(f'Applying subcomponent {component} failed! ',
                                 data.failure)
         return data
@@ -15,7 +15,7 @@ class Pipeline:
     def use(self, data):
         for component in self.components:
             data = component.use(data)
-            if data.failure is not None:
+            if data and (data.failure is not None):
                 raise Exception(f'Using subcomponent {component} failed! ',
                                 data.failure)
         return data

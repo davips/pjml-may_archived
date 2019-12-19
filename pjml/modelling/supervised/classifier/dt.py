@@ -10,8 +10,7 @@ class DT(Predictor):
     """Decision Tree."""
 
     def __init__(self, **kwargs):
-        self._configure(kwargs)
-        self.algorithm = DecisionTreeClassifier(**kwargs)
+        super().__init__(kwargs, DecisionTreeClassifier(**kwargs))
 
     @classmethod
     def _cs_impl(cls):

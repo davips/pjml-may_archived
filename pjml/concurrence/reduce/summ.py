@@ -1,7 +1,10 @@
+import numpy
 from numpy import mean
+from numpy import std
 
 from pjdata.data import Data
 from pjml.concurrence.reduce.reduce import Reduce
+from pjml.concurrence.shrink import Shrink
 from pjml.config.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameters import CatP
@@ -18,17 +21,29 @@ class Summ(Reduce):
     """
 
     def __init__(self, field='r', function='mean'):
-        self._configure(locals())
-        self.algorithm = self.functions[function]
+        super().__init__(self._to_config(locals()), self.functions[function], True)
         self.field = field
 
     def _use_impl(self, collection):
-        return Data(
+        if collection.has_nones:
+            collection = Shrink().apply(collection)
+            if len(collection.datas) == 0:
+                return None
+            else:
+                print("Warning: collections containing Nones are shrunk before"
+                      "summarization.")
+
+        data = Data(
             dataset=collection.dataset,
-            history=collection.history.extended(self.transformation()),
-            failure=collection.failure,
-            s=self.algorithm(collection)
+            history=collection.history,
+            failure=collection.failure
         )
+        res = self.algorithm(collection)
+        if isinstance(res, tuple):
+            summ = numpy.array([res])
+            return data.updated(self.transformation(), S=summ)
+        else:
+            return data.updated(self.transformation(), s=res)
 
     @classmethod
     def _cs_impl(cls):
@@ -40,3 +55,11 @@ class Summ(Reduce):
 
     def _fun_mean(self, collection):
         return mean([data.fields[self.field] for data in collection])
+
+    def _fun_std(self, collection):
+        return std([data.fields[self.field] for data in collection])
+
+    def _fun_mean_std(self, collection):
+        # TODO?: optimize calculating mean and stdev together
+        values = [data.fields[self.field] for data in collection]
+        return mean(values), std(values)

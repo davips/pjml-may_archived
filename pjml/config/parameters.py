@@ -32,6 +32,17 @@ class Param:
 class CatP(Param):
     pass
 
+
+class SubP(Param):
+    """Subset of values."""
+    pass
+
+
+class PermP(Param):
+    """Permutation of a list."""
+    pass
+
+
 class OrdP(Param):
     pass
 

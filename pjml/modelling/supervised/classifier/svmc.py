@@ -9,8 +9,7 @@ from pjml.config.parameters import RealP, CatP, OrdP, IntP
 
 class SVMC(Predictor):
     def __init__(self, **kwargs):
-        self._configure(kwargs)
-        self.algorithm = SVC(**self.config)
+        super().__init__(kwargs, SVC(**kwargs))
 
     @classmethod
     def _cs_impl(cls):

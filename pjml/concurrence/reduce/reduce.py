@@ -5,6 +5,9 @@ from pjml.base.component import Component
 
 
 class Reduce(Component, FunctionInspector, ABC):
+    def __init__(self, config, algorithm, isdeterministic=False):
+        super().__init__(config, algorithm, isdeterministic)
+        self.model = algorithm
+
     def _apply_impl(self, collection):
-        self.model = self.algorithm
         return self._use_impl(collection)

@@ -11,15 +11,14 @@ class NB(Predictor):
     """Naive Bayes implementations: gaussian, bernoulli."""
 
     def __init__(self, distribution="gaussian"):
-        self._configure(locals())
-        self.distribution = distribution
-
-        if self.distribution == "gaussian":
-            self.algorithm = GaussianNB()
-        elif self.distribution == "bernoulli":
-            self.algorithm = BernoulliNB()
+        if distribution == "gaussian":
+            algorithm = GaussianNB()
+        elif distribution == "bernoulli":
+            algorithm = BernoulliNB()
         else:
             raise Exception('Wrong distribution:', distribution)
+        super().__init__({'distribution': distribution}, algorithm)
+        self.distribution = distribution
 
     @classmethod
     def _cs_impl(cls):

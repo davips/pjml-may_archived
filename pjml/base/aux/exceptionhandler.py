@@ -33,7 +33,7 @@ class ExceptionHandler:
     transformer = None
 
     def _handle_exception(self, e):
-        print(f'Trying to handle: {str(e)} for {self.transformer}...')
+        print(f'Trying to handle: [{str(e)}] at {self.transformer}...')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
             traceback.print_exc()
             exit(0)

@@ -11,7 +11,7 @@ class Predictor(Component, ABC):
     def _apply_impl(self, data):
         self.algorithm.fit(*data.Xy)
         self.model = self.algorithm
-        return self._use_impl(data)
+        return None
 
     def _use_impl(self, data):
         return data.updated(self.transformation(), z=self.algorithm.predict(data.X))

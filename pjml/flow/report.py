@@ -13,11 +13,10 @@ class Report(Component):
     """
 
     def __init__(self, text):
-        self._configure(locals(), True)
-        self.algorithm = text
+        super().__init__({'text': text}, text, isdeterministic=True)
+        self.model = self.algorithm
 
     def _apply_impl(self, data):
-        self.model = self.algorithm
         print('[apply] ', self._interpolate(self.model, data))
         return data
 
@@ -40,7 +39,6 @@ class Report(Component):
     def _interpolate(cls, text, data):
         segments = text.split('$')
         start = segments[0]
-        print(999999999, data.fields)
         rest = [str(data.fields[seg[0]]) + seg[1:] for seg in segments[1:]]
         return cls._eval(start + ''.join(rest), data)
 

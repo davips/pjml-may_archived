@@ -7,9 +7,8 @@ class Map(Component):
     def __init__(self, element):
         if isinstance(element, Component):
             element = element.transformer
-        self._configure(locals())
-        # TODO: seed
-        self.algorithm = element
+        # TODO: propagar seed
+        super().__init__({'element': element}, element)
 
     def _apply_impl(self, collection):
         if collection.infinite:
@@ -36,4 +35,5 @@ class Map(Component):
 
     @classmethod
     def _cs_impl(cls):
-        raise Exception('It is not clear whether Multi should have a CS now.')
+        # TODO: CS
+        raise Exception('expõe o CS do element passado')

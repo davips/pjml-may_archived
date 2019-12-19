@@ -26,11 +26,12 @@ class Split(Component, FunctionInspector):
         Name of the matrices to be modified.
     """
 
-    def __init__(self, split_type='cv', steps=10, partition=0, test=0.3, seed=0,
-                 fields=None):
+    def __init__(self, split_type='cv', steps=10,
+                 partition=0, test=0.3, seed=0, fields=None):
+        config = self._to_config(locals())
+
         if fields is None:
             fields = ['X', 'Y']
-        self._configure(locals())
         if split_type == "cv":
             algorithm = SKF(shuffle=True, n_splits=steps, random_state=seed)
         elif split_type == "loo":
@@ -39,7 +40,7 @@ class Split(Component, FunctionInspector):
             algorithm = HO(n_splits=steps, test_size=test, random_state=seed)
         else:
             raise Exception('Wrong split_type: ', split_type)
-        self.algorithm = algorithm
+        super().__init__(config, algorithm)
         self.steps = steps
         self.partition = partition
         self.test = test
@@ -55,7 +56,7 @@ class Split(Component, FunctionInspector):
         return self._core(data, partitions[self.partition][0])
 
     def _use_impl(self, data):
-        return self._core(data, self.model[self.partition][1])
+        return self._core(data, self.model)
 
     def _core(self, data, idxs):
         new_dic = {f: data.matrices[f][idxs] for f in self.fields}

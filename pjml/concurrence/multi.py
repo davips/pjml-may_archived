@@ -6,12 +6,11 @@ class Multi(Component):
     transformer of the given FiniteConfigSpace."""
 
     def __init__(self, cs):
-        self._configure(locals())
-        # TODO: seed
+        # TODO: propagar seed
+        super().__init__({'cs':cs}, cs)
         # TODO: aceitar componentes instanciados? = problemas de referências?
         #  desmaterializar?
-        self.algorithm = cs
-        self.size = self.algorithm.size
+        self.size = cs.size
 
     def _apply_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -38,5 +37,7 @@ class Multi(Component):
 
     @classmethod
     def _cs_impl(cls):
-        raise Exception('It is not clear whether Multi should have a CS now.')
-
+        raise Exception('Multi should have a CS:'
+                        'Pode ter um finiteCS de tamanho um (se for passado 1 '
+                        'finiteCS) ou pode ter um CS combinando vários CS '
+                        'passados')

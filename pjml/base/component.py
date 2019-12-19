@@ -12,16 +12,17 @@ from pjml.config.parameters import FixedP
 class Component(ABC, Timers, ExceptionHandler):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
+    Each component should decide by itself if it requires apply before use.
     All components should implement:
         _apply_impl()
         _use_impl()
         _cs_impl()
 
-    They also should, at __init__(), assign a value to:
-        self.isdeterministic* (only when an override is needed)
-        self.config¹
-        self.algorithm²
-    and at _apply_impl(), assign a value to:
+    They also should call super.__init__(), assigning values to:
+        config¹
+        algorithm²
+        isdeterministic*
+    and at _apply_impl(), or before (at init), assign a value to:
         self.model³
 
     *: Deterministic components should override this class member with True.
@@ -30,21 +31,14 @@ class Component(ABC, Timers, ExceptionHandler):
     ³: induced/fitted/describing model to use()
     """
 
-    # Mandatory fields.
-    isdeterministic = False
-    config = {}
-    algorithm = None
-    model = None
-
-    _apply_failure = None
-    last_operation = None
-
-    def _configure(self, args, isdeterministic=False):
-        self.config = args.copy()
-        for keyword in ['self','args','kwargs']:
-            if keyword in self.config:
-                del self.config[keyword]
+    def __init__(self, config, algorithm, isdeterministic=False):
+        self.config = config
+        self.algorithm = algorithm
         self.isdeterministic = isdeterministic
+
+        self.model = None  # Mandatory field at apply() or init().
+        self._failure_during_apply = None
+        self.last_operation = None
 
     @abstractmethod
     def _apply_impl(self, data):
@@ -54,6 +48,8 @@ class Component(ABC, Timers, ExceptionHandler):
     def _use_impl(self, data):
         """Each component should implement its core 'use' functionality."""
 
+    # Class methods cannot be a property!
+    # And should be classmethod, for this: KNN = KNN.cs()
     @classmethod
     @abstractmethod
     def _cs_impl(cls):
@@ -98,7 +94,8 @@ class Component(ABC, Timers, ExceptionHandler):
             return None
         if self.algorithm is None or self.config is None:
             raise BadComponent(f"{self.transformer} didn't set up "
-                               f"an algorithm or a config at __init__")
+                               f"an algorithm or a config at __init__. This"
+                               f" should be done by calling the parent init")
         self.last_operation = 'a'
         return self._run(self._apply_impl, data)
 
@@ -120,11 +117,12 @@ class Component(ABC, Timers, ExceptionHandler):
         """
         if data is None:
             return None
-        if self._apply_failure is not None:
-            return data.updated(failure=self._apply_failure)
+        if self._failure_during_apply is not None:
+            return data.updated(failure=self._failure_during_apply)
         if self.model is None:
             raise NoModel(f"{self.transformer} didn't set up a model yet."
-                          f" Method apply() should be called before use()!")
+                          f" Method apply() should be called before use()!"
+                          f"Another reason is a bad apply/init implementation.")
         self.last_operation = 'u'
         return self._run(self._use_impl, data)
 
@@ -174,3 +172,11 @@ class Component(ABC, Timers, ExceptionHandler):
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
         return output_data
+
+    @staticmethod
+    def _to_config(locals_):
+        """Convert a dict comming from locals() to config."""
+        config = locals_.copy()
+        del config['self']
+        del config['__class__']
+        return config

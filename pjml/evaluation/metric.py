@@ -26,12 +26,13 @@ class Metric(Component, FunctionInspector):
     """
 
     def __init__(self, function, target='Y', prediction='Z'):
-        self._configure(locals(), True)
-        self.algorithm = self.functions[function]
+        super().__init__(self._to_config(locals()),
+                         self.functions[function],
+                         isdeterministic=True)
         self.target, self.prediction = target, prediction
+        self.model = self.algorithm
 
     def _apply_impl(self, data):
-        self.model = self.algorithm
         return self._use_impl(data)
 
     def _use_impl(self, data):
@@ -54,3 +55,5 @@ class Metric(Component, FunctionInspector):
         return accuracy_score(
             data.matrices[self.target], data.matrices[self.prediction]
         )
+
+
