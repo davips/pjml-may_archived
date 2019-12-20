@@ -1,21 +1,15 @@
-from itertools import repeat
-
 from pjdata.data_creation import read_arff
-from pjml.base.aux.seq import Seq
-from pjml.base.pipeline import Pipeline
-from pjml.concurrence.expand import Expand
-from pjml.concurrence.map import Map
-from pjml.concurrence.multi import Multi
-from pjml.concurrence.reduce.summ import Summ
-from pjml.config.lists import sampler, bag
-from pjml.container.applyusing import ApplyUsing
-from pjml.evaluation.metric import Metric
-from pjml.flow.report import Report
-from pjml.modelling.supervised.classifier.dt import DT
-from pjml.modelling.supervised.classifier.nb import NB
-from pjml.modelling.supervised.classifier.svmc import SVMC
-from pjml.processing.instance.sampler.over.rnd_over_sampler import \
-    RndOverSampler
+from pjml.config.list import sampler
+from pjml.pipeline import Pipeline
+from pjml.tool.collection.expand.expand import Expand
+from pjml.tool.collection.reduce.summ import Summ
+from pjml.tool.collection.transform.map import Map
+from pjml.tool.collection.transform.multi import Multi
+from pjml.tool.data.container.applyusing import ApplyUsing
+from pjml.tool.data.container.seq import Seq
+from pjml.tool.data.evaluation.metric import Metric
+from pjml.tool.data.flow.report import Report
+from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 
 
 def map(x):

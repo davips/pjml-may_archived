@@ -1,5 +1,5 @@
-from pjml.base.transformer import Transformer
 from pjml.config.distributions import choice
+from pjml.config.transformer import Transformer
 
 
 class ConfigSpace:

@@ -1,8 +1,4 @@
-import traceback
-
-from pjml.base.transformer import Transformer
 from pjml.config.configspace import ConfigSpace
-from pjml.config.distributions import choice
 
 
 class FiniteConfigSpace(ConfigSpace):
