@@ -72,13 +72,10 @@ def evaluator(pipe):
     )
 
 
-workflow_to_eval = Seq(
-    ApplyUsing(SVMC(kernel='linear')),
-    Metric(function='accuracy')
-)
-
 pipe = Pipeline(
-    evaluator(workflow_to_eval),
+    evaluator(
+        Seq(ApplyUsing(SVMC(kernel='linear')), Metric(function='accuracy'))
+    ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
 
@@ -144,4 +141,5 @@ pipe.use(datain)
 #
 #
 #
-# seq(rnd(seq(ga(workflow, 100), SVMC), 100), Select(n=10, field='s', function='max'))
+# seq(rnd(seq(ga(workflow, 100), SVMC), 100), Select(n=10, field='s',
+# function='max'))
