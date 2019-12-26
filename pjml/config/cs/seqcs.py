@@ -25,4 +25,4 @@ class SeqCS(ConfigSpace):
 
     def sample(self):
         transformers = [cs.sample() for cs in self.config_spaces]
-        return Seq.cs(transformers=transformers)
+        return Seq(transformers=transformers)

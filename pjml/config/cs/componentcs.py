@@ -19,7 +19,7 @@ class ComponentCS(ConfigSpace):
         List of internal nodes. Only one is sampled at a time.
     """
 
-    def __init__(self, name, path=None, nodes=None):
+    def __init__(self, name, path, nodes):
         self.name = name
         self.path = path
         self.nodes = nodes
@@ -42,7 +42,7 @@ class ComponentCS(ConfigSpace):
         child_node = choice(self.nodes)
         config.update(child_node.partial_sample())
 
-        return Transformer(self.name, self.path, config)
+        return Transformer.materialize(self.name, self.path, config)
 
     def updated(self, **kwargs):
         dic = {
