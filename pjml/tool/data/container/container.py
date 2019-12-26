@@ -30,7 +30,7 @@ class Container(Component, ABC):
         return self.model.use(data)
 
     @classmethod
-    def cs(cls, component=None, **kwargs):
+    def cs(cls, component, **kwargs):
         """Config Space of this container. See Component.cs() for details.
 
         Parameters
@@ -38,9 +38,11 @@ class Container(Component, ABC):
         component
             A container requires the config space of a component.
             'component' can be:
-                a Component object, which will be converted to a config
+                * a Component object, which will be converted to a config
                 space, implying that |ConfigSpace| = 1;
-                a ConfigSpace;
+                * a ConfigSpace;
+                * a Transformer, which will be converted to a config
+                space, implying that |ConfigSpace| = 1;
 
         kwargs
             See Component.cs() for details.

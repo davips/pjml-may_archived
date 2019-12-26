@@ -2,6 +2,7 @@ import json
 from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
+from pjml.config.list import bag
 
 
 class Transformer(Identifyable, dict):
@@ -48,6 +49,12 @@ class Transformer(Identifyable, dict):
         """Helper function to avoid conditional Transformer vs Component.
         """
         return self
+
+    @property
+    @lru_cache()
+    def cs(self=None):
+        """Convert a transformer into a config space."""
+        return bag(self)
 
     @classmethod
     def _dict_to_transformer(cls, dic):

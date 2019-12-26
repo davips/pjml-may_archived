@@ -36,3 +36,6 @@ class Seq(Component):
         raise Exception('Seq has no CS! Use seq() operator.')
         # TODO: Seq pode ter CS com arg "config_spaces",
         #  mas pode haver uma função  atalho seq() pra isso.
+
+    def cs(self, *args, components=None):
+        pass

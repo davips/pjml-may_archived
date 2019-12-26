@@ -2,7 +2,10 @@ from numpy.random.mtrand import uniform
 from sklearn.svm import SVC
 
 from pjml.config.configspace import ConfigSpace
+
+from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
+from pjml.config.node import Node
 from pjml.config.parameter import RealP, CatP, OrdP, IntP
 from pjml.tool.data.modeling.supervised.predictor import Predictor
 
@@ -47,12 +50,11 @@ class SVMC(Predictor):
             'coef0': RealP(uniform, low=0.0, high=100),
         })
 
-        kernel_nonlinear = ConfigSpace(
+        kernel_nonlinear = Node(
             {'gamma': RealP(uniform, low=0.00001, high=100)},
-            children=[kernel_poly, kernel_rbf, kernel_sigmoid]
+            config_spaces=[kernel_poly, kernel_rbf, kernel_sigmoid]
         )
-
-        return ConfigSpace(
-            params=params,
-            children=[kernel_linear, kernel_nonlinear]
+        raise Exception('missing top level node with params')
+        return ComponentCS(
+            config_spaces=[kernel_linear, kernel_nonlinear]
         )
