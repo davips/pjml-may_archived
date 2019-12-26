@@ -1,9 +1,10 @@
 import json
+from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
 
 
-class Transformer(Identifyable):
+class Transformer(Identifyable, dict):
     def __init__(self, name, path, config):
         """
         Parameters
@@ -20,6 +21,7 @@ class Transformer(Identifyable):
         self.name = name
         self.path = path
         self.config = config
+        dict.__init__(self, transformer=name + '@' + path, config=config)
 
     def materialize(self):
         """Incarnate the respective component for this transformer.
@@ -31,9 +33,39 @@ class Transformer(Identifyable):
         class_ = self._get_class(self.path, self.name)
         return class_(**self.config)
 
+    @property
+    @lru_cache()
+    def serialized(self):
+        return json.dumps(self, sort_keys=True)
+
+    @classmethod
+    def deserialize(cls, txt):
+        return cls._dict_to_transformer(json.loads(txt))
+
+    @property
+    @lru_cache()
+    def transformer(self):
+        """Helper function to avoid conditional Transformer vs Component.
+        """
+        return self
+
+    @classmethod
+    def _dict_to_transformer(cls, dic):
+        """Convert recursively a dict to a transformer."""
+        if 'transformer' not in dic:
+            raise Exception('Provided dict does not represent a transformer.')
+        name, path = dic['transformer'].split('@')
+        cfg = dic['config']
+        if 'component' in cfg:
+            cfg['component'] = cls._dict_to_transformer(cfg['component'])
+
+        return Transformer(
+            name=name, path=path,
+            config=cfg
+        )
+
     def _uuid_impl(self):
-        # TODO self.config é jasonizavel? Resolver aqui?
-        return self.name + self.path + json.dumps(self.config, sort_keys=True)
+        return self.serialized
 
     @staticmethod
     def _get_class(module, class_name):
