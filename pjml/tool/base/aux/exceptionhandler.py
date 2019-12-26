@@ -3,7 +3,7 @@ import numpy
 
 
 class ExceptionHandler:
-    """Handle component exceptions and enable/disable numpy warnings.
+    """Handle transformer exceptions and enable/disable numpy warnings.
 
         E.g. Mahalanobis distance in KNN needs to supress warnings due to NaN
         in linear algebra calculations. MLP is also verbose due to
@@ -26,7 +26,7 @@ class ExceptionHandler:
             'MemoryError',
             'On entry to DLASCL parameter number',  # Mahala knn
             'excess of neighbors!',  # KNN
-            'subcomponent failed',  # nested failure
+            'subtransformer failed',  # nested failure
             'specified nu is infeasible',  # SVM
             'excess of neurons',
             ]

@@ -7,8 +7,8 @@ class ApplyUsing(Transformer):
     Useful to calculate training error in classifiers, which would otherwise
     return None in the 'apply' step."""
 
-    def __init__(self, component):
-        super().__init__({'component': component}, component, True)
+    def __init__(self, transformer):
+        super().__init__({'transformer': transformer}, transformer, True)
         self.model = self.algorithm
 
     def _apply_impl(self, data):

@@ -24,12 +24,12 @@ def cache(component, engine="file", settings=None):
 
 
 class Cache(Transformer):
-    def __init__(self, component, engine="file", settings=None):
+    def __init__(self, transformer, engine="file", settings=None):
         super().__init__(self._to_config(locals()), engine)
 
         if settings is None:
             settings = {'db': '/tmp'}
-        self.uuid = self.components[0].uuid
+        self.uuid = self.transformer.uuid
         if engine == "amnesia":
             from paje.storage.mysql import MySQL
             self._storage = Amnesia(**settings)
@@ -47,7 +47,6 @@ class Cache(Transformer):
             self._storage = PickleServer(**settings)
         else:
             raise Exception('Unknown engine:', engine)
-        self.component = self.components[0]
 
         self._storage._dump = 'dump' in config  # TODO: not used yet!
 
@@ -60,7 +59,7 @@ class Cache(Transformer):
         #  specially if it is a LOO.
         #  Maybe some components could inform whether they are cheap.
         output_data, started = self._storage.get_result(
-            self.component, self.op, self.train_data_uuid__mutable(), data
+            self.transformer, self.op, self.train_data_uuid__mutable(), data
         )
 
         if started:
@@ -120,6 +119,7 @@ class Cache(Transformer):
         self._storage.store_result(self.component, data, output_data)
         return output_data
 
+    @classmethod
     def _cs_impl(cls):
         params = {'engine': CatP(
             choice, items=["amnesia","mysql","sqlite","nested"]

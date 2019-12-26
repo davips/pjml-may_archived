@@ -5,7 +5,9 @@ from pjml.tool.base.transformer import Transformer
 
 
 class ComponentCS(ConfigSpace):
-    """Complete settings for a component.
+    """Complete settings for a component (a component is a set of
+    transformers, e.g. the component KNN represents the set of all k-NN
+    transformers: KNN(k=1), KNN(k=3), ...
 
     Parameters
     ----------

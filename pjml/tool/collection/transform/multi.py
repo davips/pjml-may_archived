@@ -7,9 +7,8 @@ class Multi(Transformer):
 
     def __init__(self, cs):
         # TODO: propagar seed
-        super().__init__({'cs':cs}, cs)
-        # TODO: aceitar componentes instanciados? = problemas de referências?
-        #  desmaterializar?
+        # TODO: testar se cs é finito?
+        super().__init__({'cs': cs}, cs)
         self.size = cs.size
 
     def _apply_impl(self, collection):
@@ -18,6 +17,7 @@ class Multi(Transformer):
                             f'size {self.size} != collection {collection.size}')
         self.model = []
         datas = []
+        # TODO: deve clonar antes de usar?
         for transformer in self.algorithm:
             data = transformer.apply(next(collection))
             datas.append(data)
@@ -29,8 +29,8 @@ class Multi(Transformer):
             raise Exception('Config space and collection should have the same '
                             f'size {self.size} != collection {collection.size}')
         datas = []
-        for component in self.model:
-            data = component.use(next(collection))
+        for transformer in self.model:
+            data = transformer.use(next(collection))
             datas.append(data)
         return collection.updated(self.transformation(), datas)
 

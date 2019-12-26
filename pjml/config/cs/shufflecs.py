@@ -26,4 +26,4 @@ class ShuffleCS(ConfigSpace):
     def sample(self):
         css = self.config_spaces.copy()
         np.random.shuffle(css)
-        return Seq(components=[cs.sample() for cs in css])
+        return Seq(transformers=[cs.sample() for cs in css])

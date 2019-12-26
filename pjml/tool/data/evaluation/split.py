@@ -71,8 +71,8 @@ class Split(Transformer, FunctionInspector):
         raise Exception('Split is not for external use for now!')
         # return ConfigSpace(params=params)
 
-    # Version that would break the archtecture, because of the need for a
-    # super component Sampler that is expand + container + finiteconfigspace.
+    # Version that would break the architecture, because of the need for a
+    # super component Sampler = expand + container + finiteconfigspace.
 
     # def __init__(self, train_indexes, test_indexes, fields=None):
     #     if fields is None:

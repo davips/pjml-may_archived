@@ -16,7 +16,9 @@ from pjml.tool.base.aux.timers import Timers
 class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
-    Each component should decide by itself if it requires apply before use.
+    Each component (alias for Transformer child class) implementation should
+    decide by
+    itself if it requires the 'apply' step before the 'use' step.
     All components should implement:
         _apply_impl()
         _use_impl()
@@ -48,11 +50,13 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.last_operation = None
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
-        # component without having to check if it is a class or an object.
+        # transformer (Transformer object) without having to check that it is
+        # not a
+        # component (Transformer class).
 
         self.name = self.__class__.__name__
         self.path = self.__class__.__module__
-        dict.__init__(self, transf=f'{self.name}@{self.path}', config=config)
+        dict.__init__(self, transf_id=f'{self.name}@{self.path}', config=config)
 
     def __hash__(self):
         """Needed only because of lru_cache complaining about hashability of
@@ -97,7 +101,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         -------
         transformed data, normally
         None, when data is None
-            (probably meaning the pipeline finished before this component)
+            (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
         if data is None:
@@ -122,7 +126,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         -------
         transformed data, normally
         None, when data is None
-            (probably meaning the pipeline finished before this component)
+            (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
         if data is None:
@@ -139,8 +143,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     @classmethod
     def cs(cls, **kwargs):
         """Config Space of this component, when called as class method.
-        If called on an object, will convert the object to a config space
-        with a single transformer.
+        If called on an transformer (object/instance method), will convert
+        the object to a config space with a single transformer.
 
         Each Config Space is a tree, where each path represents a parameter
         space of the learning/processing/evaluating algorithm of this component.
@@ -219,10 +223,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Convert recursively a dict to a transformer."""
         if 'transformer' not in dic:
             raise Exception('Provided dict does not represent a transformer.')
-        name, path = dic['transformer'].split('@')
+        name, path = dic['transf_id'].split('@')
         cfg = dic['config']
-        if 'component' in cfg:
-            cfg['component'] = cls._dict_to_transformer(cfg['component'])
+        if 'transformer' in cfg:
+            cfg['transformer'] = cls._dict_to_transformer(cfg['transformer'])
 
         return cls.materialize(name, path, cfg)
 
@@ -242,7 +246,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
         Returns
         -------
-        A ready to use component.
+        A ready to use transformer.
         """
         return self.materialize(self.name, self.path, self.config)
 

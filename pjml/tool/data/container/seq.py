@@ -2,32 +2,31 @@ from pjml.tool.base.transformer import Transformer
 
 
 class Seq(Transformer):
-    """Chain the execution of the given components.
+    """Chain the execution of the given transformers.
 
-    Each arg is a component. Optionally, a list of them can be passed as a
-    named arg 'components'."""
+    Each arg is a transformer. Optionally, a list of them can be passed as a
+    named arg 'transformers'."""
 
-    def __init__(self, *args, components=None):
-        if components is None:
-            components = args
-        super().__init__({'components': components}, components)
+    def __init__(self, *args, transformers=None):
+        if transformers is None:
+            transformers = args
+        super().__init__({'transformers': transformers}, transformers)
         # TODO: seed
-        # TODO: auto dematerialize component into transformer?
 
     def _apply_impl(self, data):
         self.model = self.algorithm
-        for component in self.algorithm:
-            data = component.apply(data)
+        for transformer in self.algorithm:
+            data = transformer.apply(data)
             if data and (data.failure is not None):
-                raise Exception(f'Applying subcomponent {component} failed! ',
+                raise Exception(f'Applying subtransformer {transformer} failed! ',
                                 data.failure)
         return data
 
     def _use_impl(self, data):
-        for component in self.algorithm:
-            data = component.use(data)
+        for transformer in self.algorithm:
+            data = transformer.use(data)
             if data and (data.failure is not None):
-                raise Exception(f'Using subcomponent {component} failed! ',
+                raise Exception(f'Using subtransformer {transformer} failed! ',
                                 data.failure)
         return data
 
@@ -37,5 +36,5 @@ class Seq(Transformer):
         # TODO: Seq pode ter CS com arg "config_spaces",
         #  mas pode haver uma função  atalho seq() pra isso.
 
-    def cs(self, *args, components=None):
+    def cs(self, *args, transformers=None):
         pass

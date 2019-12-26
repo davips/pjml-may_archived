@@ -13,14 +13,14 @@ from pjml.tool.base.transformer import Transformer
 
 class Container(Transformer, ABC):
     """This component is a generic component to build a 'Container'.
-    The idea of the Container is to modify a 'Component'.
+    The idea of the Container is to modify a 'transformer'.
     """
 
-    def __init__(self, component):  # , seed):
-        # TODO: pass seed to component, before Component changes it to randomsta
-        # if not component.isdeterministic:
+    def __init__(self, transformer):  # , seed):
+        # TODO: pass seed to transformer, before Component changes it to randomsta
+        # if not transformer.isdeterministic:
 
-        super().__init__({'component': component}, component, False)
+        super().__init__({'transformer': transformer}, transformer, False)
         self.model = self.algorithm
 
     def _apply_impl(self, data):
@@ -38,14 +38,14 @@ class Container(Transformer, ABC):
         component
             A container requires the config space of a component.
             'component' can be:
-                * a Component object, which will be converted to a config
+                * a Transformer object, which will be converted to a config
                 space, implying that |ConfigSpace| = 1;
                 * a ConfigSpace;
-                * a Transformer, which will be converted to a config
-                space, implying that |ConfigSpace| = 1;
+                * a component aka Transformer class, which will be converted
+                to a config space, implying that |ConfigSpace| = 1;
 
         kwargs
-            See Component.cs() for details.
+            See Transformer.cs() for details.
 
         Returns
         -------
