@@ -1,7 +1,7 @@
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Sampler(Component):
+class Sampler(Transformer):
     """Class to perform, e.g. Expand+kfoldCV.
 
     This task is already done by function sampler,

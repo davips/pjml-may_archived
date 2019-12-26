@@ -1,10 +1,10 @@
-from pjml.config.configspace import ConfigSpace
+from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameter import CatP
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Report(Component):
+class Report(Transformer):
     """Report printer.
 
     $r prints 'r'

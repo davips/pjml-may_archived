@@ -1,7 +1,7 @@
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Multi(Component):
+class Multi(Transformer):
     """Process each Data object from a collection with its respective
     transformer of the given FiniteConfigSpace."""
 
@@ -19,10 +19,9 @@ class Multi(Component):
         self.model = []
         datas = []
         for transformer in self.algorithm:
-            component = transformer.materialize()
-            data = component.apply(next(collection))
+            data = transformer.apply(next(collection))
             datas.append(data)
-            self.model.append(component)
+            self.model.append(transformer)
         return collection.updated(self.transformation(), datas)
 
     def _use_impl(self, collection):

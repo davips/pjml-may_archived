@@ -1,8 +1,8 @@
 from pjml.tool.collection.expand.expand import NoAlgorithm
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Shrink(Component):
+class Shrink(Transformer):
     def __init__(self):
         super().__init__({}, NoAlgorithm, isdeterministic=True)
 

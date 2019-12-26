@@ -1,12 +1,10 @@
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Map(Component):
+class Map(Transformer):
     """Execute the same transformer/component for the entire collection."""
 
     def __init__(self, element):
-        if isinstance(element, Component):
-            element = element.transformer
         # TODO: propagar seed
         super().__init__({'element': element}, element)
 
@@ -16,7 +14,7 @@ class Map(Component):
         self.model = []
         datas = []
         for data in collection:
-            component = self.algorithm.materialize()
+            component = self.algorithm.clone()
             output_data = component.apply(data)
             datas.append(output_data)
             self.model.append(component)

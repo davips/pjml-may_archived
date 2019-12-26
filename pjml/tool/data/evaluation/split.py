@@ -7,10 +7,10 @@ from sklearn.model_selection import StratifiedShuffleSplit as HO, \
 from pjml.config.distributions import choice
 from pjml.config.parameter import CatP
 from pjml.tool.base.aux.functioninspector import FunctionInspector
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Split(Component, FunctionInspector):
+class Split(Transformer, FunctionInspector):
     """Split a given Data field into training/apply set and testing/use set.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'

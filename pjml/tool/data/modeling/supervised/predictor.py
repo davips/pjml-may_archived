@@ -1,9 +1,9 @@
 from abc import ABC
 
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Predictor(Component, ABC):
+class Predictor(Transformer, ABC):
     """
     Base class for classifiers, regressors, ... that implement fit/predict.
     """

@@ -8,10 +8,10 @@ For more information about the Container concept see [1].
 """
 from abc import ABC
 
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Container(Component, ABC):
+class Container(Transformer, ABC):
     """This component is a generic component to build a 'Container'.
     The idea of the Container is to modify a 'Component'.
     """

@@ -1,12 +1,12 @@
 from pjdata.collection import Collection
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
 class NoAlgorithm:
     pass
 
 
-class Expand(Component):
+class Expand(Transformer):
     def __init__(self):
         super().__init__({}, NoAlgorithm, isdeterministic=True)
 

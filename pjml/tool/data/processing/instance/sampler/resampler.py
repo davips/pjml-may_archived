@@ -1,9 +1,9 @@
 from abc import ABC
 
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Resampler(Component, ABC):
+class Resampler(Transformer, ABC):
     """Base class for resampling methods. Not to be confused with Sampler."""
 
     def _apply_impl(self, data):

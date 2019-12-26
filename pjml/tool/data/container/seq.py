@@ -1,7 +1,7 @@
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Seq(Component):
+class Seq(Transformer):
     """Chain the execution of the given components.
 
     Each arg is a component. Optionally, a list of them can be passed as a

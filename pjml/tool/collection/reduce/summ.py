@@ -3,7 +3,7 @@ from numpy import mean
 from numpy import std
 
 from pjdata.data import Data
-from pjml.config.configspace import ConfigSpace
+from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameter import CatP
 from pjml.tool.collection.reduce.reduce import Reduce

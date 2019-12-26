@@ -2,14 +2,14 @@ from functools import lru_cache
 
 from sklearn.metrics import accuracy_score
 
-from pjml.config.configspace import ConfigSpace
+from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameter import CatP
 from pjml.tool.base.aux.functioninspector import FunctionInspector
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class Metric(Component, FunctionInspector):
+class Metric(Transformer, FunctionInspector):
     """Metric to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'

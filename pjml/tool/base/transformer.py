@@ -1,17 +1,19 @@
+import hashlib
+import json
 from abc import ABC, abstractmethod
 from functools import lru_cache
 
+from pjdata.aux.encoders import dec
+from pjdata.aux.identifyable import Identifyable
 from pjdata.transformation import Transformation
-from pjml.config.configspace import ConfigSpace
 from pjml.config.list import bag
 from pjml.config.parameter import FixedP
-from pjml.config.transformer import Transformer
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, NoModel
 from pjml.tool.base.aux.timers import Timers
 
 
-class Component(ABC, Timers, ExceptionHandler):
+class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Each component should decide by itself if it requires apply before use.
@@ -32,6 +34,7 @@ class Component(ABC, Timers, ExceptionHandler):
     ²: processor/learner/evaluator to apply()
     ³: induced/fitted/describing model to use()
     """
+    _dump = None  # Needed because of conflicts between dict and lru_cache
 
     def __init__(self, config, algorithm, isdeterministic=False):
         if not isdeterministic and 'seed' in config:
@@ -46,6 +49,17 @@ class Component(ABC, Timers, ExceptionHandler):
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
         # component without having to check if it is a class or an object.
+
+        self.name = self.__class__.__name__
+        self.path = self.__class__.__module__
+        dict.__init__(self, transf=f'{self.name}@{self.path}', config=config)
+
+    def __hash__(self):
+        """Needed only because of lru_cache complaining about hashability of
+        dict child classes."""
+        if self._dump is None:
+            self._dump = json.dumps(self, sort_keys=True)
+        return int(hashlib.md5(self._dump.encode()).hexdigest(), 16)
 
     @abstractmethod
     def _apply_impl(self, data):
@@ -63,23 +77,12 @@ class Component(ABC, Timers, ExceptionHandler):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
-    @property
-    @lru_cache()
-    def transformer(self):
-        """
-        Returns
-        -------
-            A Transformer object able to recreate this component from scratch.
-        """
-        name, path = self.__class__.__name__, self.__module__
-        return Transformer(name, path, self.config)
-
     def transformation(self):
         if self.last_operation is None:
             raise Exception(
                 'transformation() should be called only after apply() or use()'
                 ' operations!')
-        return Transformation(self.transformer, self.last_operation)
+        return Transformation(self, self.last_operation)
 
     def apply(self, data):
         """Training step (usually).
@@ -100,7 +103,7 @@ class Component(ABC, Timers, ExceptionHandler):
         if data is None:
             return None
         if self.algorithm is None or self.config is None:
-            raise BadComponent(f"{self.transformer} didn't set up "
+            raise BadComponent(f"{self} didn't set up "
                                f"an algorithm or a config at __init__. This"
                                f" should be done by calling the parent init")
         self.last_operation = 'a'
@@ -127,7 +130,7 @@ class Component(ABC, Timers, ExceptionHandler):
         if self._failure_during_apply is not None:
             return data.updated(failure=self._failure_during_apply)
         if self.model is None:
-            raise NoModel(f"{self.transformer} didn't set up a model yet."
+            raise NoModel(f"{self} didn't set up a model yet."
                           f" Method apply() should be called before use()!"
                           f"Another reason is a bad apply/init implementation.")
         self.last_operation = 'u'
@@ -167,9 +170,9 @@ class Component(ABC, Timers, ExceptionHandler):
     @property
     @lru_cache()
     def cs1(self=None):
-        """Convert component into a config space with a single transformer
+        """Convert transformer into a config space with a single transformer
         inside it."""
-        return bag(self.transformer)
+        return bag(self)
 
     def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
@@ -191,8 +194,72 @@ class Component(ABC, Timers, ExceptionHandler):
 
     @staticmethod
     def _to_config(locals_):
-        """Convert a dict comming from locals() to config."""
+        """Convert a dict coming from locals() to config."""
         config = locals_.copy()
         del config['self']
         del config['__class__']
         return config
+
+    @classmethod
+    def _get_class(cls, module, class_name):
+        import importlib
+        module = importlib.import_module(module)
+        class_ = getattr(module, class_name)
+        return class_
+
+    def __str__(self, depth=''):
+        rows = '\n'.join([f'  {k}: {v}' for k, v in self.config.items()])
+        return f'{self.name} "{self.path}" [\n{rows}\n]'
+
+    def _uuid_impl(self):
+        return self.serialized
+
+    @classmethod
+    def _dict_to_transformer(cls, dic):
+        """Convert recursively a dict to a transformer."""
+        if 'transformer' not in dic:
+            raise Exception('Provided dict does not represent a transformer.')
+        name, path = dic['transformer'].split('@')
+        cfg = dic['config']
+        if 'component' in cfg:
+            cfg['component'] = cls._dict_to_transformer(cfg['component'])
+
+        return cls.materialize(name, path, cfg)
+
+    @classmethod
+    def materialize(cls, name, path, config):
+        """Instantiate a transformer.
+
+        Returns
+        -------
+        A ready to use component.
+        """
+        class_ = cls._get_class(path, name)
+        return class_(**config)
+
+    def clone(self):
+        """Clone this transformer.
+
+        Returns
+        -------
+        A ready to use component.
+        """
+        return self.materialize(self.name, self.path, self.config)
+
+    @property
+    @lru_cache()
+    def serialized(self):
+        if self._dump is None:
+            self._dump = json.dumps(self, sort_keys=True)
+        return self._dump
+
+    @classmethod
+    def deserialize(cls, txt):
+        return cls._dict_to_transformer(json.loads(txt))
+
+    @property
+    @lru_cache()
+    def transformer(self):
+        """Helper function to avoid conditional Transformer vs Component.
+        """
+        return self

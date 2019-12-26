@@ -1,7 +1,7 @@
 from numpy.random.mtrand import uniform
 from sklearn.svm import SVC
 
-from pjml.config.configspace import ConfigSpace
+from pjml.config.cs.configspace import ConfigSpace
 
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice

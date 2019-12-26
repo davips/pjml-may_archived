@@ -1,7 +1,7 @@
 from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.node import Node
-from pjml.config.transformer import Transformer
+from pjml.tool.base.transformer import Transformer
 
 
 class ComponentCS(ConfigSpace):

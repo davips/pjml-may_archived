@@ -3,7 +3,7 @@ from cururu.pickleserver import PickleServer
 from pjml.config.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameter import CatP
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
 def cache(component, engine="file", settings=None):
@@ -23,7 +23,7 @@ def cache(component, engine="file", settings=None):
     return Cache.cs(component, engine=engine, settings=settings)
 
 
-class Cache(Component):
+class Cache(Transformer):
     def __init__(self, component, engine="file", settings=None):
         super().__init__(self._to_config(locals()), engine)
 

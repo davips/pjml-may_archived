@@ -1,7 +1,7 @@
-from pjml.tool.base.component import Component
+from pjml.tool.base.transformer import Transformer
 
 
-class ApplyUsing(Component):
+class ApplyUsing(Transformer):
     """Run a 'use' step right after an 'apply' one.
 
     Useful to calculate training error in classifiers, which would otherwise
