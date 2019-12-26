@@ -2,10 +2,12 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 
 from pjdata.transformation import Transformation
+from pjml.config.configspace import ConfigSpace
+from pjml.config.list import bag
 from pjml.config.parameter import FixedP
 from pjml.config.transformer import Transformer
-from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, BadComponent, \
-    NoModel
+from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
+    BadComponent, NoModel
 from pjml.tool.base.aux.timers import Timers
 
 
@@ -32,6 +34,8 @@ class Component(ABC, Timers, ExceptionHandler):
     """
 
     def __init__(self, config, algorithm, isdeterministic=False):
+        if not isdeterministic and 'seed' in config:
+            config['random_state'] = config.pop('seed')
         self.config = config
         self.algorithm = algorithm
         self.isdeterministic = isdeterministic
@@ -39,6 +43,9 @@ class Component(ABC, Timers, ExceptionHandler):
         self.model = None  # Mandatory field at apply() or init().
         self._failure_during_apply = None
         self.last_operation = None
+
+        self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
+        # component without having to check if it is a class or an object.
 
     @abstractmethod
     def _apply_impl(self, data):
@@ -128,7 +135,9 @@ class Component(ABC, Timers, ExceptionHandler):
 
     @classmethod
     def cs(cls, **kwargs):
-        """Config Space of this component.
+        """Config Space of this component, when called as class method.
+        If called on an object, will convert the object to a config space
+        with a single transformer.
 
         Each Config Space is a tree, where each path represents a parameter
         space of the learning/processing/evaluating algorithm of this component.
@@ -154,6 +163,13 @@ class Component(ABC, Timers, ExceptionHandler):
             params[k] = FixedP(v)
 
         return cs_.updated(name=name, path=path, params=params)
+
+    @property
+    @lru_cache()
+    def cs1(self=None):
+        """Convert component into a config space with a single transformer
+        inside it."""
+        return bag(self.transformer)
 
     def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
