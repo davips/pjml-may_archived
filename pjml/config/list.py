@@ -13,10 +13,6 @@ def concat(*transformers):
     return FiniteConfigSpace(nested=transformers)
 
 
-def seq(*args):
-    return Seq().cs(*args)
-
-
 def fetch(path):
     pass
 
