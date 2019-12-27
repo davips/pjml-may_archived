@@ -1,6 +1,7 @@
 from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.node import Node
+from pjml.tool.base.aux.serialization import materialize
 from pjml.tool.base.transformer import Transformer
 
 
@@ -42,7 +43,7 @@ class ComponentCS(ConfigSpace):
         child_node = choice(self.nodes)
         config.update(child_node.partial_sample())
 
-        return Transformer.materialize(self.name, self.path, config)
+        return materialize(self.name, self.path, config)
 
     def updated(self, **kwargs):
         dic = {

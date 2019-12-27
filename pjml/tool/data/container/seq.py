@@ -1,17 +1,19 @@
+from pjml.config.cs.seqcs import SeqCS
 from pjml.tool.base.transformer import Transformer
 
 
-def seq(*args, transformers=None):
-    if transformers is None:
-        transformers = args
-    return Seq.cs(config_spaces=transformers)
+def seq(*args, components=None):
+    # TODO: convert components as classes to CSs?
+    if components is None:
+        components = args
+    return Seq.cs(config_spaces=components)
 
 
 class Seq(Transformer):
     """Chain the execution of the given transformers.
 
     Each arg is a transformer. Optionally, a list of them can be passed as a
-    named arg 'transformers'."""
+    named arg called 'transformers'."""
 
     def __init__(self, *args, transformers=None):
         if transformers is None:
@@ -38,13 +40,9 @@ class Seq(Transformer):
         return data
 
     @classmethod
-    def _cs_impl(cls, config_spaces):
-        raise Exception(
-            'TODO: Seq pode ter CS com arg "config_spaces" mas pode haver uma '
-            'função  atalho seq() pra isso.')
+    def _cs_impl(cls):
+        raise Exception('Seq._cs_impl should never be called!')
 
     @classmethod
     def cs(cls, config_spaces):
-        raise Exception(
-            'TODO: Seq pode ter CS com arg "config_spaces" mas pode haver uma '
-            'função  atalho seq() pra isso.')
+        return SeqCS(config_spaces=config_spaces)

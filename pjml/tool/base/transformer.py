@@ -1,15 +1,16 @@
 import hashlib
 import json
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from functools import lru_cache
 
-from pjdata.aux.encoders import dec
 from pjdata.aux.identifyable import Identifyable
 from pjdata.transformation import Transformation
 from pjml.config.list import bag
-from pjml.config.parameter import FixedP
+from pjml.config.util import freeze
+from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, NoModel
+from pjml.tool.base.aux.serialization import materialize, serialize
 from pjml.tool.base.aux.timers import Timers
 
 
@@ -54,16 +55,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         # not a
         # component (Transformer class).
 
-        self.name = self.__class__.__name__
-        self.path = self.__class__.__module__
         dict.__init__(self, transf_id=f'{self.name}@{self.path}', config=config)
-
-    def __hash__(self):
-        """Needed only because of lru_cache complaining about hashability of
-        dict child classes."""
-        if self._dump is None:
-            self._dump = json.dumps(self, sort_keys=True)
-        return int(hashlib.md5(self._dump.encode()).hexdigest(), 16)
 
     @abstractmethod
     def _apply_impl(self, data):
@@ -162,14 +154,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             Tree representing all the possible parameter spaces.
         """
         cs_ = cls._cs_impl()
-        params = None if cs_.params is None else cs_.params.copy()
-        name, path = cls.__name__, cls.__module__
-
-        # Freeze args passed via kwargs # TODO: make real freeze inside the tree
-        for k, v in kwargs.items():
-            params[k] = FixedP(v)
-
-        return cs_.updated(name=name, path=path, params=params)
+        cs_ = freeze(cs_, **kwargs) if kwargs else cs_
+        return cs_.updated(name=cls.__name__, path=cls.__module__)
 
     @property
     @lru_cache()
@@ -177,6 +163,30 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Convert transformer into a config space with a single transformer
         inside it."""
         return bag(self)
+
+    def clone(self):
+        """Clone this transformer.
+
+        Returns
+        -------
+        A ready to use transformer.
+        """
+        return materialize(self.name, self.path, self.config)
+
+    @property
+    @lru_cache()
+    def serialized(self):
+        if self._dump is None:
+            self._dump = serialize(self)
+        return self._dump
+
+    @property
+    @lru_cache()
+    def transformer(self):
+        """Helper function to avoid conditional Transformer (object) vs
+        component (class).
+        """
+        return self
 
     def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
@@ -204,66 +214,27 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         del config['__class__']
         return config
 
-    @classmethod
-    def _get_class(cls, module, class_name):
-        import importlib
-        module = importlib.import_module(module)
-        class_ = getattr(module, class_name)
-        return class_
+    def _uuid_impl(self):
+        return self.serialized
+
+    @classproperty
+    @lru_cache()
+    def name(cls):
+        return cls.__name__
+
+    @classproperty
+    @lru_cache()
+    def path(cls):
+        print('cacheou', cls.__module__)
+        return cls.__module__
+
+    def __hash__(self):  # Not memoizable due to infinite loop.
+        """Needed only because of lru_cache complaining about hashability of
+        dict child classes."""
+        if self._dump is None:
+            self._dump = json.dumps(self, sort_keys=True)
+        return int(hashlib.md5(self._dump.encode()).hexdigest(), 16)
 
     def __str__(self, depth=''):
         rows = '\n'.join([f'  {k}: {v}' for k, v in self.config.items()])
         return f'{self.name} "{self.path}" [\n{rows}\n]'
-
-    def _uuid_impl(self):
-        return self.serialized
-
-    @classmethod
-    def _dict_to_transformer(cls, dic):
-        """Convert recursively a dict to a transformer."""
-        if 'transformer' not in dic:
-            raise Exception('Provided dict does not represent a transformer.')
-        name, path = dic['transf_id'].split('@')
-        cfg = dic['config']
-        if 'transformer' in cfg:
-            cfg['transformer'] = cls._dict_to_transformer(cfg['transformer'])
-
-        return cls.materialize(name, path, cfg)
-
-    @classmethod
-    def materialize(cls, name, path, config):
-        """Instantiate a transformer.
-
-        Returns
-        -------
-        A ready to use component.
-        """
-        class_ = cls._get_class(path, name)
-        return class_(**config)
-
-    def clone(self):
-        """Clone this transformer.
-
-        Returns
-        -------
-        A ready to use transformer.
-        """
-        return self.materialize(self.name, self.path, self.config)
-
-    @property
-    @lru_cache()
-    def serialized(self):
-        if self._dump is None:
-            self._dump = json.dumps(self, sort_keys=True)
-        return self._dump
-
-    @classmethod
-    def deserialize(cls, txt):
-        return cls._dict_to_transformer(json.loads(txt))
-
-    @property
-    @lru_cache()
-    def transformer(self):
-        """Helper function to avoid conditional Transformer vs Component.
-        """
-        return self

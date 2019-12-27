@@ -1,7 +1,4 @@
-import numpy as np
 from pjml.config.cs.configspace import ConfigSpace
-from pjml.config.distributions import choice
-from pjml.tool.data.container.seq import Seq
 
 
 class SeqCS(ConfigSpace):
@@ -14,7 +11,7 @@ class SeqCS(ConfigSpace):
     """
 
     def __init__(self, config_spaces):
-        self.config_spaces = [] if config_spaces is None else config_spaces
+        self.config_spaces = config_spaces
 
     def updated(self, **kwargs):
         dic = {
@@ -25,4 +22,5 @@ class SeqCS(ConfigSpace):
 
     def sample(self):
         transformers = [cs.sample() for cs in self.config_spaces]
+        from pjml.tool.data.container.seq import Seq
         return Seq(transformers=transformers)

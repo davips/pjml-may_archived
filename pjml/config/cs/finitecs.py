@@ -3,7 +3,7 @@ from abc import ABC
 from pjml.config.cs.configspace import ConfigSpace
 
 
-class FiniteConfigSpace(ConfigSpace, ABC):
+class FiniteCS(ConfigSpace, ABC):
     """Iterable tree representing a finite set of (hyper)parameter spaces.
 
     TODO: expand it to traverse more than just the top level nested nodes.

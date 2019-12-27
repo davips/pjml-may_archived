@@ -8,6 +8,7 @@ For more information about the Container concept see [1].
 """
 from abc import ABC
 
+from pjml.config.cs.supercs import SuperCS
 from pjml.tool.base.transformer import Transformer
 
 
@@ -17,7 +18,8 @@ class Container(Transformer, ABC):
     """
 
     def __init__(self, transformer):  # , seed):
-        # TODO: pass seed to transformer, before Component changes it to randomsta
+        # TODO: pass seed to transformer, before Transformer changes it to
+        #  randomstate
         # if not transformer.isdeterministic:
 
         super().__init__({'transformer': transformer}, transformer, False)
@@ -32,6 +34,8 @@ class Container(Transformer, ABC):
     @classmethod
     def cs(cls, component, **kwargs):
         """Config Space of this container. See Component.cs() for details.
+
+        Child classes should implement _cs_impl returning a Node.
 
         Parameters
         ----------
@@ -51,9 +55,6 @@ class Container(Transformer, ABC):
         -------
             Tree representing all remaining parameter spaces.
         """
-        named_frozen_cs = super().cs(**kwargs)
-
-        if named_frozen_cs.nested is not None:
-            raise Exception('Container child classes cannot have nested CSs.'
-                            'The parent creates the nested component.')
-        return named_frozen_cs.updated(nested=component.cs)
+        from pjml.config.util import freeze
+        node = freeze(cls._cs_impl(), **kwargs)
+        return SuperCS(cls.name, cls.path, component.cs, nodes=[node])
