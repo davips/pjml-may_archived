@@ -1,5 +1,6 @@
 from cururu.amnesia import Amnesia
 from cururu.pickleserver import PickleServer
+from pjdata.data import Data
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import CatP
@@ -28,13 +29,17 @@ class Cache(Container):
         if fields is None:
             fields = ['X', 'Y', 'Z']
         if settings is None:
-            settings = {'db': '/tmp'}
-        super().__init__(self._to_config(locals()))
+            settings = {'db': '/tmp/'}
+
+        super().__init__(
+            transformer=transformer,
+            config=self._to_config(locals())
+        )
 
         self.fields = fields
 
         if engine == "amnesia":
-            self.storage = Amnesia(**settings)
+            self.storage = Amnesia()
         elif engine == "mysql":
             from cururu.mysql import MySQL
             self.storage = MySQL(**settings)
@@ -50,21 +55,26 @@ class Cache(Container):
         else:
             raise Exception('Unknown engine:', engine)
 
-    def apply_impl(self, data):
+    def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage,
         #  specially if it is a LOO.
         #  Maybe some components could inform whether they are cheap.
         output_data = self.storage.fetch(
             data, self.fields, self.transformation(), lock=True
         )
-
         # Apply if still needed  ----------------------------------
         if output_data is None:
             output_data = self.transformer.apply(data)
+            print('cacheou a')
+            # if output_data is None:
+            #     output_data = data.updated(
+            #         self.transformer.transformation(),
+            #
+            #     )
             self.storage.store(output_data, self.fields, check_dup=True)
         return output_data
 
-    def use_impl(self, data):
+    def _use_impl(self, data):
         output_data = self.storage.fetch(
             data, self.fields, self.transformation(), lock=True
         )
@@ -86,6 +96,7 @@ class Cache(Container):
         # Use if still needed  ----------------------------------
         if output_data is None:
             output_data = self.transformer.use(data)
+            print('cacheou b')
             self.storage.store(output_data, self.fields, check_dup=True)
         return output_data
 

@@ -180,14 +180,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             self._dump = serialize(self)
         return self._dump
 
-    @property
-    @lru_cache()
-    def transformer(self):
-        """Helper function to avoid conditional Transformer (object) vs
-        component (class).
-        """
-        return self
-
     def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
         if data.failure is not None:
@@ -225,7 +217,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     @classproperty
     @lru_cache()
     def path(cls):
-        print('cacheou', cls.__module__)
         return cls.__module__
 
     def __hash__(self):  # Not memoizable due to infinite loop.

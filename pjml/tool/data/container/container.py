@@ -17,19 +17,17 @@ class Container(Transformer, ABC):
     The idea of the Container is to modify a 'transformer'.
     """
 
-    def __init__(self, transformer):  # , seed):
+    def __init__(self, transformer, config=None):  # , seed):
         # TODO: pass seed to transformer, before Transformer changes it to
         #  randomstate
         # if not transformer.isdeterministic:
+        if config is None:
+            config = {}
+        config['transformer'] = transformer
 
-        super().__init__({'transformer': transformer}, transformer, False)
+        super().__init__(config, transformer, False)
+        self.transformer = transformer
         self.model = self.algorithm
-
-    def _apply_impl(self, data):
-        return self.model.apply(data)
-
-    def _use_impl(self, data):
-        return self.model.use(data)
 
     @classmethod
     def cs(cls, component, **kwargs):

@@ -6,6 +6,7 @@ from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map
 from pjml.tool.collection.transform.multi import Multi
 from pjml.tool.data.container.applyusing import ApplyUsing
+from pjml.tool.data.container.cache import Cache
 from pjml.tool.data.container.seq import Seq
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.report import Report
@@ -65,10 +66,9 @@ def evaluator(pipe):
         Summ(function='mean_std')
     )
 
-
 pipe = Pipeline(
     evaluator(
-        Seq(ApplyUsing(SVMC(kernel='linear')), Metric(function='accuracy'))
+        Seq(ApplyUsing(Cache(SVMC(kernel='linear'))), Metric(function='accuracy'))
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
