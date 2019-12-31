@@ -80,7 +80,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Ongoing/last transformation performed."""
         return Transformation(self, self._current_operation)
 
-    def apply(self, data):
+    def apply(self, data, internal=False):
         """Training step (usually).
 
         Fit/remove-noise-from/evaluate/... Data.
@@ -88,6 +88,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
+
+        internal
+            Whether the transformer is inside another and requires no history
+            update.
 
         Returns
         -------
@@ -103,11 +107,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                                f"an algorithm or a config at __init__. This"
                                f" should be done by calling the parent init")
         self._current_operation = 'a'
-        res = self._run(self._apply_impl, data)
+        res = self._run(self._apply_impl, data, internal)
         self._current_operation = None
         return res
 
-    def use(self, data):
+    def use(self, data, internal=False):
         """Testing step (usually).
 
         Predict/transform/do nothing/evaluate/... Data.
@@ -115,6 +119,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
+
+        internal
+            Whether the transformer is inside another and requires no history
+            update.
 
         Returns
         -------
@@ -132,7 +140,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                           f" Method apply() should be called before use()!"
                           f"Another reason is a bad apply/init implementation.")
         self._current_operation = 'u'
-        res = self._run(self._use_impl, data)
+        res = self._run(self._use_impl, data, internal)
         self._current_operation = None
         return res
 
@@ -184,7 +192,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             self._dump = serialize(self)
         return self._dump
 
-    def _run(self, function, data, max_time=None):
+    def _run(self, function, data, internal=False, max_time=None):
         """Common procedure for apply() and use()."""
         if data.failure is not None:
             return data
@@ -193,6 +201,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         start = self._clock()
         try:
             output_data = self._limit_by_time(function, data, max_time)
+            if not internal and output_data is not None:
+                output_data = output_data.updated1(
+                    transformation=self.to_transformations(
+                        self._current_operation)
+                )
         except Exception as e:
             print('>>>>>>>>>>>>>>>>', e)
             self._handle_exception(e)
@@ -233,13 +246,16 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def __str__(self, depth=''):
         return json.dumps(self, sort_keys=False, indent=3)
 
-# def flatten(items):
-#     """Yield items from any nested iterable
-#     https://stackoverflow.com/questions
-#     /952914/how-to-make-a-flat-list-out-of-list-of-lists."""
-#     from collections import Iterable
-#     for x in items:
-#         if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-#             yield from flatten(x)
-#         else:
-#             yield x
+    # def flatten(items):
+    #     """Yield items from any nested iterable
+    #     https://stackoverflow.com/questions
+    #     /952914/how-to-make-a-flat-list-out-of-list-of-lists."""
+    #     from collections import Iterable
+    #     for x in items:
+    #         if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+    #             yield from flatten(x)
+    #         else:
+    #             yield x
+    @lru_cache()
+    def to_transformations(self, operation):
+        return [Transformation(self, operation)]

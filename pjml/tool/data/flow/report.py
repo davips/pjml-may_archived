@@ -12,7 +12,7 @@ class Report(Transformer):
     {dataset.failure} prints the failure
     """
 
-    def __init__(self, text):
+    def __init__(self, text='Default report r=$r'):
         super().__init__({'text': text}, text, isdeterministic=True)
         self.model = self.algorithm
 

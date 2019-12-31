@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from pjml.tool.base.transformer import Transformer
 
 
@@ -13,12 +15,22 @@ class ApplyUsing(Transformer):
         self.transformer = transformer
 
     def _apply_impl(self, data):
-        self.model.apply(data)
-        return self.model.use(data)
+        self.transformer.apply(data)
+        return self.transformer.use(data, internal=True)
 
     def _use_impl(self, data):
-        return self.model.use(data)
+        return self.transformer.use(data, internal=True)
 
     @classmethod
     def _cs_impl(cls):
         pass
+
+    # Saída do Apply não entra no Use, logo AppU precisa ser atômico.
+    # @lru_cache()
+    # def to_transformations(self, operation):
+    #     lstu = self.transformer.to_transformations('u')
+    #     if operation == 'a':
+    #         lsta = self.transformer.to_transformations('a')
+    #         return lsta + lstu
+    #     else:
+    #         return lstu

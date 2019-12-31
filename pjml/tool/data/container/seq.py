@@ -1,3 +1,6 @@
+from functools import lru_cache
+
+from pjdata.transformation import Transformation
 from pjml.config.cs.seqcs import SeqCS
 from pjml.tool.base.transformer import Transformer
 
@@ -25,7 +28,7 @@ class Seq(Transformer):
     def _apply_impl(self, data):
         self.model = self.algorithm
         for transformer in self.algorithm:
-            data = transformer.apply(data)
+            data = transformer.apply(data, internal=True)
             if data and (data.failure is not None):
                 raise Exception(
                     f'Applying subtransformer {transformer} failed! ',
@@ -34,7 +37,7 @@ class Seq(Transformer):
 
     def _use_impl(self, data):
         for transformer in self.algorithm:
-            data = transformer.use(data)
+            data = transformer.use(data, internal=True)
             if data and (data.failure is not None):
                 raise Exception(f'Using subtransformer {transformer} failed! ',
                                 data.failure)
@@ -47,3 +50,9 @@ class Seq(Transformer):
     @classmethod
     def cs(cls, config_spaces):
         return SeqCS(config_spaces=config_spaces)
+
+    @lru_cache()
+    def to_transformations(self, operation):
+        from itertools import chain
+        lst = [tr.to_transformations(operation) for tr in self.transformers]
+        return list(chain.from_iterable(lst))

@@ -22,7 +22,7 @@ class Multi(Transformer):
             data = transformer.apply(next(collection))
             datas.append(data)
             self.model.append(transformer)
-        return collection.updated(self._transformation(), datas)
+        return collection.updated1(datas=datas)
 
     def _use_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -32,7 +32,7 @@ class Multi(Transformer):
         for transformer in self.model:
             data = transformer.use(next(collection))
             datas.append(data)
-        return collection.updated(self._transformation(), datas)
+        return collection.updated1(datas=datas)
 
     @classmethod
     def _cs_impl(cls):

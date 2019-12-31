@@ -31,9 +31,11 @@ def evaluator(transformer):
 
 pipe = Pipeline(
     evaluator(
-        Seq(
-            Cache(ApplyUsing(SVMC(kernel='linear'))),
-            Metric(function='accuracy')
+        Cache(
+            Seq(
+                (SVMC(kernel='linear')),
+                Cache(Metric(function='accuracy'))
+            )
         )
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
@@ -48,8 +50,8 @@ print('--------')
 print(1111111111111111111111111111111)
 pipe.apply(datain)
 print(222222222222222222222222222221)
-# pipe.use(datain)
-# print(3333333333333333333333333333333)
+pipe.use(datain)
+print(3333333333333333333333333333333)
 
 # ML 2 ========================================================================
 # pipe = Pipeline(

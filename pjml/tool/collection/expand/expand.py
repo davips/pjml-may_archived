@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from pjdata.collection import Collection
 from pjml.tool.base.transformer import Transformer
 
@@ -20,3 +22,7 @@ class Expand(Transformer):
     @classmethod
     def _cs_impl(cls):
         raise Exception('It is not clear whether Expand should have a CS now.')
+
+    @lru_cache()
+    def to_transformations(self, operation):
+        return []

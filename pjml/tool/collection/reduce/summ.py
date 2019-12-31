@@ -28,11 +28,11 @@ class Summ(Reduce):
         if collection.has_nones:
             collection = Shrink().apply(collection)
             if len(collection.datas) == 0:
+                print('WW: All Nones')
                 return None
             else:
                 print("Warning: collections containing Nones are shrunk before"
                       "summarization.")
-
         data = Data(
             dataset=collection.dataset,
             history=collection.history,
@@ -41,9 +41,9 @@ class Summ(Reduce):
         res = self.algorithm(collection)
         if isinstance(res, tuple):
             summ = numpy.array([res])
-            return data.updated(self._transformation(), S=summ)
+            return data.updated1(S=summ)
         else:
-            return data.updated(self._transformation(), s=res)
+            return data.updated1(s=res)
 
     @classmethod
     def _cs_impl(cls):

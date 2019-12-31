@@ -1,7 +1,10 @@
+from functools import lru_cache
+
 from cururu.amnesia import Amnesia
 from cururu.compression import pack_object, unpack_object
 from cururu.pickleserver import PickleServer
 from pjdata.data import Data
+from pjdata.history import History
 from pjdata.transformation import Transformation
 from pjml.config.distributions import choice
 from pjml.config.node import Node
@@ -60,14 +63,10 @@ class Cache(Container):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
-        # Não há como antecipar qual transformação vai ocorrer porque há
-        # componentes que não entram no histórico (ApplyUsing, Cache, ...) e
-        # aqueles que usam outros internamente (NR+KNN, ?).
-        # Solução: proibir 'não entrar no histórico' e proibir estensão do
-        # histórico com qualquer coisa diferente de 'self.transformation'.
-        transformation = self.transformer.simulate('a')
+        transformations = self.transformer.to_transformations('a')
+
         output_data = self.storage.fetch(
-            data, self.fields, transformation, lock=True
+            data, self.fields, transformations, lock=True
         )
         #
         # self.transformer = self.storage.fetch_transformer(
@@ -80,18 +79,27 @@ class Cache(Container):
         # Apply if still needed  ----------------------------------
         if output_data is None:
             output_data = self.transformer.apply(data)
-            print(333333, output_data.uuid)
-            print(output_data.history)
             if output_data is None:  # Create an empty Data object.
-                output_data = data.updated(transformation)
-            self.storage.store(output_data, self.fields, check_dup=False)
+                self.storage.store(
+                    data.updated1(transformation=transformations),
+                    self.fields,
+                    check_dup=False
+                )
+            else:
+                self.storage.store(output_data, self.fields, check_dup=False)
+
+
+        if output_data is not None:
+            print(44444444, output_data.uuid, output_data.history)
+        else:
+            print(44444444, None)
 
         return output_data
 
     def _use_impl(self, data):
-        transformation = Transformation(self.transformer, 'u')
+        transformations = self.transformer.to_transformations('u')
         output_data = self.storage.fetch(
-            data, self.fields, transformation, lock=True
+            data, self.fields, transformations, lock=True
         )
 
         # Use if still needed  ----------------------------------
@@ -126,3 +134,7 @@ class Cache(Container):
             choice, items=["amnesia", "mysql", "sqlite", "nested"]
         )}  # TODO: cada engine é um ramo!
         return Node(params=params)
+
+    @lru_cache()
+    def to_transformations(self, operation):
+        return self.transformer.to_transformations(operation)
