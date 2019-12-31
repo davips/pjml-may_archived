@@ -227,6 +227,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             self._dump = json.dumps(self, sort_keys=True)
         return int(hashlib.md5(self._dump.encode()).hexdigest(), 16)
 
-    def __str__(self, depth=''):
-        rows = '\n'.join([f'  {k}: {v}' for k, v in self.config.items()])
-        return f'{self.name} "{self.path}" [\n{rows}\n]'
+    # def __str__(self, depth=''):
+    #     rows = '\n'.join([f'  {k}: {v}' for k, v in self.config.items()])
+    #     return f'{self.name} "{self.path}" [\n{rows}\n]'

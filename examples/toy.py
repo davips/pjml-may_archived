@@ -1,4 +1,8 @@
 from pjdata.data_creation import read_arff
+from cururu.file import load
+from cururu.compression import pack_object, unpack_object
+from cururu.file import save
+from pjdata.data_creation import read_arff
 from pjml.config.list import sampler
 from pjml.pipeline import Pipeline
 from pjml.tool.collection.expand.expand import Expand
@@ -12,22 +16,42 @@ from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.report import Report
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 
-
-def map(x):
-    return 0
-
-
-def seq(*x):
-    return 0
-
-
-def shuffle(*x):
-    return 0
-
-
 datain = read_arff('iris.arff')
 
 
+# ML 1 ========================================================================
+def evaluator(transformer):
+    return Seq(
+        Expand(),
+        Multi(sampler(split_type='cv')),
+        Map(transformer),
+        Summ(function='mean_std')
+    )
+
+
+pipe = Pipeline(
+    evaluator(
+        Seq(
+            ApplyUsing(Cache(SVMC(kernel='linear'))),
+            Metric(function='accuracy')
+        )
+    ),
+    Report("{history.last.config['function']} $S for dataset {dataset.name}.")
+)
+
+print('--------')
+# save('/tmp/pipe', pipe)
+#
+# pipe = load('/tmp/pipe')
+# print(pipe)
+
+print(1111111111111111111111111111111)
+pipe.apply(datain)
+print(222222222222222222222222222221)
+pipe.use(datain)
+print(3333333333333333333333333333333)
+
+# ML 2 ========================================================================
 # pipe = Pipeline(
 #     RndOverSampler(sampling_strategy='not minority'),
 #
@@ -56,25 +80,6 @@ datain = read_arff('iris.arff')
 # print(SVMC.cs().sample())
 # Report('Mean $s for dataset {dataset.name}.')
 
-
-# ML ========================================================================
-def evaluator(pipe):
-    return Seq(
-        Expand(),
-        Multi(sampler(split_type='cv')),
-        Map(pipe),
-        Summ(function='mean_std')
-    )
-
-pipe = Pipeline(
-    evaluator(
-        Seq(ApplyUsing(Cache(SVMC(kernel='linear'))), Metric(function='accuracy'))
-    ),
-    Report("{history.last.config['function']} $S for dataset {dataset.name}.")
-)
-
-pipe.apply(datain)
-pipe.use(datain)
 
 #
 # # AutoML ===================================================================
