@@ -60,9 +60,11 @@ class Cache(Container):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
-        # Não há como antecipar qual transformação vai ocorrer (porque há
-        # componentes que desaparecem: ApplyUsing, Cache, ...) e nem aqueles que
-        # usam outros internamente.
+        # Não há como antecipar qual transformação vai ocorrer porque há
+        # componentes que não entram no histórico (ApplyUsing, Cache, ...) e
+        # aqueles que usam outros internamente (NR+KNN, ?).
+        # Solução: proibir 'não entrar no histórico' e proibir estensão do
+        # histórico com qualquer coisa diferente de 'self.transformation'.
         transformation = self.transformer.simulate('a')
         output_data = self.storage.fetch(
             data, self.fields, transformation, lock=True
