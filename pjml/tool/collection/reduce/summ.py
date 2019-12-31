@@ -41,9 +41,9 @@ class Summ(Reduce):
         res = self.algorithm(collection)
         if isinstance(res, tuple):
             summ = numpy.array([res])
-            return data.updated(self.transformation(), S=summ)
+            return data.updated(self._transformation(), S=summ)
         else:
-            return data.updated(self.transformation(), s=res)
+            return data.updated(self._transformation(), s=res)
 
     @classmethod
     def _cs_impl(cls):

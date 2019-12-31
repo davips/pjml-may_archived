@@ -23,7 +23,7 @@ datain = read_arff('iris.arff')
 def evaluator(transformer):
     return Seq(
         Expand(),
-        Multi(sampler(split_type='cv')),
+        Multi(sampler(split_type='cv', steps=2)),
         Map(transformer),
         Summ(function='mean_std')
     )
@@ -32,7 +32,7 @@ def evaluator(transformer):
 pipe = Pipeline(
     evaluator(
         Seq(
-            ApplyUsing(Cache(SVMC(kernel='linear'))),
+            Cache(ApplyUsing(SVMC(kernel='linear'))),
             Metric(function='accuracy')
         )
     ),
@@ -48,8 +48,8 @@ print('--------')
 print(1111111111111111111111111111111)
 pipe.apply(datain)
 print(222222222222222222222222222221)
-pipe.use(datain)
-print(3333333333333333333333333333333)
+# pipe.use(datain)
+# print(3333333333333333333333333333333)
 
 # ML 2 ========================================================================
 # pipe = Pipeline(

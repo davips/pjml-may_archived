@@ -22,7 +22,7 @@ class Sampler(Transformer):
     #
     # def _core(self, data, idxs):
     #     new_dic = {f: data.get_matrix(f)[idxs] for f in self.algorithm}
-    #     return data.updated(self.transformation(), **new_dic)
+    #     return data.updated(self._transformation(), **new_dic)
     #
     # def _apply_impl(self, data):
     #     self.model = self.algorithm

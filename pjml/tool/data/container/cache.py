@@ -2,6 +2,7 @@ from cururu.amnesia import Amnesia
 from cururu.compression import pack_object, unpack_object
 from cururu.pickleserver import PickleServer
 from pjdata.data import Data
+from pjdata.transformation import Transformation
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import CatP
@@ -59,8 +60,12 @@ class Cache(Container):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
+        # Não há como antecipar qual transformação vai ocorrer (porque há
+        # componentes que desaparecem: ApplyUsing, Cache, ...) e nem aqueles que
+        # usam outros internamente.
+        transformation = self.transformer.simulate('a')
         output_data = self.storage.fetch(
-            data, self.fields, self.transformation(), lock=True
+            data, self.fields, transformation, lock=True
         )
         #
         # self.transformer = self.storage.fetch_transformer(
@@ -73,18 +78,18 @@ class Cache(Container):
         # Apply if still needed  ----------------------------------
         if output_data is None:
             output_data = self.transformer.apply(data)
+            print(333333, output_data.uuid)
+            print(output_data.history)
             if output_data is None:  # Create an empty Data object.
-                output_data = data.updated(
-                    self.transformer.transformation(),
-
-                )
+                output_data = data.updated(transformation)
             self.storage.store(output_data, self.fields, check_dup=False)
 
         return output_data
 
     def _use_impl(self, data):
+        transformation = Transformation(self.transformer, 'u')
         output_data = self.storage.fetch(
-            data, self.fields, self.transformation(), lock=True
+            data, self.fields, transformation, lock=True
         )
 
         # Use if still needed  ----------------------------------

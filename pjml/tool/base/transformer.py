@@ -4,6 +4,8 @@ from abc import abstractmethod
 from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
+from pjdata.data import Data
+from pjdata.dataset import Dataset
 from pjdata.transformation import Transformation
 from pjml.config.list import bag
 from pjml.config.util import freeze
@@ -38,12 +40,13 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     ³: induced/fitted/describing model to use()
     """
     _dump = None  # Needed because of conflicts between dict and lru_cache,
+
     # cannot be in _init_ since _hash_ is called before _init_ is called.
 
     def __init__(self, config, algorithm, isdeterministic=False):
         if not isdeterministic and 'seed' in config:
             config['random_state'] = config.pop('seed')
-        dict.__init__(self, name_path=f'{self.name}@{self.path}', config=config)
+        dict.__init__(self, id=f'{self.name}@{self.path}', config=config)
 
         self.config = config
         self.algorithm = algorithm
@@ -73,7 +76,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
-    def transformation(self):
+    def _transformation(self):
         """Ongoing/last transformation performed."""
         if self.last_operation is None:
             raise Exception(
@@ -227,6 +230,5 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             self._dump = json.dumps(self, sort_keys=True)
         return int(hashlib.md5(self._dump.encode()).hexdigest(), 16)
 
-    # def __str__(self, depth=''):
-    #     rows = '\n'.join([f'  {k}: {v}' for k, v in self.config.items()])
-    #     return f'{self.name} "{self.path}" [\n{rows}\n]'
+    def __str__(self, depth=''):
+        return json.dumps(self, sort_keys=False, indent=3)

@@ -24,7 +24,7 @@ def _dict_to_transformer(dic):
     """Convert recursively a dict to a transformer."""
     if 'transformer' not in dic:
         raise Exception('Provided dict does not represent a transformer.')
-    name, path = dic['name_path'].split('@')
+    name, path = dic['id'].split('@')
     cfg = dic['config']
     if 'transformer' in cfg:
         cfg['transformer'] = _dict_to_transformer(cfg['transformer'])

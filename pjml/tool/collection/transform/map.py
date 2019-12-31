@@ -18,7 +18,7 @@ class Map(Transformer):
             output_data = transformer.apply(data)
             datas.append(output_data)
             self.model.append(transformer)
-        return collection.updated(self.transformation(), datas)
+        return collection.updated(self._transformation(), datas)
 
     def _use_impl(self, collection):
         size = len(self.model)
@@ -29,7 +29,7 @@ class Map(Transformer):
         for transformer in self.model:
             data = transformer.use(next(collection))
             datas.append(data)
-        return collection.updated(self.transformation(), datas)
+        return collection.updated(self._transformation(), datas)
 
     @classmethod
     def _cs_impl(cls):

@@ -36,7 +36,7 @@ class Metric(Transformer, FunctionInspector):
         return self._use_impl(data)
 
     def _use_impl(self, data):
-        return data.updated(self.transformation(), r=self.algorithm(data))
+        return data.updated(self._transformation(), r=self.algorithm(data))
 
     @classmethod
     def _cs_impl(cls):

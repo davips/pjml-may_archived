@@ -10,7 +10,7 @@ class Shrink(Transformer):
         return self._use_impl(collection)
 
     def _use_impl(self, collection):
-        return collection.updated(self.transformation(),
+        return collection.updated(self._transformation(),
                                   datas=[d for d in collection
                                          if d is not None],
                                   failure=collection.failure)
