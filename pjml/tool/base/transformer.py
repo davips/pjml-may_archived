@@ -54,7 +54,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
         self.model = None  # Mandatory field at apply() or init().
         self._failure_during_apply = None
-        self.last_operation = None
+        self._current_operation = None
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
         # Transformer object without having to check that it is not a
@@ -78,11 +78,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def _transformation(self):
         """Ongoing/last transformation performed."""
-        if self.last_operation is None:
-            raise Exception(
-                'transformation() should be called only during/after apply() '
-                'or use() operations!')
-        return Transformation(self, self.last_operation)
+        return Transformation(self, self._current_operation)
 
     def apply(self, data):
         """Training step (usually).
@@ -106,8 +102,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             raise BadComponent(f"{self} didn't set up "
                                f"an algorithm or a config at __init__. This"
                                f" should be done by calling the parent init")
-        self.last_operation = 'a'
-        return self._run(self._apply_impl, data)
+        self._current_operation = 'a'
+        res = self._run(self._apply_impl, data)
+        self._current_operation = None
+        return res
 
     def use(self, data):
         """Testing step (usually).
@@ -133,8 +131,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             raise NoModel(f"{self} didn't set up a model yet."
                           f" Method apply() should be called before use()!"
                           f"Another reason is a bad apply/init implementation.")
-        self.last_operation = 'u'
-        return self._run(self._use_impl, data)
+        self._current_operation = 'u'
+        res = self._run(self._use_impl, data)
+        self._current_operation = None
+        return res
 
     @classmethod
     def cs(cls, **kwargs):
@@ -232,3 +232,14 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def __str__(self, depth=''):
         return json.dumps(self, sort_keys=False, indent=3)
+
+# def flatten(items):
+#     """Yield items from any nested iterable
+#     https://stackoverflow.com/questions
+#     /952914/how-to-make-a-flat-list-out-of-list-of-lists."""
+#     from collections import Iterable
+#     for x in items:
+#         if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+#             yield from flatten(x)
+#         else:
+#             yield x

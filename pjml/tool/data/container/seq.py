@@ -18,6 +18,7 @@ class Seq(Transformer):
     def __init__(self, *args, transformers=None):
         if transformers is None:
             transformers = args
+        self.transformers = transformers
         super().__init__({'transformers': transformers}, transformers)
         # TODO: seed
 

@@ -10,6 +10,7 @@ class ApplyUsing(Transformer):
     def __init__(self, transformer):
         super().__init__({'transformer': transformer}, transformer, True)
         self.model = self.algorithm
+        self.transformer = transformer
 
     def _apply_impl(self, data):
         self.model.apply(data)
