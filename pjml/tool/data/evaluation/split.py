@@ -28,19 +28,21 @@ class Split(Transformer, FunctionInspector):
 
     def __init__(self, split_type='cv', steps=10,
                  partition=0, test=0.3, seed=0, fields=None):
-        config = self._to_config(locals())
-
         if fields is None:
             fields = ['X', 'Y']
+
+        # Using 'self.algorithm' here to avoid 'algorithm' inside config.
         if split_type == "cv":
-            algorithm = SKF(shuffle=True, n_splits=steps, random_state=seed)
+            self.algorithm = SKF(shuffle=True, n_splits=steps, random_state=seed)
         elif split_type == "loo":
-            algorithm = LOO()
+            self.algorithm = LOO()
         elif split_type == 'holdout':
-            algorithm = HO(n_splits=steps, test_size=test, random_state=seed)
+            self.algorithm = HO(n_splits=steps, test_size=test, random_state=seed)
         else:
             raise Exception('Wrong split_type: ', split_type)
-        super().__init__(config, algorithm)
+
+        super().__init__(self._to_config(locals()), self.algorithm)
+
         self.steps = steps
         self.partition = partition
         self.test = test
@@ -70,26 +72,3 @@ class Split(Transformer, FunctionInspector):
         }
         raise Exception('Split is not for external use for now!')
         # return ConfigSpace(params=params)
-
-    # Version that would break the architecture, because of the need for a
-    # super component Sampler = expand + container + finiteconfigspace.
-
-    # def __init__(self, train_indexes, test_indexes, fields=None):
-    #     if fields is None:
-    #         fields = ['X', 'Y']
-    #     self.config = locals()
-    #     self.isdeterministic = True
-    #     self.algorithm = fields
-    #     self.train_indexes = train_indexes
-    #     self.test_indexes = test_indexes
-    #
-    # def _core(self, data, idxs):
-    #     new_dic = {f: data.get_matrix(f)[idxs] for f in self.algorithm}
-    #     return data.updated(self.transformation(), **new_dic)
-    #
-    # def _apply_impl(self, data):
-    #     self.model = self.algorithm
-    #     return self._core(data, self.train_indexes)
-    #
-    # def _use_impl(self, data):
-    #     return self._core(data, self.test_indexes)

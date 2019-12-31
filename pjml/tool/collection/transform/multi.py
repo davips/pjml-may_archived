@@ -3,13 +3,13 @@ from pjml.tool.base.transformer import Transformer
 
 class Multi(Transformer):
     """Process each Data object from a collection with its respective
-    transformer of the given FiniteConfigSpace."""
+    transformer."""
 
-    def __init__(self, cs):
+    def __init__(self, transformers):
         # TODO: propagar seed
         # TODO: testar se cs é finito?
-        super().__init__({'cs': cs}, cs)
-        self.size = cs.size
+        super().__init__({'transformers': transformers}, transformers)
+        self.size = len(transformers)
 
     def _apply_impl(self, collection):
         if not collection.infinite and self.size != collection.size:

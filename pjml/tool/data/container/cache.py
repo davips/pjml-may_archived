@@ -1,4 +1,5 @@
 from cururu.amnesia import Amnesia
+from cururu.compression import pack_object, unpack_object
 from cururu.pickleserver import PickleServer
 from pjdata.data import Data
 from pjml.config.distributions import choice
@@ -56,22 +57,29 @@ class Cache(Container):
             raise Exception('Unknown engine:', engine)
 
     def _apply_impl(self, data):
-        # TODO: CV() is too cheap to be recovered from storage,
-        #  specially if it is a LOO.
-        #  Maybe some components could inform whether they are cheap.
+        # TODO: CV() is too cheap to be recovered from storage, specially if
+        #  it is a LOO. Maybe transformers could inform whether they are cheap.
         output_data = self.storage.fetch(
             data, self.fields, self.transformation(), lock=True
         )
+        #
+        # self.transformer = self.storage.fetch_transformer(
+        #     data, self.transformer, lock=True
+        # )
+        #
+        # self.storage.store_transformer(self.transformer, self.fields,
+        #                                check_dup=True)
+
         # Apply if still needed  ----------------------------------
         if output_data is None:
             output_data = self.transformer.apply(data)
-            print('cacheou a')
-            # if output_data is None:
-            #     output_data = data.updated(
-            #         self.transformer.transformation(),
-            #
-            #     )
-            self.storage.store(output_data, self.fields, check_dup=True)
+            if output_data is None:  # Create an empty Data object.
+                output_data = data.updated(
+                    self.transformer.transformation(),
+
+                )
+            self.storage.store(output_data, self.fields, check_dup=False)
+
         return output_data
 
     def _use_impl(self, data):
@@ -79,25 +87,25 @@ class Cache(Container):
             data, self.fields, self.transformation(), lock=True
         )
 
-        # If the component was applied (probably simulated by storage),
-        # but there is no model, we reapply it...
-        if self.transformer.model is None:
-            # TODO: recover from apply-stored-but-use-not-stored.
-            print('It is possible that a previous apply() was '
-                  'successfully stored, but its use() wasn\'t.'
-                  'Or you are trying to use in new data.')
-            print(
-                'Trying to recover training data from storage to apply '
-                'just to induce a model usable by use()...\n'
-                f'comp: {self.transformer.sid()}  data: {data.sid()} ...')
-            # stored_train_data = self.storage.fetch(train_uuid)
-            # self.component.apply_impl(stored_train_data)
-
         # Use if still needed  ----------------------------------
         if output_data is None:
+            # If the component was applied (probably simulated by storage),
+            # but there is no model, we reapply it...
+            if self.transformer.model is None:
+                # TODO: recover from apply-stored-but-use-not-stored.
+                print('It is possible that a previous apply() was '
+                      'successfully stored, but its use() wasn\'t.'
+                      'Or you are trying to use in new data.')
+                print(
+                    'Trying to recover training data from storage to apply '
+                    'just to induce a model usable by use()...\n'
+                    f'comp: {self.transformer.sid}  data: {data.sid} ...')
+                # stored_train_data = self.storage.fetch(train_uuid)
+                # self.component.apply_impl(stored_train_data)
+
             output_data = self.transformer.use(data)
-            print('cacheou b')
-            self.storage.store(output_data, self.fields, check_dup=True)
+            self.storage.store(output_data, self.fields, check_dup=False)
+
         return output_data
 
     # @property  # TODO: it is not clear if Cache should override UUID.

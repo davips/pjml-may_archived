@@ -5,9 +5,9 @@ Module to create CS from transformers.
 
 def bag(*transformers):
     """Make a FiniteConfigSpace from a sequence of transformers."""
-    from pjml.config.cs.finitecs import FiniteCS
-    return FiniteCS(trasformers=transformers)
-
+    # from pjml.config.cs.finitecs import FiniteCS
+    # return FiniteCS(trasformers=transformers)
+    return transformers
 
 def concat(*transformers):
     # TODO: para que era isso msm?
@@ -31,8 +31,10 @@ def sampler(split_type='cv', steps=10, test_size=0.3, seed=0, fields=None):
         fields = ['X', 'Y']
     transformers = []
     for i in range(steps):
+        s = Split(split_type, steps, i, test_size, seed, fields)
         transformers.append(
             Split(split_type, steps, i, test_size, seed, fields)
         )
-    from pjml.config.cs.finitecs import FiniteCS
-    return FiniteCS(trasformers=transformers)
+    # from pjml.config.cs.finitecs import FiniteCS
+    # return FiniteCS(trasformers=transformers)
+    return transformers

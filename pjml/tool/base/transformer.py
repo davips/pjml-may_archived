@@ -37,11 +37,14 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     ²: processor/learner/evaluator to apply()
     ³: induced/fitted/describing model to use()
     """
-    _dump = None  # Needed because of conflicts between dict and lru_cache
+    _dump = None  # Needed because of conflicts between dict and lru_cache,
+    # cannot be in _init_ since _hash_ is called before _init_ is called.
 
     def __init__(self, config, algorithm, isdeterministic=False):
         if not isdeterministic and 'seed' in config:
             config['random_state'] = config.pop('seed')
+        dict.__init__(self, name_path=f'{self.name}@{self.path}', config=config)
+
         self.config = config
         self.algorithm = algorithm
         self.isdeterministic = isdeterministic
@@ -51,11 +54,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.last_operation = None
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
-        # transformer (Transformer object) without having to check that it is
-        # not a
+        # Transformer object without having to check that it is not a
         # component (Transformer class).
-
-        dict.__init__(self, transf_id=f'{self.name}@{self.path}', config=config)
 
     @abstractmethod
     def _apply_impl(self, data):
@@ -74,10 +74,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
     def transformation(self):
+        """Ongoing/last transformation performed."""
         if self.last_operation is None:
             raise Exception(
-                'transformation() should be called only after apply() or use()'
-                ' operations!')
+                'transformation() should be called only during/after apply() '
+                'or use() operations!')
         return Transformation(self, self.last_operation)
 
     def apply(self, data):
