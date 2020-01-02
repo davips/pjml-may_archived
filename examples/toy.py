@@ -5,6 +5,7 @@ from cururu.file import save
 from pjdata.data_creation import read_arff
 from pjml.config.list import sampler
 from pjml.pipeline import Pipeline
+from pjml.tool.base.macro import evaluator
 from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map
@@ -13,6 +14,7 @@ from pjml.tool.data.container.applyusing import ApplyUsing
 from pjml.tool.data.container.cache import Cache
 from pjml.tool.data.container.seq import Seq
 from pjml.tool.data.evaluation.metric import Metric
+from pjml.tool.data.evaluation.split import Split
 from pjml.tool.data.flow.report import Report
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 
@@ -20,29 +22,21 @@ datain = read_arff('iris.arff')
 
 
 # ML 1 ========================================================================
-def evaluator(transformer):
-    return Seq(
-        Expand(),
-        Multi(sampler(split_type='cv', steps=2)),
-        Map(transformer),
-        Summ(function='mean_std')
-    )
-
 
 pipe = Pipeline(
     evaluator(
         Cache(
             Seq(
-                (SVMC(kernel='linear')),
-                Cache(Metric(function='accuracy'))
-            )
+                ApplyUsing(SVMC(kernel='linear')),
+                Cache(Metric(function='accuracy')),
+            ),
         )
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
 
 print('--------')
-# save('/tmp/pipe', pipe)
+save('/tmp/pipe', pipe)
 #
 # pipe = load('/tmp/pipe')
 # print(pipe)

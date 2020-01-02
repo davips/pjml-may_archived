@@ -9,6 +9,11 @@ def deserialize(txt):
     return _dict_to_transformer(json.loads(txt))
 
 
+def serialized_to_int(txt):
+    import hashlib
+    return int(hashlib.md5(txt.encode()).hexdigest(), 16)
+
+
 def materialize(name, path, config):
     """Instantiate a transformer.
 
@@ -17,7 +22,11 @@ def materialize(name, path, config):
     A ready to use component.
     """
     class_ = _get_class(path, name)
-    return class_(**config)
+    try:
+        return class_(**config)
+    except Exception as e:
+        print(e)
+        raise Exception(f'Problems materializing {name}@{path} with\n{config}')
 
 
 def _dict_to_transformer(dic):

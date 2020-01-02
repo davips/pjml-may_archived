@@ -1,26 +1,21 @@
 from pjml.config.cs.configspace import ConfigSpace
-from pjml.config.distributions import choice
 
 
-class AnyCS(ConfigSpace):
+class AnyCS(ConfigSpace, set):
     """
 
     Parameters
     ----------
     config_spaces
-        List of CSs. Only one is sampled.
+        Set of CSs. Only one is sampled.
     """
 
-    def __init__(self, config_spaces):
-        self.config_spaces = [] if config_spaces is None else config_spaces
-
-    def updated(self, **kwargs):
-        dic = {
-            'config_spaces': self.config_spaces
-        }
-        dic.update(kwargs)
-        return self.__class__(**dic)
+    def __init__(self, *components):
+        set.__init__(self, components)
 
     def sample(self):
-        cs = choice(self.config_spaces)
-        return cs.sample()
+        from pjml.config.distributions import choice
+        cs = choice(list(self))
+
+        # cs.cs ensures it is not a class or transformer.
+        return cs.cs.sample()

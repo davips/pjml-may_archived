@@ -1,10 +1,10 @@
 from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.parameter import CatP
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.data.flow.noop import NoOp
 
 
-class Report(Transformer):
+class Report(NoOp):
     """Report printer.
 
     $r prints 'r'
@@ -14,14 +14,15 @@ class Report(Transformer):
 
     def __init__(self, text='Default report r=$r'):
         super().__init__({'text': text}, text, isdeterministic=True)
-        self.model = self.algorithm
+        self.model = text
+        self.text = text
 
     def _apply_impl(self, data):
-        print('[apply] ', self._interpolate(self.model, data))
+        print('[apply] ', self._interpolate(self.text, data))
         return data
 
     def _use_impl(self, data):
-        print('[use] ', self._interpolate(self.model, data))
+        print('[use] ', self._interpolate(self.text, data))
         return data
 
     @classmethod
@@ -58,3 +59,4 @@ class Report(Transformer):
     @classmethod
     def _flatten(cls, lst):
         return [item for sublist in lst for item in sublist]
+

@@ -21,13 +21,14 @@ class Summ(Reduce):
     """
 
     def __init__(self, field='r', function='mean'):
-        super().__init__(self._to_config(locals()), self.functions[function], True)
+        self.function = self.functions[function]
+        super().__init__(self._to_config(locals()), self.function, True)
         self.field = field
 
     def _use_impl(self, collection):
         if collection.has_nones:
             collection = Shrink().apply(collection)
-            if len(collection.datas) == 0:
+            if collection.size == 0:
                 print('WW: All Nones')
                 return None
             else:
@@ -38,12 +39,12 @@ class Summ(Reduce):
             history=collection.history,
             failure=collection.failure
         )
-        res = self.algorithm(collection)
+        res = self.function(collection)
         if isinstance(res, tuple):
             summ = numpy.array([res])
-            return data.updated1(S=summ)
+            return data.updated1(self._transformation(), S=summ)
         else:
-            return data.updated1(s=res)
+            return data.updated1(self._transformation(), s=res)
 
     @classmethod
     def _cs_impl(cls):

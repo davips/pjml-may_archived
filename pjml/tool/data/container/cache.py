@@ -1,14 +1,12 @@
 from functools import lru_cache
 
 from cururu.amnesia import Amnesia
-from cururu.compression import pack_object, unpack_object
 from cururu.pickleserver import PickleServer
-from pjdata.data import Data
-from pjdata.history import History
 from pjdata.transformation import Transformation
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import CatP
+from pjml.tool.base.transformer import Transformer
 from pjml.tool.data.container.container import Container
 
 
@@ -31,6 +29,10 @@ def cache(component, engine="file", settings=None):
 
 class Cache(Container):
     def __init__(self, transformer, fields=None, engine="file", settings=None):
+        if isinstance(fields, Transformer):
+            raise Exception(
+                f'Container {self.name} should have a single transformer!')
+
         if fields is None:
             fields = ['X', 'Y', 'Z']
         if settings is None:
@@ -63,43 +65,37 @@ class Cache(Container):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
-        transformations = self.transformer.to_transformations('a')
-
+        transformation = Transformation(self.transformer, 'a')
         output_data = self.storage.fetch(
-            data, self.fields, transformations, lock=True
+            data, transformation, self.fields,
+            lock=True
         )
-        #
+        # pra carregar modelo:
         # self.transformer = self.storage.fetch_transformer(
         #     data, self.transformer, lock=True
         # )
         #
+        # pra guardar modelo:
         # self.storage.store_transformer(self.transformer, self.fields,
         #                                check_dup=True)
 
         # Apply if still needed  ----------------------------------
         if output_data is None:
             output_data = self.transformer.apply(data)
-            if output_data is None:  # Create an empty Data object.
-                self.storage.store(
-                    data.updated1(transformation=transformations),
-                    self.fields,
-                    check_dup=False
-                )
-            else:
-                self.storage.store(output_data, self.fields, check_dup=False)
-
-
-        if output_data is not None:
-            print(44444444, output_data.uuid, output_data.history)
-        else:
-            print(44444444, None)
+            data_to_store = data.phantom if output_data is None else output_data
+            self.storage.store(
+                data, transformation, self.fields,
+                data_to_store,
+                check_dup=False
+            )
 
         return output_data
 
     def _use_impl(self, data):
-        transformations = self.transformer.to_transformations('u')
+        transformation = Transformation(self.transformer, 'u')
         output_data = self.storage.fetch(
-            data, self.fields, transformations, lock=True
+            data, transformation, self.fields,
+            lock=True
         )
 
         # Use if still needed  ----------------------------------
@@ -119,14 +115,14 @@ class Cache(Container):
                 # self.component.apply_impl(stored_train_data)
 
             output_data = self.transformer.use(data)
-            self.storage.store(output_data, self.fields, check_dup=False)
+            data_to_store = data.phantom if output_data is None else output_data
+            self.storage.store(
+                data, transformation, self.fields,
+                data_to_store,
+                check_dup=False
+            )
 
         return output_data
-
-    # @property  # TODO: it is not clear if Cache should override UUID.
-    # @lru_cache()
-    # def uuid(self):
-    #     return self.transformer.uuid()
 
     @classmethod
     def _cs_impl(cls):

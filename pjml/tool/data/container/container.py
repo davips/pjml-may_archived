@@ -17,12 +17,10 @@ class Container(Transformer, ABC):
     The idea of the Container is to modify a 'transformer'.
     """
 
-    def __init__(self, transformer, config=None):  # , seed):
+    def __init__(self, transformer, config):  # , seed):
         # TODO: pass seed to transformer, before Transformer changes it to
         #  randomstate
         # if not transformer.isdeterministic:
-        if config is None:
-            config = {}
         config['transformer'] = transformer
 
         super().__init__(config, transformer, False)
@@ -55,4 +53,4 @@ class Container(Transformer, ABC):
         """
         from pjml.config.util import freeze
         node = freeze(cls._cs_impl(), **kwargs)
-        return SuperCS(cls.name, cls.path, component.cs, nodes=[node])
+        return SuperCS(node, config_space=component.cs)

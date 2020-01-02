@@ -7,6 +7,7 @@ class Map(Transformer):
     def __init__(self, transformer):
         # TODO: propagar seed
         super().__init__({'transformer': transformer}, transformer)
+        self.transformer = transformer
 
     def _apply_impl(self, collection):
         if collection.infinite:
@@ -14,11 +15,11 @@ class Map(Transformer):
         self.model = []
         datas = []
         for data in collection:
-            transformer = self.algorithm.clone()
+            transformer = self.transformer.clone()
             output_data = transformer.apply(data)
             datas.append(output_data)
             self.model.append(transformer)
-        return collection.updated1(datas=datas)
+        return collection.updated1(self._transformation(), datas=datas)
 
     def _use_impl(self, collection):
         size = len(self.model)
@@ -29,7 +30,7 @@ class Map(Transformer):
         for transformer in self.model:
             data = transformer.use(next(collection))
             datas.append(data)
-        return collection.updated1(datas=datas)
+        return collection.updated1(self._transformation(), datas=datas)
 
     @classmethod
     def _cs_impl(cls):

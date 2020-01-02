@@ -9,7 +9,7 @@ def seq(*args, components=None):
     # TODO: convert components as classes to CSs?
     if components is None:
         components = args
-    return Seq.cs(config_spaces=components)
+    return Seq.cs(components=components)
 
 
 class Seq(Transformer):
@@ -26,9 +26,9 @@ class Seq(Transformer):
         # TODO: seed
 
     def _apply_impl(self, data):
-        self.model = self.algorithm
-        for transformer in self.algorithm:
-            data = transformer.apply(data, internal=True)
+        self.model = self.transformers
+        for transformer in self.transformers:
+            data = transformer.apply(data)
             if data and (data.failure is not None):
                 raise Exception(
                     f'Applying subtransformer {transformer} failed! ',
@@ -36,8 +36,8 @@ class Seq(Transformer):
         return data
 
     def _use_impl(self, data):
-        for transformer in self.algorithm:
-            data = transformer.use(data, internal=True)
+        for transformer in self.transformers:
+            data = transformer.use(data)
             if data and (data.failure is not None):
                 raise Exception(f'Using subtransformer {transformer} failed! ',
                                 data.failure)
@@ -48,8 +48,8 @@ class Seq(Transformer):
         raise Exception('Seq._cs_impl should never be called!')
 
     @classmethod
-    def cs(cls, config_spaces):
-        return SeqCS(config_spaces=config_spaces)
+    def cs(cls, components):
+        return SeqCS(components)
 
     @lru_cache()
     def to_transformations(self, operation):

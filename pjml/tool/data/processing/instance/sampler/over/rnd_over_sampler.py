@@ -6,7 +6,7 @@ from pjml.config.parameter import CatP
 from pjml.tool.data.processing.instance.sampler.resampler import Resampler
 
 
-class RndOverSampler(Resampler):
+class ROS(Resampler):
     def __init__(self, **kwargs):
         super().__init__(kwargs, RandomOverSampler(**kwargs))
 

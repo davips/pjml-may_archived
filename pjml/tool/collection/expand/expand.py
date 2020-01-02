@@ -1,14 +1,12 @@
-from functools import lru_cache
-
 from pjdata.collection import Collection
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.data.flow.noop import NoOp
 
 
 class NoAlgorithm:
     pass
 
 
-class Expand(Transformer):
+class Expand(NoOp):
     def __init__(self):
         super().__init__({}, NoAlgorithm, isdeterministic=True)
 
@@ -19,10 +17,3 @@ class Expand(Transformer):
     def _use_impl(self, data):
         return Collection(data, data.history, data.failure, data.dataset)
 
-    @classmethod
-    def _cs_impl(cls):
-        raise Exception('It is not clear whether Expand should have a CS now.')
-
-    @lru_cache()
-    def to_transformations(self, operation):
-        return []

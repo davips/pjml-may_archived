@@ -2,26 +2,43 @@ import hashlib
 import json
 from abc import abstractmethod
 from functools import lru_cache
+# from methodtools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
-from pjdata.data import Data
-from pjdata.dataset import Dataset
 from pjdata.transformation import Transformation
 from pjml.config.list import bag
 from pjml.config.util import freeze
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, NoModel
-from pjml.tool.base.aux.serialization import materialize, serialize
+from pjml.tool.base.aux.serialization import materialize, serialize, \
+    serialized_to_int
 from pjml.tool.base.aux.timers import Timers
 
 
 class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
-    Each component (alias for Transformer child class) implementation should
-    decide by
-    itself if it requires the 'apply' step before the 'use' step.
+    Contributors:
+
+    Each component (alias for Transformer child classes) implementation should
+    decide by itself if it requires the 'apply' step before the 'use' step.
+    self.model should be set at the time of calling use().
+
+    When using internal transformers inside your own component,
+    using the internal versions of transformations is obligatory when the
+    resulting Data object history is not discarded, e.g.:
+    'return internal_transformer.internal_apply(data)'
+    'return internal_transformer.internal_use(data)'
+    This avoids duplicate items in the resulting history, because the method
+    to_transformations() will also be called from the parent class to
+    complete the history. to_transformations() is also used to preview any
+    ongoing sequence of transformations.
+    It is an essential part of Cache inner workings.
+    Concurrent components (Map, Multi, ...) are the notable exception to this,
+    since the history of the collection and the history of each Data object run
+    independently.
+
     All components should implement:
         _apply_impl()
         _use_impl()
@@ -39,7 +56,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     ²: processor/learner/evaluator to apply()
     ³: induced/fitted/describing model to use()
     """
-    _dump = None  # Needed because of conflicts between dict and lru_cache,
+    _dump = None
+    _hash = None  # Needed because of conflicts between dict and lru_cache,
 
     # cannot be in _init_ since _hash_ is called before _init_ is called.
 
@@ -80,7 +98,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Ongoing/last transformation performed."""
         return Transformation(self, self._current_operation)
 
-    def apply(self, data, update_history=True):
+    def apply(self, data):
         """Training step (usually).
 
         Fit/remove-noise-from/evaluate/... Data.
@@ -88,10 +106,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
-
-        update_history
-            Whether the transformer is inside another and requires no history
-            update.
 
         Returns
         -------
@@ -107,11 +121,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                                f"an algorithm or a config at __init__. This"
                                f" should be done by calling the parent init")
         self._current_operation = 'a'
-        res = self._run(self._apply_impl, data, update_history)
+        res = self._run(self._apply_impl, data)
         self._current_operation = None
         return res
 
-    def use(self, data, update_history=True):
+    def use(self, data):
         """Testing step (usually).
 
         Predict/transform/do nothing/evaluate/... Data.
@@ -119,10 +133,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
-
-        update_history
-            Whether the transformer is inside another and requires no history
-            update.
 
         Returns
         -------
@@ -140,12 +150,13 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                           f" Method apply() should be called before use()!"
                           f"Another reason is a bad apply/init implementation.")
         self._current_operation = 'u'
-        res = self._run(self._use_impl, data, update_history)
+        res = self._run(self._use_impl, data)
         self._current_operation = None
         return res
 
-    @classmethod
-    def cs(cls, **kwargs):
+    @classproperty
+    @lru_cache()
+    def cs(cls):
         """Config Space of this component, when called as class method.
         If called on an transformer (object/instance method), will convert
         the object to a config space with a single transformer.
@@ -154,20 +165,12 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         space of the learning/processing/evaluating algorithm of this component.
         It is a possibly infinite set of configurations.
 
-        Parameters
-        ----------
-        kwargs
-            If given, keyworded args are used to freeze some parameters of
-            the algorithm, regardless of what a CS sampling could have chosen.
-            TODO: it may be improved to effectively traverse and change the tree
-
         Returns
         -------
             Tree representing all the possible parameter spaces.
         """
         cs_ = cls._cs_impl()
-        cs_ = freeze(cs_, **kwargs) if kwargs else cs_
-        return cs_.updated(name=cls.__name__, path=cls.__module__)
+        return cs_.identified(name=cls.__name__, path=cls.__module__)
 
     @property
     @lru_cache()
@@ -192,7 +195,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             self._dump = serialize(self)
         return self._dump
 
-    def _run(self, function, data, update_history=True, max_time=None):
+    def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
         if data.failure is not None:
             return data
@@ -201,11 +204,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         start = self._clock()
         try:
             output_data = self._limit_by_time(function, data, max_time)
-            if update_history and output_data is not None:
-                output_data = output_data.updated1(
-                    transformation=self.to_transformations(
-                        self._current_operation)
-                )
         except Exception as e:
             print('>>>>>>>>>>>>>>>>', e)
             self._handle_exception(e)
@@ -236,12 +234,14 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def path(cls):
         return cls.__module__
 
-    def __hash__(self):  # Not memoizable due to infinite loop.
+    def __hash__(self):  # This method is not memoizable due to infinite loop.
         """Needed only because of lru_cache complaining about hashability of
         dict child classes."""
         if self._dump is None:
-            self._dump = json.dumps(self, sort_keys=True)
-        return int(hashlib.md5(self._dump.encode()).hexdigest(), 16)
+            self._dump = serialize(self)  # Cannot call self.serialized here!
+        if self._hash is None:
+            self._hash = serialized_to_int(self._dump)
+        return self._hash
 
     def __str__(self, depth=''):
         return json.dumps(self, sort_keys=False, indent=3)

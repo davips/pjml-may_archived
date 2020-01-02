@@ -1,26 +1,20 @@
 from pjml.config.cs.configspace import ConfigSpace
 
 
-class SeqCS(ConfigSpace):
+class SeqCS(ConfigSpace, tuple):
     """
 
     Parameters
     ----------
     config_spaces
-        List of CSs. A Seq is sampled.
+        Tuple of CSs. A Seq is sampled.
     """
 
-    def __init__(self, config_spaces):
-        self.config_spaces = config_spaces
-
-    def updated(self, **kwargs):
-        dic = {
-            'config_spaces': self.config_spaces
-        }
-        dic.update(kwargs)
-        return self.__class__(**dic)
+    def __new__(cls, *components):
+        return tuple.__new__(SeqCS, *components)
 
     def sample(self):
-        transformers = [cs.sample() for cs in self.config_spaces]
+        # cs.cs ensures it is not a class or transformer.
+        transformers = [cs.cs.sample() for cs in self]
         from pjml.tool.data.container.seq import Seq
         return Seq(transformers=transformers)

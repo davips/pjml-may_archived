@@ -2,7 +2,6 @@ from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.tool.base.aux.serialization import materialize
-from pjml.tool.base.transformer import Transformer
 
 
 class ComponentCS(ConfigSpace):
@@ -20,10 +19,10 @@ class ComponentCS(ConfigSpace):
         List of internal nodes. Only one is sampled at a time.
     """
 
-    def __init__(self, name, path, nodes):
+    def __init__(self, *nodes, name=None, path=None):
+        self.nodes = nodes
         self.name = name
         self.path = path
-        self.nodes = nodes
         if any([not isinstance(cs, Node) for cs in self.nodes]):
             raise Exception('CompleteCS can only have Nodes as children.')
 
@@ -45,11 +44,5 @@ class ComponentCS(ConfigSpace):
 
         return materialize(self.name, self.path, config)
 
-    def updated(self, **kwargs):
-        dic = {
-            'name': self.name,
-            'path': self.path,
-            'nodes': self.nodes
-        }
-        dic.update(kwargs)
-        return self.__class__(**dic)
+    def identified(self, name, path):
+        return self.__class__(*self.nodes, name=name, path=path)

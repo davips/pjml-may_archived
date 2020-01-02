@@ -1,5 +1,5 @@
-from pjml.tool.collection.expand.expand import NoAlgorithm
 from pjml.tool.base.transformer import Transformer
+from pjml.tool.collection.expand.expand import NoAlgorithm
 
 
 class Shrink(Transformer):
@@ -10,10 +10,11 @@ class Shrink(Transformer):
         return self._use_impl(collection)
 
     def _use_impl(self, collection):
-        return collection.updated1(transformation=self._transformation(),
-                                   datas=[d for d in collection
-                                          if d is not None],
-                                   failure=collection.failure)
+        return collection.updated1(
+            transformation=self._transformation(),
+            datas=[d for d in collection if d is not None],
+            failure=collection.failure
+        )
 
     @classmethod
     # TODO: define a CS that has a single transformer with zero parameters?

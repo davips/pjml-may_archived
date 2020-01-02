@@ -1,10 +1,7 @@
-import numpy as np
 from pjml.config.cs.configspace import ConfigSpace
-from pjml.config.distributions import choice
-from pjml.tool.data.container.seq import Seq
 
 
-class ShuffleCS(ConfigSpace):
+class ShuffleCS(ConfigSpace, list):
     """
 
     Parameters
@@ -13,17 +10,12 @@ class ShuffleCS(ConfigSpace):
         List of CSs. A permutation is sampled.
     """
 
-    def __init__(self, config_spaces):
-        self.config_spaces = [] if config_spaces is None else config_spaces
-
-    def updated(self, **kwargs):
-        dic = {
-            'config_spaces': self.config_spaces
-        }
-        dic.update(kwargs)
-        return self.__class__(**dic)
+    def __init__(self, *components):
+        list.__init__(self, components)
 
     def sample(self):
-        css = self.config_spaces.copy()
+        import numpy as np
+        from pjml.tool.data.container.seq import Seq
+        css = self.copy()
         np.random.shuffle(css)
-        return Seq(transformers=[cs.sample() for cs in css])
+        return Seq(transformers=[cs.cs.sample() for cs in css])

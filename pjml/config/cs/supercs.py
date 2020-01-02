@@ -13,8 +13,8 @@ class SuperCS(ComponentCS):
         A single CS.
     """
 
-    def __init__(self, name, path, config_space, nodes=None):
-        super().__init__(name, path, nodes)
+    def __init__(self, config_space, *nodes, name=None, path=None):
+        super().__init__(*nodes, name=name, path=path)
         self.config_space = config_space
 
     def sample(self):
@@ -26,12 +26,6 @@ class SuperCS(ComponentCS):
 
         return materialize(self.name, self.path, config)
 
-    def updated(self, **kwargs):
-        dic = {
-            'name': self.name,
-            'path': self.path,
-            'config_space': self.config_space,
-            'nodes': self.nodes
-        }
-        dic.update(kwargs)
-        return self.__class__(**dic)
+    def identified(self, name, path):
+        return self.__class__(config_space=self.config_space, *self.nodes,
+                              name=name, path=path)

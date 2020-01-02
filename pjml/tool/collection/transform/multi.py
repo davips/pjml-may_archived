@@ -10,6 +10,7 @@ class Multi(Transformer):
         # TODO: testar se cs é finito?
         super().__init__({'transformers': transformers}, transformers)
         self.size = len(transformers)
+        self.transformers = transformers
 
     def _apply_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -18,11 +19,11 @@ class Multi(Transformer):
         self.model = []
         datas = []
         # TODO: deve clonar antes de usar?
-        for transformer in self.algorithm:
+        for transformer in self.transformers:
             data = transformer.apply(next(collection))
             datas.append(data)
             self.model.append(transformer)
-        return collection.updated1(datas=datas)
+        return collection.updated1(self._transformation(), datas=datas)
 
     def _use_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -32,7 +33,7 @@ class Multi(Transformer):
         for transformer in self.model:
             data = transformer.use(next(collection))
             datas.append(data)
-        return collection.updated1(datas=datas)
+        return collection.updated1(self._transformation(), datas=datas)
 
     @classmethod
     def _cs_impl(cls):

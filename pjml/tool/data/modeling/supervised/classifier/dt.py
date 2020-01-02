@@ -1,7 +1,10 @@
-from numpy.random import choice, uniform
+from numpy.random import uniform
 from sklearn.tree import DecisionTreeClassifier
 
-from pjml.config.configspace import ConfigSpace
+from pjml.config.cs.componentcs import ComponentCS
+from pjml.config.cs.configspace import ConfigSpace
+from pjml.config.distributions import choice
+from pjml.config.node import Node
 from pjml.config.parameter import CatP, IntP, RealP
 from pjml.tool.data.modeling.supervised.predictor import Predictor
 
@@ -15,10 +18,10 @@ class DT(Predictor):
     @classmethod
     def _cs_impl(cls):
         params = {
-            'criterion': CatP(choice, a=['gini', 'entropy']),
-            'splitter': CatP(choice, a=['best']),
-            'class_weight': CatP(choice, a=[None, 'balanced']),
-            'max_features': CatP(choice, a=['auto', 'sqrt', 'log2', None]),
+            'criterion': CatP(choice, items=['gini', 'entropy']),
+            'splitter': CatP(choice, items=['best']),
+            'class_weight': CatP(choice, items=[None, 'balanced']),
+            'max_features': CatP(choice, items=['auto', 'sqrt', 'log2', None]),
 
             'max_depth': IntP(uniform, low=2, high=1000),
 
@@ -27,4 +30,4 @@ class DT(Predictor):
             'min_weight_fraction_leaf': RealP(uniform, low=0.0, high=0.3),
             'min_impurity_decrease': RealP(uniform, low=0.0, high=0.2)
         }
-        return ConfigSpace(params=params)
+        return ComponentCS(Node(params=params))
