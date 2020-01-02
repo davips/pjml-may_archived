@@ -1,6 +1,6 @@
 from abc import ABC
 
-from pjml.tool.data.flow.configless import ConfigLess
+from pjml.tool.common.configless import ConfigLess
 
 
 class NoOp(ConfigLess, ABC):

@@ -1,5 +1,5 @@
 from pjml.tool.base.transformer import NoAlgorithm
-from pjml.tool.data.flow.configless import ConfigLess
+from pjml.tool.common.configless import ConfigLess
 
 
 class Shrink(ConfigLess):

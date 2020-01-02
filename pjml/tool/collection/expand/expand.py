@@ -1,6 +1,6 @@
 from pjdata.collection import Collection
 from pjml.tool.base.transformer import NoAlgorithm
-from pjml.tool.data.flow.noop import NoOp
+from pjml.tool.common.noop import NoOp
 
 
 class Expand(NoOp):
