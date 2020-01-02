@@ -1,7 +1,7 @@
 from pjml.config.distributions import choice
 
 
-class Node:
+class Node(dict):
     """Partial settings for a component.
 
     Parameters
@@ -13,6 +13,10 @@ class Node:
     """
 
     def __init__(self, params=None, children=None):
+        dic = params.copy()
+        dic['children'] = children
+        dict.__init__(self, dic)  # For pretty printing.
+
         self.params = {} if params is None else params
         self.children = [] if children is None else children
         if any([not isinstance(cs, Node) for cs in self.children]):
@@ -46,9 +50,3 @@ class Node:
         }
         dic.update(kwargs)
         return self.__class__(**dic)
-
-    def __str__(self, depth=''):
-        rows = '\n'.join([f'  {k}: {v}' for k, v in self.params.items()])
-        return f'[\n{rows}\n]'
-
-    __repr__ = __str__

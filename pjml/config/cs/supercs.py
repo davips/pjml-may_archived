@@ -16,6 +16,9 @@ class SuperCS(ComponentCS):
         super().__init__(*nodes, name=name, path=path)
         self.config_spaces = config_spaces
 
+        self.append(config_spaces)  # For pretty printing.
+
+
     def sample(self):
         if len(self.config_spaces) > 1:
             cfg = {'transformers': [c.cs.sample() for c in self.config_spaces]}

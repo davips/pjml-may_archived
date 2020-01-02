@@ -64,10 +64,10 @@ dataout2 = pipe.use(datain)
 
 print(dataout.history)
 print(dataout2.history)
-print('------------------')
+print('------vvvvvvvvv------------')
 print(SVMC.cs)
 
-print('------------------')
+print('------^^^^^^^^^------------')
 print(SVMC.cs.sample())
 Report('Mean $s for dataset {dataset.name}.')
 

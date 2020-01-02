@@ -1,10 +1,12 @@
+import json
+
 from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.tool.base.aux.serialization import materialize
 
 
-class ComponentCS(ConfigSpace):
+class ComponentCS(ConfigSpace, list):
     """Complete settings for a component (a component is a set of
     transformers, e.g. the component KNN represents the set of all k-NN
     transformers: KNN(k=1), KNN(k=3), ...
@@ -20,6 +22,9 @@ class ComponentCS(ConfigSpace):
     """
 
     def __init__(self, *nodes, name=None, path=None):
+        list.__init__(self, nodes)
+        self.append(f'{name}@{path}')  # For pretty printing.
+
         self.nodes = nodes
         self.name = name
         self.path = path

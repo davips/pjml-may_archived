@@ -4,27 +4,25 @@ from functools import partial
 import numpy
 
 
-class Param:
+class Param(dict):
     """Base class for all kinds of algorithm (hyper)parameters."""
 
-    def __init__(self, func, **kwargs):
-        self.func = partial(func, **kwargs)
+    def __init__(self, function, **kwargs):
+        dic = kwargs.copy()
+        dic['function'] = function.__name__
+        dict.__init__(self, dic)  # For pretty printing.
+
+        self.function = partial(function, **kwargs)
         self.kwargs = kwargs
 
     def sample(self):
         try:
-            return self.func()
+            return self.function()
         except Exception as e:
             traceback.print_exc()
             print(e)
             print('Problems sampling: ', self)
             exit(0)
-
-    def __str__(self):
-        return str(self.kwargs)
-        # return '\n'.join([str(x) for x in self.kwargs.items()])
-
-    __repr__ = __str__
 
 
 class CatP(Param):
@@ -52,7 +50,7 @@ class RealP(Param):
 class IntP(Param):
     def sample(self):
         try:
-            return numpy.round(self.func())
+            return numpy.round(self.function())
         except Exception as e:
             traceback.print_exc()
             print(e)
