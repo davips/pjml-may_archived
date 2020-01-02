@@ -12,7 +12,7 @@ from pjml.tool.data.container.seq import Seq
 def evaluator(transformer, sampler=sampler(steps=10), function='mean_std'):
     return Seq(
         Expand(),
-        Multi(sampler),
+        Multi(*sampler),
         Map(transformer),
         Summ(function=function)
     )

@@ -1,24 +1,16 @@
-from pjml.config.cs.supercs import SuperCS
-from pjml.tool.base.aux.decorator import classproperty
-from pjml.tool.base.transformer import Transformer
+from pjml.config.cs.supercs import SuperNCS
+from pjml.tool.common.container import ContainerN
 
 
 def multi(*args, components=None):
     if components is None:
         components = args
-    return SuperCS(Multi.name, Multi.path, *components)
+    return SuperNCS(Multi.name, Multi.path, components)
 
 
-class Multi(Transformer):
+class Multi(ContainerN):
     """Process each Data object from a collection with its respective
     transformer."""
-
-    def __init__(self, transformers):
-        # TODO: propagar seed
-        # TODO: testar se cs é finito?
-        super().__init__({'transformers': transformers}, transformers)
-        self.size = len(transformers)
-        self.transformers = transformers
 
     def _apply_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -42,10 +34,3 @@ class Multi(Transformer):
             data = transformer.use(next(collection))
             datas.append(data)
         return collection.updated1(self._transformation(), datas=datas)
-
-    @classmethod
-    def _cs_impl(cls):
-        raise Exception('Multi should have a CS:'
-                        'Pode ter um finiteCS de tamanho um (se for passado 1 '
-                        'finiteCS) ou pode ter um CS combinando vários CS '
-                        'passados')

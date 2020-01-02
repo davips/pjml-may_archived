@@ -26,17 +26,6 @@ class Report(NoOp):
         return data
 
     @classmethod
-    def _cs_impl(cls):
-        params = {
-            'text': CatP(choice, items=['Random report X=$X',
-                                        'Random report y=$y',
-                                        'Random report z=$z',
-                                        'Random report r=$r',
-                                        'Random report s=$s'])
-        }
-        return ConfigSpace(params=params)
-
-    @classmethod
     def _interpolate(cls, text, data):
         segments = text.split('$')
         start = segments[0]

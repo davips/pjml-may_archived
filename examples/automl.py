@@ -88,7 +88,7 @@ print(dataout.history)
 #
 #
 # def rnd(cs, size):
-#     return bag(*repeat(cs.sample(), size))
+#     return *repeat(cs.sample(), size),
 #
 #
 #

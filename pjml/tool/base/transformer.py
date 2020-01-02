@@ -1,19 +1,18 @@
-import hashlib
 import json
 from abc import abstractmethod
 from functools import lru_cache
-# from methodtools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
 from pjdata.transformation import Transformation
-from pjml.config.list import bag
-from pjml.config.util import freeze
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjml.tool.base.aux.serialization import materialize, serialize, \
     serialized_to_int
 from pjml.tool.base.aux.timers import Timers
+
+
+# from methodtools import lru_cache
 
 
 class Transformer(Identifyable, dict, Timers, ExceptionHandler):
@@ -24,20 +23,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     Each component (alias for Transformer child classes) implementation should
     decide by itself if it requires the 'apply' step before the 'use' step.
     self.model should be set at the time of calling use().
-
-    When using internal transformers inside your own component,
-    using the internal versions of transformations is obligatory when the
-    resulting Data object history is not discarded, e.g.:
-    'return internal_transformer.internal_apply(data)'
-    'return internal_transformer.internal_use(data)'
-    This avoids duplicate items in the resulting history, because the method
-    to_transformations() will also be called from the parent class to
-    complete the history. to_transformations() is also used to preview any
-    ongoing sequence of transformations.
-    It is an essential part of Cache inner workings.
-    Concurrent components (Map, Multi, ...) are the notable exception to this,
-    since the history of the collection and the history of each Data object run
-    independently.
 
     All components should implement:
         _apply_impl()
@@ -86,15 +71,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def _use_impl(self, data):
         """Each component should implement its core 'use' functionality."""
 
-    # Class methods cannot be a property!
-    # And should be classmethod, for this: KNN = KNN.cs()
     @classmethod
     @abstractmethod
     def _cs_impl(cls):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
-        raise Exception('Missing implementation or wrong calling of'
-                        f'{cls.name}._cs_impl at an obj that overrides cs!')
 
     def _transformation(self):
         """Ongoing/last transformation performed."""
@@ -158,6 +139,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self._current_operation = None
         return res
 
+    # @classmethod  <-- Causes AttributeError:
+    #           'functools._lru_cache_wrapper' object has no attribute 'sample'
     @classproperty
     @lru_cache()
     def cs(cls):
@@ -181,7 +164,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def cs1(self=None):
         """Convert transformer into a config space with a single transformer
         inside it."""
-        return bag(self)
+        return self,
 
     def clone(self):
         """Clone this transformer.
@@ -249,27 +232,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def __str__(self, depth=''):
         return json.dumps(self, sort_keys=False, indent=3)
-
-    # def flatten(items):
-    #     """Yield items from any nested iterable
-    #     https://stackoverflow.com/questions
-    #     /952914/how-to-make-a-flat-list-out-of-list-of-lists."""
-    #     from collections import Iterable
-    #     for x in items:
-    #         if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-    #             yield from flatten(x)
-    #         else:
-    #             yield x
-    @lru_cache()
-    def to_transformations(self, operation):
-        """Useful to construct the Data history.
-
-        Used by Transformer.apply/use to update Data objects and by Cache to
-        predict an ongoing transformation.
-
-        Child classes should override this if they are better represented as
-        a sequence of transformations, not a single atomic one."""
-        return [Transformation(self, operation)]
 
 
 class NoAlgorithm:

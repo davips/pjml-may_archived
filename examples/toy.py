@@ -1,7 +1,6 @@
 from cururu.file import save
 from pjdata.data_creation import read_arff
 from pjml.pipeline import Pipeline
-from pjml.tool.macro import evaluator
 from pjml.tool.data.container.applyusing import ApplyUsing
 from pjml.tool.data.container.cache import Cache
 from pjml.tool.data.container.seq import Seq
@@ -10,8 +9,8 @@ from pjml.tool.data.flow.report import Report
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
-import pjml.config.syntax
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
+from pjml.tool.macro import evaluator
 
 datain = read_arff('iris.arff')
 
@@ -20,12 +19,14 @@ datain = read_arff('iris.arff')
 
 pipe = Pipeline(
     evaluator(
-        Cache(
+        # Cache(
             Seq(
-                ApplyUsing(SVMC(kernel='linear')),
+                ApplyUsing(
+                    SVMC(kernel='linear')
+                ),
                 Cache(Metric(function='accuracy')),
             ),
-        )
+        # )
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )

@@ -1,9 +1,5 @@
-from abc import ABC
-from functools import lru_cache
-
 from pjml.config.cs.seqcs import SeqCS
-from pjml.tool.base.aux.decorator import classproperty
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.common.container import ContainerN
 
 
 def seq(*args, components=None):
@@ -12,18 +8,11 @@ def seq(*args, components=None):
     return SeqCS(*components)
 
 
-class Seq(Transformer, ABC):
+class Seq(ContainerN):
     """Chain the execution of the given transformers.
 
     Each arg is a transformer. Optionally, a list of them can be passed as a
     named arg called 'transformers'."""
-
-    def __init__(self, *args, transformers=None):
-        if transformers is None:
-            transformers = args
-        self.transformers = transformers
-        super().__init__({'transformers': transformers}, transformers)
-        # TODO: seed
 
     def _apply_impl(self, data):
         self.model = self.transformers
@@ -42,19 +31,3 @@ class Seq(Transformer, ABC):
                 raise Exception(f'Using subtransformer {transformer} failed! ',
                                 data.failure)
         return data
-    #
-    # @classmethod
-    # def _cs_impl(cls):
-    #     raise Exception('Seq._cs_impl should never be called!')
-
-    # @classmethod
-    @classproperty
-    def cs(cls):
-        raise Exception(
-            'Use shortcut seq() or class SeqCS() instead of calling Seq.cs!')
-
-    @lru_cache()
-    def to_transformations(self, operation):
-        from itertools import chain
-        lst = [tr.to_transformations(operation) for tr in self.transformers]
-        return list(chain.from_iterable(lst))

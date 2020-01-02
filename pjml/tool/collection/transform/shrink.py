@@ -1,7 +1,8 @@
-from pjml.tool.base.transformer import Transformer, NoAlgorithm
+from pjml.tool.base.transformer import NoAlgorithm
+from pjml.tool.data.flow.configless import ConfigLess
 
 
-class Shrink(Transformer):
+class Shrink(ConfigLess):
     def __init__(self):
         super().__init__({}, NoAlgorithm, isdeterministic=True)
 
@@ -14,12 +15,3 @@ class Shrink(Transformer):
             datas=[d for d in collection if d is not None],
             failure=collection.failure
         )
-
-    @classmethod
-    # TODO: define a CS that has a single transformer with zero parameters?
-    def _cs_impl(cls):
-        raise Exception(
-            'TODO: define a CS that has a single transformer with zero '
-            'parameters?')
-
-# return ConfigSpace()

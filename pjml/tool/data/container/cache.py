@@ -1,33 +1,20 @@
-from functools import lru_cache
-
 from cururu.amnesia import Amnesia
 from cururu.pickleserver import PickleServer
 from pjdata.transformation import Transformation
-from pjml.config.distributions import choice
+from pjml.config.cs.supercs import Super1CS
 from pjml.config.node import Node
-from pjml.config.parameter import CatP
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.data.container.container import Container
+
+from pjml.tool.common.container import Container1
 
 
 def cache(component, engine="file", settings=None):
-    """Shortcut to create a ConfigSpace for Cache.
-
-    Parameters
-    ----------
-    component
-
-    engine
-    settings
-
-    Returns
-    -------
-
-    """
-    return Cache.cs(component, engine=engine, settings=settings)
+    """Shortcut to create a ConfigSpace for Cache."""
+    node = Node({'engine': engine, 'settings': settings})
+    return Super1CS(Cache.name, Cache.path, component, node)
 
 
-class Cache(Container):
+class Cache(Container1):
     def __init__(self, transformer, fields=None, engine="file", settings=None):
         if isinstance(fields, Transformer):
             raise Exception(
@@ -38,10 +25,7 @@ class Cache(Container):
         if settings is None:
             settings = {'db': '/tmp/'}
 
-        super().__init__(
-            transformer=transformer,
-            config=self._to_config(locals())
-        )
+        super().__init__(transformer, self._to_config(locals()))
 
         self.fields = fields
 
@@ -88,6 +72,11 @@ class Cache(Container):
                 data_to_store,
                 check_dup=False
             )
+        self.model = self.transformer.model  # Melhor deixar quebrar caso um
+        # apply() seja armazenado e o use() correspondente não.
+        # Ou guardar referência pro conjunto de treino para reinduzir.
+        # Fazer dump do transformer resolve melhor, mas pode ser custoso.
+        # Usuário pode decidir, escolhendo um cache local para isso.
 
         return output_data
 
@@ -123,14 +112,3 @@ class Cache(Container):
             )
 
         return output_data
-
-    @classmethod
-    def _cs_impl(cls):
-        params = {'engine': CatP(
-            choice, items=["amnesia", "mysql", "sqlite", "nested"]
-        )}  # TODO: cada engine é um ramo!
-        return Node(params=params)
-
-    @lru_cache()
-    def to_transformations(self, operation):
-        return self.transformer.to_transformations(operation)

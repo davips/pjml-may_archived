@@ -1,21 +1,14 @@
-from abc import ABC
+from pjml.config.cs.supercs import Super1CS
 
-from pjml.config.cs.supercs import SuperCS
-from pjml.tool.base.aux.decorator import classproperty
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.common.container import Container1
 
 
 def mapa(component):
-    return SuperCS(Map.name, Map.path, [component])
+    return Super1CS(Map.name, Map.path, component)
 
 
-class Map(Transformer, ABC):
+class Map(Container1):
     """Execute the same transformer for the entire collection."""
-
-    def __init__(self, transformer):
-        # TODO: propagar seed
-        super().__init__({'transformer': transformer}, transformer)
-        self.transformer = transformer
 
     def _apply_impl(self, collection):
         if collection.infinite:
@@ -39,9 +32,3 @@ class Map(Transformer, ABC):
             data = transformer.use(next(collection))
             datas.append(data)
         return collection.updated1(self._transformation(), datas=datas)
-
-    @classmethod
-    def _cs_impl(cls):
-        # TODO: CS
-        raise Exception(
-            'Use shortcut  or class () instead of calling .cs!')

@@ -3,8 +3,10 @@ from numpy import mean
 from numpy import std
 
 from pjdata.data import Data
+from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
+from pjml.config.node import Node
 from pjml.config.parameter import CatP
 from pjml.tool.collection.reduce.reduce import Reduce
 from pjml.tool.collection.transform.shrink import Shrink
@@ -48,11 +50,11 @@ class Summ(Reduce):
 
     @classmethod
     def _cs_impl(cls):
-        # TODO field
         params = {
-            'function': CatP(choice, items=cls.functions.keys())
+            'function': CatP(choice, items=cls.functions.keys()),
+            'field': CatP(choice, items=['z', 'r', 's'])
         }
-        return ConfigSpace(params=params)
+        return ComponentCS(Node(params))
 
     def _fun_mean(self, collection):
         return mean([data.fields[self.field] for data in collection])

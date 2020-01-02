@@ -13,4 +13,3 @@ class Expand(NoOp):
 
     def _use_impl(self, data):
         return Collection(data, data.history, data.failure, data.dataset)
-
