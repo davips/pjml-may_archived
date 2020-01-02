@@ -17,44 +17,43 @@ class SVMC(Predictor):
     @classmethod
     def _cs_impl(cls):
         # todo: set random seed; set 'cache_size'
-        params = {
-            'C': RealP(uniform, low=1e-4, high=100),
-            'shrinking': CatP(choice, items=[True, False]),
-            'probability': CatP(choice, items=[False]),
-            'tol': OrdP(choice, items=[
-                0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1,
-                1, 10, 100, 1000, 10000
-            ]),
-            'class_weight': CatP(choice, items=[None, 'balanced']),
-            # 'verbose': [False],
-            'max_iter': CatP(choice, items=[1000000]),
-            'decision_function_shape': CatP(choice, items=['ovr', 'ovo'])
-        }
+        kernel_linear = Node({'kernel': CatP(choice, items=['linear'])})
 
-        kernel_linear = ConfigSpace(
-            params={'kernel': CatP(choice, items=['linear'])}
-        )
-
-        kernel_poly = ConfigSpace({
+        kernel_poly = Node({
             'kernel': CatP(choice, items=['poly']),
             'degree': IntP(uniform, low=0, high=10),
             'coef0': RealP(uniform, low=0.0, high=100)
         })
 
-        kernel_rbf = ConfigSpace({
+        kernel_rbf = Node({
             'kernel': CatP(choice, items=['rbf'])
         })
 
-        kernel_sigmoid = ConfigSpace({
+        kernel_sigmoid = Node({
             'kernel': CatP(choice, items=['sigmoid']),
             'coef0': RealP(uniform, low=0.0, high=100),
         })
 
         kernel_nonlinear = Node(
             {'gamma': RealP(uniform, low=0.00001, high=100)},
-            config_spaces=[kernel_poly, kernel_rbf, kernel_sigmoid]
+            children=[kernel_poly, kernel_rbf, kernel_sigmoid]
         )
-        raise Exception('missing top level node with params')
-        return ComponentCS(
-            config_spaces=[kernel_linear, kernel_nonlinear]
+
+        top = Node(
+            {
+                'C': RealP(uniform, low=1e-4, high=100),
+                'shrinking': CatP(choice, items=[True, False]),
+                'probability': CatP(choice, items=[False]),
+                'tol': OrdP(choice, items=[
+                    0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1,
+                    1, 10, 100, 1000, 10000
+                ]),
+                'class_weight': CatP(choice, items=[None, 'balanced']),
+                # 'verbose': [False],
+                'max_iter': CatP(choice, items=[1000000]),
+                'decision_function_shape': CatP(choice, items=['ovr', 'ovo'])
+            },
+            children=[kernel_linear, kernel_nonlinear]
         )
+
+        return ComponentCS(top)

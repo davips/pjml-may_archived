@@ -10,7 +10,7 @@ from pjml.config.list import bag
 from pjml.config.util import freeze
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
-    BadComponent, NoModel
+    BadComponent, MissingModel
 from pjml.tool.base.aux.serialization import materialize, serialize, \
     serialized_to_int
 from pjml.tool.base.aux.timers import Timers
@@ -93,6 +93,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def _cs_impl(cls):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
+        raise Exception('Missing implementation or wrong calling of'
+                        f'{cls.name}._cs_impl at an obj that overrides cs!')
 
     def _transformation(self):
         """Ongoing/last transformation performed."""
@@ -115,6 +117,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         same data, but annotated with a failure
         """
         if data is None:
+            self.model = NoModel
             return None
         if self.algorithm is None or self.config is None:
             raise BadComponent(f"{self} didn't set up "
@@ -141,14 +144,15 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
-        if data is None:
+        if data is None or self.model is NoModel:
             return None
         if self._failure_during_apply is not None:
             return data.updated(failure=self._failure_during_apply)
         if self.model is None:
-            raise NoModel(f"{self} didn't set up a model yet."
-                          f" Method apply() should be called before use()!"
-                          f"Another reason is a bad apply/init implementation.")
+            raise MissingModel(f"{self} didn't set up a model yet."
+                               f" Method apply() should be called before use()!"
+                               f"Another reason is a bad apply/init "
+                               f"implementation.")
         self._current_operation = 'u'
         res = self._run(self._use_impl, data)
         self._current_operation = None
@@ -266,3 +270,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Child classes should override this if they are better represented as
         a sequence of transformations, not a single atomic one."""
         return [Transformation(self, operation)]
+
+
+class NoAlgorithm:
+    pass
+
+
+class NoModel:
+    pass

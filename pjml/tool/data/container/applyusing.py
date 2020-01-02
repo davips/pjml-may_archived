@@ -1,7 +1,15 @@
+from abc import ABC
+
+from pjml.config.cs.supercs import SuperCS
+from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.transformer import Transformer
 
 
-class ApplyUsing(Transformer):
+def applyusing(component):
+    return SuperCS(ApplyUsing.name, ApplyUsing.path, [component])
+
+
+class ApplyUsing(Transformer, ABC):
     """Run a 'use' step right after an 'apply' one.
 
     Useful to calculate training error in classifiers, which would otherwise

@@ -53,4 +53,4 @@ class Container(Transformer, ABC):
         """
         from pjml.config.util import freeze
         node = freeze(cls._cs_impl(), **kwargs)
-        return SuperCS(node, config_space=component.cs)
+        return SuperCS(cls.name, cls.path, component.cs, node)

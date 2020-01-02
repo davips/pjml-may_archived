@@ -1,4 +1,12 @@
+from pjml.config.cs.supercs import SuperCS
+from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.transformer import Transformer
+
+
+def multi(*args, components=None):
+    if components is None:
+        components = args
+    return SuperCS(Multi.name, Multi.path, *components)
 
 
 class Multi(Transformer):

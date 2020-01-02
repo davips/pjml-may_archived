@@ -1,5 +1,4 @@
-from pjml.tool.base.transformer import Transformer
-from pjml.tool.collection.expand.expand import NoAlgorithm
+from pjml.tool.base.transformer import Transformer, NoAlgorithm
 
 
 class Shrink(Transformer):

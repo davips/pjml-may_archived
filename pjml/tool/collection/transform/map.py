@@ -1,7 +1,15 @@
+from abc import ABC
+
+from pjml.config.cs.supercs import SuperCS
+from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.transformer import Transformer
 
 
-class Map(Transformer):
+def mapa(component):
+    return SuperCS(Map.name, Map.path, [component])
+
+
+class Map(Transformer, ABC):
     """Execute the same transformer for the entire collection."""
 
     def __init__(self, transformer):
@@ -36,4 +44,4 @@ class Map(Transformer):
     def _cs_impl(cls):
         # TODO: CS
         raise Exception(
-            'deve expor o CS do componente passado, mas dentro de um SuperCS')
+            'Use shortcut  or class () instead of calling .cs!')

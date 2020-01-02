@@ -43,7 +43,7 @@ class ComponentException(Exception):
     pass
 
 
-class NoModel(Exception):
+class MissingModel(Exception):
     pass
 
 

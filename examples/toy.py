@@ -1,7 +1,7 @@
 from cururu.file import save
 from pjdata.data_creation import read_arff
 from pjml.pipeline import Pipeline
-from pjml.tool.base.macro import evaluator
+from pjml.tool.macro import evaluator
 from pjml.tool.data.container.applyusing import ApplyUsing
 from pjml.tool.data.container.cache import Cache
 from pjml.tool.data.container.seq import Seq
@@ -11,7 +11,7 @@ from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 import pjml.config.syntax
-from pjml.tool.data.processing.instance.sampler.over.rnd_over_sampler import ROS
+from pjml.tool.data.processing.instance.sampler.over.random import ROS
 
 datain = read_arff('iris.arff')
 
@@ -46,15 +46,15 @@ print(3333333333333333333333333333333)
 pipe = Pipeline(
     ROS(sampling_strategy='not minority'),
 
-    NB('bernoulli'),
+    ApplyUsing(NB('bernoulli')),
     Metric(function='accuracy'),
     Report('Accuracy: $r {history}'),
 
-    DT(max_depth=2),
+    ApplyUsing(DT(max_depth=2)),
     Metric(function='accuracy'),
     Report('Accuracy: $r'),
 
-    SVMC(kernel='linear'),
+    ApplyUsing(SVMC(kernel='linear')),
     Metric(function='accuracy'),
     Report('Accuracy: $r'),
 )
@@ -65,10 +65,10 @@ dataout2 = pipe.use(datain)
 print(dataout.history)
 print(dataout2.history)
 print('------------------')
-print(SVMC.cs())
+print(SVMC.cs)
 
 print('------------------')
-print(SVMC.cs().sample())
+print(SVMC.cs.sample())
 Report('Mean $s for dataset {dataset.name}.')
 
 

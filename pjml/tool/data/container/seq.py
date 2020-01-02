@@ -1,18 +1,18 @@
+from abc import ABC
 from functools import lru_cache
 
-from pjdata.transformation import Transformation
 from pjml.config.cs.seqcs import SeqCS
+from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.transformer import Transformer
 
 
 def seq(*args, components=None):
-    # TODO: convert components as classes to CSs?
     if components is None:
         components = args
-    return Seq.cs(components=components)
+    return SeqCS(*components)
 
 
-class Seq(Transformer):
+class Seq(Transformer, ABC):
     """Chain the execution of the given transformers.
 
     Each arg is a transformer. Optionally, a list of them can be passed as a
@@ -42,14 +42,16 @@ class Seq(Transformer):
                 raise Exception(f'Using subtransformer {transformer} failed! ',
                                 data.failure)
         return data
+    #
+    # @classmethod
+    # def _cs_impl(cls):
+    #     raise Exception('Seq._cs_impl should never be called!')
 
-    @classmethod
-    def _cs_impl(cls):
-        raise Exception('Seq._cs_impl should never be called!')
-
-    @classmethod
-    def cs(cls, components):
-        return SeqCS(components)
+    # @classmethod
+    @classproperty
+    def cs(cls):
+        raise Exception(
+            'Use shortcut seq() or class SeqCS() instead of calling Seq.cs!')
 
     @lru_cache()
     def to_transformations(self, operation):

@@ -30,7 +30,7 @@ class Node:
         # Fill config with values from child nodes.
         if self.children:
             child_node = choice(self.children)
-            config.update(child_node.sample())
+            config.update(child_node.partial_sample())
 
         # Complete args with current node values, possibly overriding some
         # values from children nodes (this happens with frozen cs()).

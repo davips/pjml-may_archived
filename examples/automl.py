@@ -13,8 +13,8 @@ from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 import pjml.config.syntax
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
-from pjml.tool.data.processing.instance.sampler.over.rnd_over_sampler import ROS
-from pjml.tool.data.processing.instance.sampler.under.rnd_under_sampler import \
+from pjml.tool.data.processing.instance.sampler.over.random import ROS
+from pjml.tool.data.processing.instance.sampler.under.random import \
     RUS
 
 datain = read_arff('iris.arff')
