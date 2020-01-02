@@ -15,7 +15,7 @@ class ShuffleCS(ConfigSpace, list):
 
     def sample(self):
         import numpy as np
-        from pjml.tool.data.container.seq import Seq
+        from pjml.tool.base.seq import Seq
         css = self.copy()
         np.random.shuffle(css)
         return Seq(transformers=[cs.cs.sample() for cs in css])

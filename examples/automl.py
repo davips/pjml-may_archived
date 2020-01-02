@@ -1,25 +1,17 @@
-from cururu.file import save
 from pjdata.data_creation import read_arff
-from pjml.pipeline import Pipeline
-from pjml.tool.base.macro import evaluator
-from pjml.tool.data.container.applyusing import ApplyUsing
-from pjml.tool.data.container.cache import Cache
-from pjml.tool.data.container.seq import Seq
-from pjml.tool.data.evaluation.metric import Metric
-from pjml.tool.data.flow.report import Report
+from pjml.tool.data.flow.applyusing import apus
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
-from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
-import pjml.config.syntax
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     RUS
+import pjml.config.syntax
 
 datain = read_arff('iris.arff')
 
-expr = [Std, {RUS, ROS}, MinMax], {DT, NB}
+expr = [Std, {RUS, ROS}, MinMax], apus({DT, NB})
 pipe = expr.sample()
 print(pipe)
 

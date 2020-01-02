@@ -42,8 +42,9 @@ class ComponentCS(EmptyCS):
         config = self._sample_cfg()
 
         # Fill config with values from internal nodes.
-        child_node = choice(self.nodes)
-        config.update(child_node.partial_sample())
+        if self.nodes:
+            child_node = choice(self.nodes)
+            config.update(child_node.partial_sample())
 
         return materialize(self.name, self.path, config)
 

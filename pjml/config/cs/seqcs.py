@@ -16,5 +16,5 @@ class SeqCS(ConfigSpace, tuple):
     def sample(self):
         # cs.cs ensures it is not a class or transformer.
         transformers = [cs.cs.sample() for cs in self]
-        from pjml.tool.data.container.seq import Seq
+        from pjml.tool.base.seq import Seq
         return Seq(transformers=transformers)
