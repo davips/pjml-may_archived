@@ -1,5 +1,5 @@
 from pjdata.data_creation import read_arff
-from pjml.tool.data.flow.applyusing import apus
+from pjml.tool.data.flow.applyusing import applyusing
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
@@ -13,16 +13,16 @@ datain = read_arff('iris.arff')
 
 expr = [Std, {RUS, ROS}, MinMax], apus({DT, NB})
 pipe = expr.sample()
-print(pipe)
+print(1111111111111, pipe)
 
 datain = read_arff('iris.arff')
 
 dataout = pipe.apply(datain)
-print(dataout.history)
+print(222222222222222, dataout.history)
 # data morre no apply() do predictor
 
 dataout = pipe.use(datain)
-print(dataout.history)
+print(3333333333333333, dataout.history)
 # RUS desaparece no use()
 
 #

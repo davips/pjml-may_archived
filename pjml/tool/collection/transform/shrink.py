@@ -1,4 +1,4 @@
-from pjml.tool.base.transformer import NoAlgorithm
+from pjml.tool.base.aux.singleton import NoAlgorithm
 from pjml.tool.common.configless import ConfigLess
 
 

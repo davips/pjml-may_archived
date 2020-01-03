@@ -125,15 +125,19 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
+        # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
+        # então "interrompe" também no 'use'.
         if data is None or self.model is NoModel:
             return None
         if self._failure_during_apply is not None:
             return data.updated(failure=self._failure_during_apply)
+
         if self.model is None:
             raise MissingModel(f"{self} didn't set up a model yet."
                                f" Method apply() should be called before use()!"
                                f"Another reason is a bad apply/init "
                                f"implementation.")
+
         self._current_operation = 'u'
         res = self._run(self._use_impl, data)
         self._current_operation = None
@@ -232,11 +236,3 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def __str__(self, depth=''):
         return json.dumps(self, sort_keys=False, indent=3)
-
-
-class NoAlgorithm:
-    pass
-
-
-class NoModel:
-    pass
