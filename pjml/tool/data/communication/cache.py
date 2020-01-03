@@ -1,5 +1,6 @@
 from cururu.amnesia import Amnesia
 from cururu.pickleserver import PickleServer
+from pjdata.singleton import NoModel
 from pjdata.transformation import Transformation
 from pjml.config.cs.supercs import Super1CS
 from pjml.config.node import Node
@@ -72,11 +73,14 @@ class Cache(Container1):
                 data_to_store,
                 check_dup=False
             )
-        self.model = self.transformer.model  # Melhor deixar quebrar caso um
+        print(233445, 'cache empresta model do transformer interno, ou NoModel')
+        # Melhor deixar quebrar caso um
         # apply() seja armazenado e o use() correspondente não.
         # Ou guardar referência pro conjunto de treino para reinduzir.
         # Fazer dump do transformer resolve melhor, mas pode ser custoso.
         # Usuário pode decidir, escolhendo um cache local para isso.
+        self.model = NoModel if self.transformer.model is None \
+            else self.transformer.model
 
         return output_data
 

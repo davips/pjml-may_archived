@@ -1,5 +1,5 @@
 from pjdata.collection import Collection
-from pjml.tool.base.aux.singleton import NoAlgorithm
+from pjdata.singleton import NoData, NoModel, NoAlgorithm
 from pjml.tool.common.noop import NoOp
 
 

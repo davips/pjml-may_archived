@@ -14,7 +14,7 @@ from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
 
 # ML 1 ========================================================================
-
+# datain = File('iris.arff').apply()
 pipe = Pipeline(
     File('iris.arff'),
     evaluator(
@@ -43,14 +43,17 @@ print(222222222222222222222222222221)
 dout = pipe.use()
 print(3333333333333333333333333333333)
 
+
 # ML 2 ========================================================================
 pipe = Pipeline(
     File('iris.arff'),
+
     ROS(sampling_strategy='not minority'),
 
     ApplyUsing(NB('bernoulli')),
     Metric(function='accuracy'),
-    Report('Accuracy: $r {history}'),
+    # Report('Accuracy: $r {history}'),
+    Report('Accuracy: $r'),
 
     ApplyUsing(DT(max_depth=2)),
     Metric(function='accuracy'),
@@ -63,14 +66,8 @@ pipe = Pipeline(
 dataout = pipe.apply()
 dataout2 = pipe.use()
 
-print(dataout.history)
-print(dataout2.history)
-print('------vvvvvvvvv------------')
-print(SVMC.cs)
-
-print('------^^^^^^^^^------------')
-print(SVMC.cs.sample())
-Report('Mean $s for dataset {dataset.name}.')
+# print(dataout.history)
+# print(dataout2.history)
 
 """
 Problemas filosoficos

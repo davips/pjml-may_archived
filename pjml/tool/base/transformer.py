@@ -3,12 +3,14 @@ from abc import abstractmethod
 from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
+from pjdata.data import Data
 from pjdata.transformation import Transformation
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjml.tool.base.aux.serialization import materialize, serialize, \
     serialized_to_int
+from pjdata.singleton import NoData, NoModel
 from pjml.tool.base.aux.timers import Timers
 
 
@@ -81,7 +83,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Ongoing/last transformation performed."""
         return Transformation(self, self._current_operation)
 
-    def apply(self, data):
+    def apply(self, data=NoData):
         """Training step (usually).
 
         Fit/remove-noise-from/evaluate/... Data.
@@ -89,6 +91,9 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
+            'None' means 'pipeline ended before this transformation
+            'NoData' means 'pipeline still alive, hoping to generate Data in
+            the current transformer.
 
         Returns
         -------
@@ -98,8 +103,23 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         same data, but annotated with a failure
         """
         if data is None:
-            self.model = NoModel
+            # None = pipeline terminou antes desse transformer
+            if self.model is None:
+                # data=None and model=None:
+                #   'apply' não consegue gerar modelo e o 'init' não o fez
+                self.model = NoModel
+                # model=NoModel:
+                # não haverá modelo para o 'use', mas o pipeline deve continuar
             return None
+        if data is NoData:
+            #     data = None
+            if self.model is None:
+                # data=None and model=None:
+                #   'apply' não consegue gerar modelo e o 'init' não o fez
+                self.model = NoModel
+                # model=NoModel:
+                # não haverá modelo para o 'use', mas o pipeline deve continuar
+
         if self.algorithm is None or self.config is None:
             raise BadComponent(f"{self} didn't set up "
                                f"an algorithm or a config at __init__. This"
@@ -109,7 +129,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self._current_operation = None
         return res
 
-    def use(self, data):
+    def use(self, data=NoData):
         """Testing step (usually).
 
         Predict/transform/do nothing/evaluate/... Data.
@@ -126,9 +146,13 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         same data, but annotated with a failure
         """
         # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
-        # então "interrompe" também no 'use'.
-        if data is None or self.model is NoModel:
+        # então "interrompe" também no 'use' (ou não, pois RF interrompe e
+        # Cache deixa como nomodel qnd lê da base).
+        if data is None:  # or self.model is NoModel:
             return None
+        # if data is NoData:
+        #     data = None
+
         if self._failure_during_apply is not None:
             return data.updated(failure=self._failure_during_apply)
 
@@ -188,7 +212,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
-        if data.failure is not None:
+        if isinstance(data, Data) and data.failure:
             return data
 
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -198,7 +222,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         except Exception as e:
             print('>>>>>>>>>>>>>>>>', e)
             self._handle_exception(e)
-            output_data = data.updated(failure=str(e))
+            output_data = NoData if NoData is None \
+                else data.updated(failure=str(e))
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
