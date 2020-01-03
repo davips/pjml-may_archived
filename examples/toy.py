@@ -1,12 +1,9 @@
 from cururu.file import save
-from cururu.pickleserver import PickleServer
 from pjml.pipeline import Pipeline
 from pjml.tool.base.seq import Seq
-from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.ausing import ApplyUsing
-from pjml.tool.data.flow.file import File
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
@@ -14,12 +11,20 @@ from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
 
 
-p = PickleServer()
-lst = p.list_by_name('iris')
+# Armazenar dataset, sem depender do pacote pjml.
+from cururu.pickleserver import PickleServer
+from pjdata.data_creation import read_arff
+PickleServer().store(read_arff('iris.arff'))
+
+# Listar *iris*
+lst = PickleServer().list_by_name('iris')
 print(lst)
 
-dout = Cache(File('iris.arff')).apply()
-print(dout.uuid)
+# Armazenar dataset com gambiarrando no pjml.
+from pjml.tool.data.communication.cache import Cache
+from pjml.tool.data.flow.file import File
+Cache(File('iris.arff')).apply()
+
 exit(0)
 
 # ML 1 ========================================================================
@@ -51,7 +56,6 @@ save('/tmp/pipea', pipe)
 print(222222222222222222222222222221)
 dout = pipe.use()
 print(3333333333333333333333333333333)
-
 
 # ML 2 ========================================================================
 pipe = Pipeline(
