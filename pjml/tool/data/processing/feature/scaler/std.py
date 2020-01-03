@@ -17,7 +17,7 @@ class Std(Scaler):
 
         super().__init__({'operation': operation},
                          StandardScaler(with_mean=with_mean, with_std=with_std),
-                         isdeterministic=True)
+                         deterministic=True)
 
     @classmethod
     def _cs_impl(cls, data=None):

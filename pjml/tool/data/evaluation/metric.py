@@ -28,7 +28,7 @@ class Metric(Transformer, FunctionInspector):
     def __init__(self, function, target='Y', prediction='Z'):
         super().__init__(self._to_config(locals()),
                          self.functions[function],
-                         isdeterministic=True)
+                         deterministic=True)
         self.target, self.prediction = target, prediction
         self.model = self.algorithm
 

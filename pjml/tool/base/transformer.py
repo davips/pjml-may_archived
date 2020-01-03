@@ -3,18 +3,16 @@ from abc import abstractmethod
 from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
-from pjdata.data import Data
+from pjdata.data import NoData
 from pjdata.transformation import Transformation
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjml.tool.base.aux.serialization import materialize, serialize, \
     serialized_to_int
-from pjdata.singleton import NoData, NoModel
 from pjml.tool.base.aux.timers import Timers
-
-
 # from methodtools import lru_cache
+from pjml.tool.base.singleton import NoModel
 
 
 class Transformer(Identifyable, dict, Timers, ExceptionHandler):
@@ -48,14 +46,14 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     # cannot be in _init_ since _hash_ is called before _init_ is called.
 
-    def __init__(self, config, algorithm, isdeterministic=False):
-        if not isdeterministic and 'seed' in config:
+    def __init__(self, config, algorithm, deterministic=False):
+        if not deterministic and 'seed' in config:
             config['random_state'] = config.pop('seed')
         dict.__init__(self, id=f'{self.name}@{self.path}', config=config)
 
         self.config = config
         self.algorithm = algorithm
-        self.isdeterministic = isdeterministic
+        self.deterministic = deterministic
 
         self.model = None  # Mandatory field at apply() or init().
         self._failure_during_apply = None
@@ -93,7 +91,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         data
             'None' means 'pipeline ended before this transformation
             'NoData' means 'pipeline still alive, hoping to generate Data in
-            the current transformer.
+            one of the next transformers.
 
         Returns
         -------
@@ -112,7 +110,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                 # não haverá modelo para o 'use', mas o pipeline deve continuar
             return None
         if data is NoData:
-            #     data = None
             if self.model is None:
                 # data=None and model=None:
                 #   'apply' não consegue gerar modelo e o 'init' não o fez
@@ -212,7 +209,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def _run(self, function, data, max_time=None):
         """Common procedure for apply() and use()."""
-        if isinstance(data, Data) and data.failure:
+        if data.failure:
             return data
 
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

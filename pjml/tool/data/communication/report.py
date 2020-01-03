@@ -10,7 +10,7 @@ class Report(NoOp):
     """
 
     def __init__(self, text='Default report r=$r'):
-        super().__init__({'text': text}, text, isdeterministic=True)
+        super().__init__({'text': text}, text, deterministic=True)
         self.model = text
         self.text = text
 

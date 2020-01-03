@@ -1,6 +1,5 @@
 from cururu.amnesia import Amnesia
 from cururu.pickleserver import PickleServer
-from pjdata.singleton import NoModel
 from pjdata.transformation import Transformation
 from pjml.config.cs.supercs import Super1CS
 from pjml.config.node import Node
