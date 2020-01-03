@@ -3,9 +3,9 @@ from pjdata.data_creation import read_arff
 from pjml.pipeline import Pipeline
 from pjml.tool.base.seq import Seq
 from pjml.tool.data.evaluation.metric import Metric
-from pjml.tool.data.flow.applyusing import applyusing
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.communication.cache import Cache
+from pjml.tool.data.flow.ausing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
@@ -20,7 +20,7 @@ pipe = Pipeline(
     evaluator(
         Cache(
             Seq(
-                AUsing(
+                ApplyUsing(
                     SVMC(kernel='linear')
                 ),
                 Cache(Metric(function='accuracy')),
@@ -48,15 +48,15 @@ pipe = Pipeline(
     File('iris.arff'),
     ROS(sampling_strategy='not minority'),
 
-    AUsing(NB('bernoulli')),
+    ApplyUsing(NB('bernoulli')),
     Metric(function='accuracy'),
     Report('Accuracy: $r {history}'),
 
-    AUsing(DT(max_depth=2)),
+    ApplyUsing(DT(max_depth=2)),
     Metric(function='accuracy'),
     Report('Accuracy: $r'),
 
-    AUsing(SVMC(kernel='linear')),
+    ApplyUsing(SVMC(kernel='linear')),
     Metric(function='accuracy'),
     Report('Accuracy: $r'),
 )
