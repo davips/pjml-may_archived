@@ -3,7 +3,7 @@ from pjdata.data_creation import read_arff
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
-from pjml.config.parameter import CatP
+from pjml.config.parameter import CatP, FixedP
 from pjml.tool.base.transformer import Transformer
 
 
@@ -33,8 +33,8 @@ class File(Transformer):
     @classmethod
     def _cs_impl(cls):
         params = {
-            'path': CatP(choice, items=['./']),
-            'name': CatP(choice, items=['iris.arff'])
+            'path': FixedP('./'),
+            'name': FixedP('iris.arff')
         }
         return ComponentCS(Node(params=params))
 

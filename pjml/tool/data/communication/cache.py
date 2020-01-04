@@ -2,17 +2,20 @@ from cururu.amnesia import Amnesia
 from cururu.pickleserver import PickleServer
 from pjdata.operation.apply import Apply
 from pjdata.operation.use import Use
-from pjml.config.cs.supercs import Super1CS
+from pjml.config.cs.supercs import SuperCS
 from pjml.config.node import Node
+from pjml.config.parameter import FixedP
 from pjml.tool.base.seq import Seq
 from pjml.tool.base.singleton import NoModel
 from pjml.tool.common.container import Container
 
 
-def cache(component, engine="file", settings=None):
+def cache(*args, engine="file", settings=None, components=None):
+    if components is None:
+        components = args
     """Shortcut to create a ConfigSpace for Cache."""
-    node = Node({'engine': engine, 'settings': settings})
-    return Super1CS(Cache.name, Cache.path, component, node)
+    node = Node(params={'engine': FixedP(engine), 'settings': FixedP(settings)})
+    return SuperCS(Cache.name, Cache.path, components, node)
 
 
 class Cache(Container):

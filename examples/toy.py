@@ -29,15 +29,17 @@ from cururu.pickleserver import PickleServer
 
 # ML 1 ========================================================================
 # datain = File('iris.arff').apply()
+from pjml.tool.meta.wrap import Wrap
+
 pipe = Pipeline(
     File('iris.arff'),
     evaluator(
-        Cache(
+        Wrap(Cache(
                 ApplyUsing(
                     SVMC(kernel='linear')
                 ),
                 Cache(Metric(function='accuracy')),
-        )
+        ))
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
@@ -48,12 +50,12 @@ save('/tmp/pipe', pipe)
 # pipe = load('/tmp/pipe')
 # print(pipe)
 
-print(1111111111111111111111111111111)
+print(111111)
 dout = pipe.apply()
 save('/tmp/pipea', pipe)
-print(222222222222222222222222222221)
+print(222222)
 dout = pipe.use()
-print(3333333333333333333333333333333)
+print(333333)
 
 # ML 2 ========================================================================
 pipe = Pipeline(

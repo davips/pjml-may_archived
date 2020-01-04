@@ -1,4 +1,5 @@
 from abc import ABC
+from functools import lru_cache
 
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.transformer import Transformer
@@ -7,20 +8,34 @@ from pjml.tool.base.transformer import Transformer
 class Container(Transformer, ABC):
     """Container modify  'transformer(s)'."""
 
-    # @property
-    # @lru_cache()
-    # def wrapped(self):
-    #     """Subpipeline inside the first Wrap().
-    #
-    #     Example:
-    #     pipe = Pipeline(
-    #         File(name='iris.arff'),
-    #         Wrap(Std(), SVMC()),
-    #         Metric(function='accuracy')
-    #     )
-    #     pipe.wrapped  # -> Pipeline(Std(), SVMC())
-    #     """
-    #     while self.tr
+    def __init__(self, transformers):
+        super().__init__({'transformers': transformers}, transformers)
+        self.transformers = transformers
+
+    @property
+    @lru_cache()
+    def wrapped(self):
+        """Subpipeline inside the first Wrap(), hopefully the only one.
+
+        It is a depth-first search.
+
+        Example:
+        pipe = Pipeline(
+            File(name='iris.arff'),
+            Wrap(Std(), SVMC()),
+            Metric(function='accuracy')
+        )
+        pipe.wrapped  # -> Pipeline(Std(), SVMC())
+        """
+        from pjml.tool.meta.wrap import Wrap
+        if isinstance(self, Wrap):
+            return self
+        for transformer in self.transformers:
+            if isinstance(transformer, Container):
+                transformer = transformer.wrapped
+                if isinstance(transformer, Wrap):
+                    return transformer
+        return 0
 
     @classmethod
     @classproperty

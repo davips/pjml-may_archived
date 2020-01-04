@@ -1,9 +1,11 @@
-from pjml.config.cs.supercs import Super1CS
+from pjml.config.cs.supercs import SuperCS
 from pjml.tool.collection.transform.map import Container1
 
 
-def applyusing(component):
-    return Super1CS(ApplyUsing.name, ApplyUsing.path, component)
+def applyusing(*args, components=None):
+    if components is None:
+        components = args
+    return SuperCS(ApplyUsing.name, ApplyUsing.path, components)
 
 
 class ApplyUsing(Container1):

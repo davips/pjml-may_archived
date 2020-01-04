@@ -2,10 +2,9 @@ from numpy.random import uniform
 from sklearn.tree import DecisionTreeClassifier
 
 from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.node import Node
-from pjml.config.parameter import CatP, IntP, RealP
+from pjml.config.parameter import CatP, IntP, RealP, FixedP
 from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 
@@ -19,7 +18,7 @@ class DT(Predictor):
     def _cs_impl(cls):
         params = {
             'criterion': CatP(choice, items=['gini', 'entropy']),
-            'splitter': CatP(choice, items=['best']),
+            'splitter': FixedP('best'),
             'class_weight': CatP(choice, items=[None, 'balanced']),
             'max_features': CatP(choice, items=['auto', 'sqrt', 'log2', None]),
 

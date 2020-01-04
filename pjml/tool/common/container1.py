@@ -17,7 +17,7 @@ class Container1(Container, ABC):
         if len(transformers) == 1 and isinstance(transformers, Seq):
             transformers = transformers[0].transformers
 
-        super().__init__({'transformers': transformers}, transformers)
+        super().__init__(transformers)
 
         if len(transformers) > 1:
             self.transformer = Seq(transformers=transformers)

@@ -60,4 +60,4 @@ class IntP(Param):
 
 class FixedP(Param):
     def __init__(self, value):
-        super().__init__(lambda _: value)
+        super().__init__(lambda: value)

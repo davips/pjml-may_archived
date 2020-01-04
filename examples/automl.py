@@ -1,4 +1,7 @@
+import numpy
+
 from pjdata.data_creation import read_arff
+from pjml.tool.data.communication.cache import cache
 from pjml.tool.data.flow.applyusing import applyusing
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
@@ -9,20 +12,24 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
     RUS
 import pjml.config.syntax
 
-datain = read_arff('iris.arff')
+numpy.random.seed(0)
 
-expr = [Std, {RUS, ROS}, MinMax], applyusing({DT, NB})
+# import sklearn
+# print('The scikit-learn version is {}.'.format(sklearn.__version__))
+
+datain = read_arff('iris.arff')
+expr = cache([Std, {RUS, ROS}, MinMax], applyusing({DT, NB}))
 pipe = expr.sample()
-print(1111111111111, pipe)
+# print(1111111111111, pipe)
 
 datain = read_arff('iris.arff')
 
 dataout = pipe.apply(datain)
-print(222222222222222, dataout.history)
+# print(222222222222222, dataout.history)
 # data morre no apply() do predictor
 
 dataout = pipe.use(datain)
-print(3333333333333333, dataout.history)
+# print(3333333333333333, dataout.history)
 # RUS desaparece no use()
 
 #

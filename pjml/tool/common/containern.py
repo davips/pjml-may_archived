@@ -10,7 +10,5 @@ class ContainerN(Container, ABC):
         if transformers is None:
             transformers = args
         # TODO: propagar seed
-        super().__init__({'transformers': transformers}, transformers)
-
-        self.transformers = transformers
+        super().__init__(transformers)
         self.size = len(transformers)

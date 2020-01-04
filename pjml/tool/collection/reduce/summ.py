@@ -4,7 +4,6 @@ from numpy import std
 
 from pjdata.data import Data
 from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import CatP
