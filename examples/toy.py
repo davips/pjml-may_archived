@@ -4,7 +4,7 @@ from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
-from pjml.tool.data.flow.ausing import ApplyUsing
+from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
@@ -33,12 +33,10 @@ pipe = Pipeline(
     File('iris.arff'),
     evaluator(
         Cache(
-            Seq(
                 ApplyUsing(
                     SVMC(kernel='linear')
                 ),
                 Cache(Metric(function='accuracy')),
-            ),
         )
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")

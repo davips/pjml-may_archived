@@ -1,5 +1,5 @@
 from pjml.config.cs.seqcs import SeqCS
-from pjml.tool.common.container import ContainerN
+from pjml.tool.common.containern import ContainerN
 
 
 def seq(*args, components=None):

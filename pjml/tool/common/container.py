@@ -1,54 +1,35 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.transformer import Transformer
 
 
 class Container(Transformer, ABC):
-    """This component is a generic component to build a 'Container'.
-    The idea of the Container is to modify  'transformer(s)'.
-    """
+    """Container modify  'transformer(s)'."""
 
-    def __init__(self, *t_or_ts, own_config=None):
-        # TODO: propagar seed
-        config = {self._parname: t_or_ts}
-        if own_config is not None:
-            config.update(**own_config)
-        super().__init__(config, t_or_ts)
-
-        self.transformer = t_or_ts[0]
-        self.transformers = t_or_ts
-        self.size = len(t_or_ts) if isinstance(t_or_ts, tuple) else 1
-
-    @property
-    @abstractmethod
-    def _parname(self):
-        pass
+    # @property
+    # @lru_cache()
+    # def wrapped(self):
+    #     """Subpipeline inside the first Wrap().
+    #
+    #     Example:
+    #     pipe = Pipeline(
+    #         File(name='iris.arff'),
+    #         Wrap(Std(), SVMC()),
+    #         Metric(function='accuracy')
+    #     )
+    #     pipe.wrapped  # -> Pipeline(Std(), SVMC())
+    #     """
+    #     while self.tr
 
     @classmethod
     @classproperty
     def cs(cls):
         raise Exception(
-            f'{cls.name} depends on {cls._parname} to build a CS. Use CS '
+            f'{cls.name} depends on transformers to build a CS. Use CS '
             f'shortcut for class {cls.name} instead of calling its .cs!'
         )
 
     @classmethod
     def _cs_impl(cls):
         raise Exception(f'Wrong calling of {cls.name}._cs_impl!')
-
-
-class Container1(Container, ABC):
-    _parname = 'transformer'
-
-    def __init__(self, transformer, own_config=None):
-        super().__init__(transformer, own_config=own_config)
-
-
-class ContainerN(Container, ABC):
-    _parname = 'transformers'
-
-    def __init__(self, *args, own_config=None, transformers=None):
-        if transformers is None:
-            transformers = args
-        super().__init__(*transformers, own_config=own_config)

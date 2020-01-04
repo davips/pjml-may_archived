@@ -4,10 +4,9 @@ from pjdata.operation.apply import Apply
 from pjdata.operation.use import Use
 from pjml.config.cs.supercs import Super1CS
 from pjml.config.node import Node
+from pjml.tool.base.seq import Seq
 from pjml.tool.base.singleton import NoModel
-from pjml.tool.base.transformer import Transformer
-
-from pjml.tool.common.container import Container1
+from pjml.tool.common.container import Container
 
 
 def cache(component, engine="file", settings=None):
@@ -16,18 +15,35 @@ def cache(component, engine="file", settings=None):
     return Super1CS(Cache.name, Cache.path, component, node)
 
 
-class Cache(Container1):
-    def __init__(self, transformer, fields=None, engine="file", settings=None):
-        if isinstance(fields, Transformer):
-            raise Exception(
-                f'Container {self.name} should have a single transformer!')
+class Cache(Container):
+
+    def __init__(self, *args, fields=None, engine="file", settings=None,
+                 transformers=None):
+        if transformers is None:
+            transformers = args
+
+        # Cache(Seq(a,b,c)) should be equal Cache(a,b,c)
+        if len(transformers) == 1 and isinstance(transformers, Seq):
+            transformers = transformers[0].transformers
+
+        # TODO: propagar seed
+        config = self._to_config(locals())
+        config['transformers'] = transformers
+        del config['args']
 
         if fields is None:
             fields = ['X', 'Y', 'Z']
         if settings is None:
             settings = {'db': '/tmp/'}
 
-        super().__init__(transformer, self._to_config(locals()))
+        # Bypass and Container due to specific config of Cache.
+        # TODO: generalize this (as ConfigurableContainer) to future components.
+        super(Container, self).__init__(config, transformers)
+
+        if len(transformers) > 1:
+            self.transformer = Seq(transformers=transformers)
+        else:
+            self.transformer = transformers[0]
 
         self.fields = fields
 

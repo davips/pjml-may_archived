@@ -1,5 +1,5 @@
 from pjdata.data_creation import read_arff
-from pjml.tool.data.flow.ausing import applyusing
+from pjml.tool.data.flow.applyusing import applyusing
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
