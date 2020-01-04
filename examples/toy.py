@@ -1,6 +1,7 @@
 from cururu.file import save
+from pjdata.fastdata import FastData
+from pjml.config.list import sampler
 from pjml.pipeline import Pipeline
-from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
@@ -11,7 +12,9 @@ from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
-from cururu.pickleserver import PickleServer
+from pjdata import data
+
+# data.Data = FastData
 
 # # Armazenar dataset, sem depender do pacote pjml.
 # from pjdata.data_creation import read_arff
@@ -32,21 +35,23 @@ from cururu.pickleserver import PickleServer
 from pjml.tool.meta.wrap import Wrap
 
 pipe = Pipeline(
-    File('iris.arff'),
+    File('abalone3.arff'),
     evaluator(
         Cache(
-                ApplyUsing(
-                    Wrap(SVMC(kernel='linear'))
-                ),
-                Cache(Metric(function='accuracy')),
+            ApplyUsing(
+                Wrap(SVMC(kernel='linear'))
+            ),
+            Metric(function='accuracy'),
+            settings={'db': '/tmp/dump/'}
         )
     ),
-    Report("{history.last.config['function']} $S for dataset {dataset.name}.")
+    Report(" $S for dataset {dataset.name}.")
+    # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
 
 print('--------\n', pipe.serialized)
 print('--------\n', pipe.wrapped.serialized)
-save('/tmp/pipe', pipe)
+# save('/tmp/pipe', pipe)
 #
 # pipe = load('/tmp/pipe')
 # print(pipe)
@@ -92,7 +97,7 @@ pesados) em config.
 obs. Um mesmo pipeline pode gerar diversos históricos. 
 GA não pode confiar no histórico, pois as mutações podem fazer com que data 
 seja alterado e mude o comportamento do pipeline (trocando transformations);
-ou esja, o GA deve ocorrer sobre o pipeline, não sobre as trasformations;
+ou seja, o GA deve ocorrer sobre o pipeline, não sobre as trasformations;
 melhor dizendo, sobre o transformer, não sobre transformations
 
 1
@@ -104,54 +109,62 @@ Component
 pros: basicamente dicts de strings = sem referências = menos memória
 cons: havia o Component para o mesmo conceito, mas materializado
 
-2
-Ficou PESO E 3 NÍVEIS - COM DEFEITO NO USE
-Transformation(transformer, op)
-Transformer(config)  <-  equivale a component+transformer
-Transformer
-pros: conceitualmente mais simples
-cons: transformer (e indiretamente transformation) agora inclui modelo,
-        então referências a transformer mantém a memória mais ocupada.
-        Se o Data tiver vida curta ou for gerado em poucas quantidades não há 
-        problema, especialmente porque nada é copiado (structural sharing).
-      Do histórico do Data é possível puxar um transformer e reutilizar, 
-      ou seja, outros datas que referenciem ele não podem contar com a 
-      imutabilidade do modelo; para evitar isso ver solução 1 abaixo
-        
-3
-Pode ficar: 1 OU 2 - COM CONSERTO DA AMBIGUIDADE DA TRANSFORMATION EM USE
-ATransformation(transformer, op)
-    UTransformation(transformer, training_data, op) 
-Transformer(config)
-Transformer
-pros: conserta o problema de que diferentes treinos produziam diferentes 
-        use-transformations com a mesma identidade
-cons: mesmos de 1 ou de 2
 
-4
-Pode ficar: ABOLIR REFERÊNCIAS, ADOTAR SÓ UUID
-applyuuid=(transfuuid, op) / useuuid=(transfuuid, training_datauuid, op) 
-Transformer(config)
-Transformer
-pros: leve, sem referências e mantém meta de identificação única de Data
-cons: corta o cordão umbilical data-transformações. mas alguém quer saber as 
-        transformações? ou basta o pipeline?
+Solução atual = 1 abaixo
+Estratégia: comparar desempenho das três em tempo (com e sem cache) e memória.
 
 
-Solução atual = 2 abaixo
+1 gasta mais espaço e mantém referências
 
-1 gasta menos espaço, mais processamento... (otimização prematura)
-Apply(transformer.serialized) / Use(transformer.serialized, training_data.uuid) 
-Transformer(config)
-Transformer
-
-    Transformation não precisa de Transformer dentro dele. Quem precisar pode
-        materializá-lo.
-
-2 gasta mais espaço, menos processamento... (vou deixar assim ver e no que dá)
 Apply(transformer) / Use(transformer, training_data) 
-Transformer(config)
-Transformer
+Transformer(config)     <-  equivale a component+transformer
+Transformer             <-  atalho para CS
 
 
+
+2 gasta menos espaço e não mantém referências, mas burocratiza um pouco... 
+(otimização prematura?)
+
+Apply(transformer.serialized) / Use(transformer.serialized, training_data.uuid) 
+Transformer(config)     <-  equivale a component+transformer
+Transformer             <-  atalho para CS
+
+    obs. Transformation não precisa de Transformer dentro dele. Quem precisar 
+    pode
+            materializá-lo.
+
+
+
+3 espaço zero e sem referências, mas sem histórico
+
+aply: data.uuid = uuid(data.uuid + transformer.uuid)
+use:  data.uuid = uuid(data.uuid + transformer.uuid + training_data.uuid) 
+Transformer(config)     <-  equivale a component+transformer
+Transformer             <-  atalho para CS
+
+
+4 usuário decide entre 1, 2 e 3; configuração seria numa das seguintes formas:
+    a. variável global HISTORY=full|text|zero
+    b. arg no apply/use cascateado automaticamente  <-- preferida 1
+    c. arg no Transformer.__init__                  <-- fracassa para automl
+    d. monkey-patch pjdata.data com pjdata.fastdata <-- preferida 2
+
+
+
+Monkey patch:
+from pjdata.fastdata import FastData
+from pjdata import data
+data.Data = FastData
+
+Com abalone3.arff e PickleServer-speed
+full: 45s/1.5s 204M  (prov dump do Data está levando Transformers junto)
+zero: 45s/1.5s 40M
+
+Com abalone3.arff e PickleServer-space-blosc
+full: Illegal instruction (core dumped) 
+zero: 47s/1.5s 10M
+
+Com abalone3.arff e PickleServer-space-mono
+full: 46s/1.9s 48M 
+zero: 46s/1.5s 10M
 """
