@@ -254,6 +254,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def path(cls):
         return cls.__module__
 
+    @property
+    def wrapped(self):
+        return None
+
     def __hash__(self):  # This method is not memoizable due to infinite loop.
         """Needed only because of lru_cache complaining about hashability of
         dict child classes."""

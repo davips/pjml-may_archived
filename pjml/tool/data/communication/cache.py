@@ -32,6 +32,7 @@ class Cache(Container):
         # TODO: propagar seed
         config = self._to_config(locals())
         config['transformers'] = transformers
+        self.transformers = transformers
         del config['args']
 
         if fields is None:

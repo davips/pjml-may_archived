@@ -34,17 +34,18 @@ from pjml.tool.meta.wrap import Wrap
 pipe = Pipeline(
     File('iris.arff'),
     evaluator(
-        Wrap(Cache(
+        Cache(
                 ApplyUsing(
-                    SVMC(kernel='linear')
+                    Wrap(SVMC(kernel='linear'))
                 ),
                 Cache(Metric(function='accuracy')),
-        ))
+        )
     ),
     Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
 
 print('--------\n', pipe.serialized)
+print('--------\n', pipe.wrapped.serialized)
 save('/tmp/pipe', pipe)
 #
 # pipe = load('/tmp/pipe')

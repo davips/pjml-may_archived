@@ -28,14 +28,11 @@ class Container(Transformer, ABC):
         pipe.wrapped  # -> Pipeline(Std(), SVMC())
         """
         from pjml.tool.meta.wrap import Wrap
-        if isinstance(self, Wrap):
-            return self
         for transformer in self.transformers:
-            if isinstance(transformer, Container):
-                transformer = transformer.wrapped
-                if isinstance(transformer, Wrap):
-                    return transformer
-        return 0
+            transformer = transformer.wrapped
+            if isinstance(transformer, Wrap):
+                return transformer
+        return None
 
     @classmethod
     @classproperty
