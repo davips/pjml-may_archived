@@ -1,7 +1,8 @@
-from cururu.file import save
+from cururu.file import save, load
 from pjdata.fastdata import FastData
 from pjml.config.list import sampler
 from pjml.pipeline import Pipeline
+from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
@@ -31,8 +32,14 @@ from pjdata import data
 # Cache(File('iris.arff')).apply()
 
 # ML 1 ========================================================================
-# datain = File('iris.arff').apply()
+datain = File('iris.arff').apply()
 from pjml.tool.meta.wrap import Wrap
+
+# print(load('/tmp/dump/pipe').model)
+# print()
+# print(load('/tmp/dump/pipea').wrapped)
+# Seq(File('abalone3.arff'), load('/tmp/dump/pipea')).use(datain)
+# exit(0)
 
 pipe = Pipeline(
     File('abalone3.arff'),
@@ -49,16 +56,19 @@ pipe = Pipeline(
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
 
+# save('/tmp/dump/pipe0', pipe)
+
+
 print('--------\n', pipe.serialized)
 print('--------\n', pipe.wrapped.serialized)
-# save('/tmp/pipe', pipe)
+save('/tmp/dump/pipe', pipe)
 #
 # pipe = load('/tmp/pipe')
 # print(pipe)
 
 print(111111)
 dout = pipe.apply()
-save('/tmp/pipea', pipe)
+save('/tmp/dump/pipea', pipe)
 print(222222)
 dout = pipe.use()
 print(333333)
@@ -167,4 +177,7 @@ zero: 47s/1.5s 10M
 Com abalone3.arff e PickleServer-space-mono
 full: 46s/1.9s 48M 
 zero: 46s/1.5s 10M
+
+Transformer dump não guarda model porque só tem name,path,config no dict for 
+json.
 """
