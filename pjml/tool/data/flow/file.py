@@ -22,8 +22,6 @@ class File(Transformer):
         self.data = data
 
     def _apply_impl(self, data):
-        print(data)
-        print(self.data)
         if data is not NoData:
             raise Exception('File component needs to be applied with NoData. '
                             'Use Sink before it if needed.')

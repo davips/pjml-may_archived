@@ -4,7 +4,9 @@ from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
 from pjdata.data import NoData
-from pjdata.transformation import Transformation
+
+from pjdata.operation.apply import Apply
+from pjdata.operation.use import Use
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
@@ -58,6 +60,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.model = None  # Mandatory field at apply() or init().
         self._failure_during_apply = None
         self._current_operation = None
+        self._last_training_data = None
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
         # Transformer object without having to check that it is not a
@@ -78,8 +81,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
     def _transformation(self):
-        """Ongoing/last transformation performed."""
-        return Transformation(self, self._current_operation)
+        """Ongoing transformation."""
+        if self._current_operation == 'a':
+            return Apply(self)
+        else:
+            return Use(self, self._last_training_data)
 
     def apply(self, data=NoData):
         """Training step (usually).
@@ -121,6 +127,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             raise BadComponent(f"{self} didn't set up "
                                f"an algorithm or a config at __init__. This"
                                f" should be done by calling the parent init")
+        self._last_training_data = data
         self._current_operation = 'a'
         res = self._run(self._apply_impl, data)
         self._current_operation = None

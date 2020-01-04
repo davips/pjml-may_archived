@@ -1,6 +1,7 @@
 from cururu.amnesia import Amnesia
 from cururu.pickleserver import PickleServer
-from pjdata.transformation import Transformation
+from pjdata.operation.apply import Apply
+from pjdata.operation.use import Use
 from pjml.config.cs.supercs import Super1CS
 from pjml.config.node import Node
 from pjml.tool.base.singleton import NoModel
@@ -50,7 +51,7 @@ class Cache(Container1):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
-        transformation = Transformation(self.transformer, 'a')
+        transformation = Apply(self.transformer)
         output_data = self.storage.fetch(
             data, transformation, self.fields,
             lock=True
@@ -74,19 +75,15 @@ class Cache(Container1):
                 self.fields,
                 check_dup=False
             )
-        print(233445, 'cache empresta model do transformer interno, ou NoModel')
-        # Melhor deixar quebrar caso um
-        # apply() seja armazenado e o use() correspondente não.
-        # Ou guardar referência pro conjunto de treino para reinduzir.
-        # Fazer dump do transformer resolve melhor, mas pode ser custoso.
-        # Usuário pode decidir, escolhendo um cache local para isso.
+
         self.model = NoModel if self.transformer.model is None \
             else self.transformer.model
 
         return output_data
 
     def _use_impl(self, data):
-        transformation = Transformation(self.transformer, 'u')
+        # exit(0)
+        transformation = Use(self.transformer, self._last_training_data)
         output_data = self.storage.fetch(
             data, transformation, self.fields,
             lock=True
@@ -97,16 +94,23 @@ class Cache(Container1):
             # If the component was applied (probably simulated by storage),
             # but there is no model, we reapply it...
             if self.transformer.model is None:
-                # TODO: recover from apply-stored-but-use-not-stored.
-                print('It is possible that a previous apply() was '
-                      'successfully stored, but its use() wasn\'t.'
-                      'Or you are trying to use in new data.')
-                print(
-                    'Trying to recover training data from storage to apply '
-                    'just to induce a model usable by use()...\n'
-                    f'comp: {self.transformer.sid}  data: {data.sid} ...')
+                # Melhor deixar quebrar caso um
+                # apply() seja armazenado e o use() correspondente não?
+                # Ou guardar referência pro conjunto de treino para reinduzir?
+                # Fazer dump do transformer resolve melhor, mas pode ser
+                # custoso.
+                # Usuário pode decidir, escolhendo um cache local para isso.
+                print('It is possible that a previous apply() was successfully'
+                      ' stored, but use() with current data wasn\'t.\n'
+                      'E.g. you are trying to use in new data, or use() never '
+                      'was stored before.\n')
+                print('Recovering training data from transformer to reapply it.'
+                      'The goal is to induce a model usable by use()...\n'
+                      f'comp: {self.transformer.sid} '
+                      f'data: {data.sid}'
+                      f'training data: {self._last_training_data}')
                 # stored_train_data = self.storage.fetch(train_uuid)
-                # self.component.apply_impl(stored_train_data)
+                self.transformer.apply(self._last_training_data)
 
             output_data = self.transformer.use(data)
             data_to_store = data.phantom if output_data is None else output_data
