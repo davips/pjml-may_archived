@@ -9,12 +9,12 @@ from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
-
-
-# Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
-from pjdata.data_creation import read_arff
-PickleServer().store(read_arff('iris.arff'))
+
+
+# # Armazenar dataset, sem depender do pacote pjml.
+# from pjdata.data_creation import read_arff
+# PickleServer().store(read_arff('iris.arff'))
 
 # Listar *iris*
 lst = PickleServer().list_by_name('iris')
@@ -25,7 +25,6 @@ from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.flow.file import File
 Cache(File('iris.arff')).apply()
 
-exit(0)
 
 # ML 1 ========================================================================
 # datain = File('iris.arff').apply()

@@ -3,6 +3,7 @@ from cururu.pickleserver import PickleServer
 from pjdata.transformation import Transformation
 from pjml.config.cs.supercs import Super1CS
 from pjml.config.node import Node
+from pjml.tool.base.singleton import NoModel
 from pjml.tool.base.transformer import Transformer
 
 from pjml.tool.common.container import Container1
@@ -110,8 +111,8 @@ class Cache(Container1):
             output_data = self.transformer.use(data)
             data_to_store = data.phantom if output_data is None else output_data
             self.storage.store(
-                data, transformation, self.fields,
                 data_to_store,
+                data, transformation, self.fields,
                 check_dup=False
             )
 
