@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from cururu.file import save, load
 from pjdata.fastdata import FastData
 from pjml.config.list import sampler
@@ -14,7 +17,8 @@ from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
 from pjdata import data
-
+if not Path('/tmp/dump').exists():
+    os.mkdir('/tmp/dump')
 # data.Data = FastData
 
 # # Armazenar dataset, sem depender do pacote pjml.
