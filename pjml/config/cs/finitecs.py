@@ -2,14 +2,15 @@
 #  listas de transformers, essencialmente p/ Multi, parece que tuplas
 #  são mais práticas, pois simplificam o construtor dele com *args, e permite
 #  estender seu conceito para aceitar também listas de CSs.
-#  Um possível problema é conflitar com o fruto proibido (loop infito?).
+#  Um possível problema é conflitar com o fruto proibido (loop infinito?).
+#  Caso de usuário de necessidade: cs1 requer que transformer não seja sampleado
 
 from pjml.config.cs.configspace import ConfigSpace
 from pjml.config.distributions import choice
 
 
 class FiniteCS(ConfigSpace):
-    """Iterable tree representing a finite set of (hyper)parameter spaces.
+    """Iterable CS. This CS does not accept config spaces, only transformers.
 
     TODO: decide if prohibition of RealP will be enforced.
     """
@@ -17,7 +18,13 @@ class FiniteCS(ConfigSpace):
     def sample(self):
         return choice(self)
 
-    def __init__(self, trasformers):
+    def __init__(self, *trasformers):
+        from pjml.tool.base.transformer import Transformer
+        for transformer in trasformers:
+            if not isinstance(transformer, Transformer):
+                raise Exception(f'Given: {type(transformer)}\n{transformer}\n'
+                                f'FiniteCS does not '
+                                f'accept config spaces, only transformers!')
         self.trasformers = trasformers
         self.current_index = 0
         self.size = len(self.trasformers)

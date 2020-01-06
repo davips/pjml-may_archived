@@ -11,7 +11,7 @@ class SeqCS(ConfigSpace, tuple):
     """
 
     def __new__(cls, *components):
-        return tuple.__new__(SeqCS, *components)
+        return tuple.__new__(SeqCS, components)
 
     def sample(self):
         # cs.cs ensures it is not a class or transformer.

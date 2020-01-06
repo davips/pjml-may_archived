@@ -1,11 +1,11 @@
-import json
-
 import numpy
+from numpy.random import uniform
 from sklearn.model_selection import StratifiedShuffleSplit as HO, \
     StratifiedKFold as SKF, LeaveOneOut as LOO
 
-from pjml.config.distributions import choice
-from pjml.config.parameter import CatP
+from pjml.config.cs.componentcs import ComponentCS
+from pjml.config.node import Node
+from pjml.config.parameter import IntP
 from pjml.tool.base.aux.functioninspector import FunctionInspector
 from pjml.tool.base.transformer import Transformer
 
@@ -50,7 +50,7 @@ class Split(Transformer, FunctionInspector):
         self.fields = fields
 
     def _apply_impl(self, data):
-        # TODO: Profile and if needed somehow optimize this without breaking
+        # TODO: Profile and, if needed, somehow optimize this without breaking
         #  pajé architecture.
         zeros = numpy.zeros(data.matrices[self.fields[0]].shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
@@ -62,13 +62,12 @@ class Split(Transformer, FunctionInspector):
 
     def _core(self, data, idxs):
         new_dic = {f: data.matrices[f][idxs] for f in self.fields}
-        return data.updated1(self._transformation(), **new_dic)
+        return data.updated(self._transformation(), **new_dic)
 
     @classmethod
     def _cs_impl(cls):
-        # TODO CS for split
+        # TODO complete CS for split
         params = {
-            'function': CatP(choice, items=cls.functions.keys())
+            'steps': IntP(uniform, low=2, high=10)
         }
-        raise Exception('Split is not for external use for now!')
-        # return ConfigSpace(params=params)
+        return ComponentCS(Node(params=params))

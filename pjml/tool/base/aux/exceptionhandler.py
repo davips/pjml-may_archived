@@ -32,11 +32,17 @@ class ExceptionHandler:
             ]
     transformer = None
 
-    def _handle_exception(self, e):
-        print(f'Trying to handle: [{str(e)}] at {self}...')
+    def _handle_exception(self, e, exit_on_error):
+        """Pipeline failure is different from python error."""
+        print(f'At {self},\nTrying to handle:\n[{str(e)}]\nName: {self.name}')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
-            traceback.print_exc()
-            exit(0)
+            if exit_on_error:
+                traceback.print_exc()
+                exit(0)
+            else:
+                raise e
+        else:
+            print(' just a known pipeline failure.')
 
 
 class ComponentException(Exception):

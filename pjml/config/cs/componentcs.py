@@ -30,7 +30,7 @@ class ComponentCS(EmptyCS):
         return {}
 
     def sample(self):
-        """Sample a transformer completely configured.
+        """Sample a completely configured transformer.
 
         Choose a path from tree and set values to parameters according to
         the given sampling functions.

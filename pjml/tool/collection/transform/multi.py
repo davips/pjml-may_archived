@@ -20,10 +20,10 @@ class Multi(ContainerN):
         datas = []
         # TODO: deve clonar antes de usar?
         for transformer in self.transformers:
-            data = transformer.apply(next(collection))
+            data = transformer.apply(next(collection), self._exit_on_error)
             datas.append(data)
             self.model.append(transformer)
-        return collection.updated1(self._transformation(), datas=datas)
+        return collection.updated(self._transformation(), datas=datas)
 
     def _use_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -31,6 +31,6 @@ class Multi(ContainerN):
                             f'size {self.size} != collection {collection.size}')
         datas = []
         for transformer in self.model:
-            data = transformer.use(next(collection))
+            data = transformer.use(next(collection), self._exit_on_error)
             datas.append(data)
-        return collection.updated1(self._transformation(), datas=datas)
+        return collection.updated(self._transformation(), datas=datas)

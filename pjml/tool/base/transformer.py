@@ -7,6 +7,8 @@ from pjdata.data import NoData
 
 from pjdata.operation.apply import Apply
 from pjdata.operation.use import Use
+from pjml.config.cs.finitecs import FiniteCS
+from pjml.config.cs.supercs import SuperCS
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
@@ -61,6 +63,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self._failure_during_apply = None
         self._current_operation = None
         self._last_training_data = None
+        self._exit_on_error = True
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
         # Transformer object without having to check that it is not a
@@ -87,7 +90,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         else:
             return Use(self, self._last_training_data)
 
-    def apply(self, data=NoData):
+    def apply(self, data=NoData, exit_on_error=True):
         """Training step (usually).
 
         Fit/remove-noise-from/evaluate/... Data.
@@ -98,6 +101,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             'None' means 'pipeline ended before this transformation
             'NoData' means 'pipeline still alive, hoping to generate Data in
             one of the next transformers.
+        exit_on_error
 
         Returns
         -------
@@ -106,7 +110,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
-        if data is None:
+        from pjml.tool.common.nodatatransformer import NoDataTransformer
+        if data is NoData and not isinstance(self, NoDataTransformer):
+            raise Exception(f'NoData is not accepted by {self.name}!')
+        if data in [None, NoData]:
             # None = pipeline terminou antes desse transformer
             if self.model is None:
                 # data=None and model=None:
@@ -114,14 +121,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                 self.model = NoModel
                 # model=NoModel:
                 # não haverá modelo para o 'use', mas o pipeline deve continuar
+        if data is None:
             return None
-        if data is NoData:
-            if self.model is None:
-                # data=None and model=None:
-                #   'apply' não consegue gerar modelo e o 'init' não o fez
-                self.model = NoModel
-                # model=NoModel:
-                # não haverá modelo para o 'use', mas o pipeline deve continuar
 
         if self.algorithm is None or self.config is None:
             raise BadComponent(f"{self} didn't set up "
@@ -129,11 +130,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                                f" should be done by calling the parent init")
         self._last_training_data = data
         self._current_operation = 'a'
-        res = self._run(self._apply_impl, data)
+        res = self._run(self._apply_impl, data, exit_on_error=exit_on_error)
         self._current_operation = None
         return res
 
-    def use(self, data=NoData):
+    def use(self, data=NoData, exit_on_error=True):
         """Testing step (usually).
 
         Predict/transform/do nothing/evaluate/... Data.
@@ -141,6 +142,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
+        exit_on_error
 
         Returns
         -------
@@ -149,6 +151,9 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
+        from pjml.tool.common.nodatatransformer import NoDataTransformer
+        if data is NoData and not isinstance(self, NoDataTransformer):
+            raise Exception(f'NoData is not accepted by {self.name}!')
         # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
         # então "interrompe" também no 'use' (ou não, pois RF interrompe e
         # Cache deixa como nomodel qnd lê da base).
@@ -158,7 +163,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         #     data = None
 
         if self._failure_during_apply is not None:
-            return data.updated(failure=self._failure_during_apply)
+            return data.updated(
+                failure=f'Already failed on apply: {self._failure_during_apply}')
 
         if self.model is None:
             raise MissingModel(f"{self} didn't set up a model yet."
@@ -167,7 +173,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                                f"implementation.")
 
         self._current_operation = 'u'
-        res = self._run(self._use_impl, data)
+        res = self._run(self._use_impl, data, exit_on_error=exit_on_error)
         self._current_operation = None
         return res
 
@@ -196,7 +202,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     def cs1(self=None):
         """Convert transformer into a config space with a single transformer
         inside it."""
-        return self,
+        return FiniteCS(self)
 
     def clone(self):
         """Clone this transformer.
@@ -214,7 +220,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             self._dump = serialize(self)
         return self._dump
 
-    def _run(self, function, data, max_time=None):
+    def _run(self, function, data, max_time=None, exit_on_error=True):
         """Common procedure for apply() and use()."""
         if data.failure:
             return data
@@ -222,12 +228,11 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         start = self._clock()
         try:
+            self._exit_on_error = exit_on_error
             output_data = self._limit_by_time(function, data, max_time)
         except Exception as e:
-            print('>>>>>>>>>>>>>>>>', e)
-            self._handle_exception(e)
-            output_data = NoData if NoData is None \
-                else data.updated(failure=str(e))
+            self._handle_exception(e, exit_on_error)
+            output_data = data.updated(self._transformation(), failure=str(e))
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

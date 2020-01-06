@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from cururu.file import save, load
+from cururu.disk import save, load
 from pjdata.fastdata import FastData
 from pjml.config.list import sampler
 from pjml.pipeline import Pipeline
@@ -11,14 +11,13 @@ from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
+from pjml.tool.data.flow.source import Source
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
 from pjdata import data
-if not Path('/tmp/dump').exists():
-    os.mkdir('/tmp/dump')
 # data.Data = FastData
 
 # # Armazenar dataset, sem depender do pacote pjml.
@@ -36,7 +35,7 @@ if not Path('/tmp/dump').exists():
 # Cache(File('iris.arff')).apply()
 
 # ML 1 ========================================================================
-datain = File('iris.arff').apply()
+datain = Source('iris.arff').apply()
 from pjml.tool.meta.wrap import Wrap
 
 # print(load('/tmp/dump/pipe').model)
@@ -46,14 +45,15 @@ from pjml.tool.meta.wrap import Wrap
 # exit(0)
 
 pipe = Pipeline(
-    File('abalone3.arff'),
+    # File('abalone3.arff'),
+    Source('iris'),
     evaluator(
         Cache(
             ApplyUsing(
                 Wrap(SVMC(kernel='linear'))
             ),
             Metric(function='accuracy'),
-            settings={'db': '/tmp/dump/'}
+            settings={'db': '/tmp/cururu'}
         )
     ),
     Report(" $S for dataset {dataset.name}.")
@@ -65,21 +65,21 @@ pipe = Pipeline(
 
 print('--------\n', pipe.serialized)
 print('--------\n', pipe.wrapped.serialized)
-save('/tmp/dump/pipe', pipe)
+save('/tmp/cururu/pipe', pipe)
 #
 # pipe = load('/tmp/pipe')
 # print(pipe)
 
 print(111111)
 dout = pipe.apply()
-save('/tmp/dump/pipea', pipe)
+save('/tmp/cururu/pipea', pipe)
 print(222222)
 dout = pipe.use()
 print(333333)
 
 # ML 2 ========================================================================
 pipe = Pipeline(
-    File('iris.arff'),
+    Source('iris.arff'),
 
     ROS(sampling_strategy='not minority'),
 

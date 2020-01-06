@@ -50,7 +50,7 @@ class RealP(Param):
 class IntP(Param):
     def sample(self):
         try:
-            return numpy.round(self.function())
+            return int(numpy.round(self.function()))
         except Exception as e:
             traceback.print_exc()
             print(e)

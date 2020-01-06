@@ -18,10 +18,10 @@ class Map(Container1):
         datas = []
         for data in collection:
             transformer = self.transformer.clone()
-            output_data = transformer.apply(data)
+            output_data = transformer.apply(data, self._exit_on_error)
             datas.append(output_data)
             self.model.append(transformer)
-        return collection.updated1(self._transformation(), datas=datas)
+        return collection.updated(self._transformation(), datas=datas)
 
     def _use_impl(self, collection):
         size = len(self.model)
@@ -30,6 +30,6 @@ class Map(Container1):
                             f'the same size a- {size} != u- {collection.size}')
         datas = []
         for transformer in self.model:
-            data = transformer.use(next(collection))
+            data = transformer.use(next(collection), self._exit_on_error)
             datas.append(data)
-        return collection.updated1(self._transformation(), datas=datas)
+        return collection.updated(self._transformation(), datas=datas)

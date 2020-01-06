@@ -1,10 +1,17 @@
 import numpy
 
 from pjdata.data_creation import read_arff
+from pjml.config.macro import ev
 from pjml.tool.data.communication.cache import cache
-from pjml.tool.data.flow.applyusing import applyusing
+from pjml.tool.data.communication.report import Report
+from pjml.tool.data.evaluation.metric import Metric
+from pjml.tool.data.evaluation.split import Split
+from pjml.tool.data.flow.applyusing import au
+from pjml.tool.data.flow.source import Source
+from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
+from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
@@ -12,23 +19,28 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
     RUS
 import pjml.config.syntax
 
-numpy.random.seed(0)
+numpy.random.seed(50)
 
 # import sklearn
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 
-datain = read_arff('iris.arff')
-expr = cache([Std, {RUS, ROS}, MinMax], applyusing({DT, NB}))
+expr = cache(
+    Source('iris.arff'), ev(
+        [Std, {RUS, ROS}, MinMax],
+        au({DT, NB, SVMC}),
+        Metric(function='accuracy')
+    )
+), Report("{history.last.config['function']} $S for dataset {dataset.name}.")
+
 pipe = expr.sample()
 # print(1111111111111, pipe)
 
-datain = read_arff('iris.arff')
 
-dataout = pipe.apply(datain)
+dataout = pipe.apply()
 # print(222222222222222, dataout.history)
 # data morre no apply() do predictor
 
-dataout = pipe.use(datain)
+dataout = pipe.use()
 # print(3333333333333333, dataout.history)
 # RUS desaparece no use()
 
@@ -93,4 +105,3 @@ dataout = pipe.use(datain)
 #
 # seq(rnd(seq(ga(workflow, 100), SVMC), 100), Select(n=10, field='s',
 # function='max'))
-

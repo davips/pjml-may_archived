@@ -1,12 +1,8 @@
 from pjdata.collection import Collection
-from pjml.tool.base.singleton import NoAlgorithm
-from pjml.tool.common.noop import NoOp
+from pjml.tool.common.configless import ConfigLess
 
 
-class Expand(NoOp):
-    def __init__(self):
-        super().__init__({}, NoAlgorithm, deterministic=True)
-
+class Expand(ConfigLess):
     def _apply_impl(self, data):
         self.model = self.algorithm
         return Collection(data, data.history, data.failure, data.dataset)

@@ -5,7 +5,15 @@ from pjml.tool.common.configless import ConfigLess
 import numpy as np
 from bisect import bisect
 
+
 class Eq(ConfigLess):
+    """Uniformly distribute examples along each attribute to make them
+    independent of scale and unit measure.
+
+    Each attribute value is replaced by the order in which the example is
+    ranked according with that attribute.
+    Applying a normalization after this transformer is recommended."""
+
     def __init__(self):
         super().__init__({}, NoAlgorithm, deterministic=True)
 
@@ -21,7 +29,7 @@ class Eq(ConfigLess):
     def _use_impl(self, data):
         self.
 
-    def _convert(self,x):
+    def _convert(self, x):
         bisect(self.mo)  # precisa remover repetidos, repartir o espaço original
 
     def _enumerate(self, lst):

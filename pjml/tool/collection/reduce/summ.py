@@ -43,9 +43,9 @@ class Summ(Reduce):
         res = self.function(collection)
         if isinstance(res, tuple):
             summ = numpy.array([res])
-            return data.updated1(self._transformation(), S=summ)
+            return data.updated(self._transformation(), S=summ)
         else:
-            return data.updated1(self._transformation(), s=res)
+            return data.updated(self._transformation(), s=res)
 
     @classmethod
     def _cs_impl(cls):
@@ -56,12 +56,12 @@ class Summ(Reduce):
         return ComponentCS(Node(params))
 
     def _fun_mean(self, collection):
-        return mean([data.fields[self.field] for data in collection])
+        return mean([data.fields_safe(self, self.field) for data in collection])
 
     def _fun_std(self, collection):
-        return std([data.fields[self.field] for data in collection])
+        return std([data.fields_safe(self, self.field) for data in collection])
 
     def _fun_mean_std(self, collection):
         # TODO?: optimize calculating mean and stdev together
-        values = [data.fields[self.field] for data in collection]
+        values = [data.fields_safe(self, self.field) for data in collection]
         return mean(values), std(values)

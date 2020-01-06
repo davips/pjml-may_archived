@@ -1,3 +1,4 @@
+from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.noop import NoOp
 
 
@@ -10,7 +11,7 @@ class Report(NoOp):
     """
 
     def __init__(self, text='Default report r=$r'):
-        super().__init__({'text': text}, text, deterministic=True)
+        Transformer.__init__(self, {'text': text}, text, deterministic=True)
         self.model = text
         self.text = text
 
@@ -26,7 +27,8 @@ class Report(NoOp):
     def _interpolate(cls, text, data):
         segments = text.split('$')
         start = segments[0]
-        rest = [str(data.fields[seg[0]]) + seg[1:] for seg in segments[1:]]
+        rest = [str(data.fields_safe(cls, seg[0])) + seg[1:]
+                for seg in segments[1:]]
         return cls._eval(start + ''.join(rest), data)
 
     @classmethod

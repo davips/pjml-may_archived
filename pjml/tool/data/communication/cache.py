@@ -1,5 +1,6 @@
-from cururu.amnesia import Amnesia
-from cururu.pickleserver import PickleServer
+import traceback
+
+from cururu.storer import Storer
 from pjdata.operation.apply import Apply
 from pjdata.operation.use import Use
 from pjml.config.cs.supercs import SuperCS
@@ -10,7 +11,7 @@ from pjml.tool.base.singleton import NoModel
 from pjml.tool.common.container import Container
 
 
-def cache(*args, engine="file", settings=None, components=None):
+def cache(*args, engine="dump", settings=None, components=None):
     if components is None:
         components = args
     """Shortcut to create a ConfigSpace for Cache."""
@@ -18,14 +19,15 @@ def cache(*args, engine="file", settings=None, components=None):
     return SuperCS(Cache.name, Cache.path, components, node)
 
 
-class Cache(Container):
-
-    def __init__(self, *args, fields=None, engine="file", settings=None,
+class Cache(Container, Storer):
+    def __init__(self, *args, fields=None, engine="dump", settings=None,
                  transformers=None):
+        if settings is None:
+            settings = {}
         if transformers is None:
             transformers = args
 
-        # Cache(Seq(a,b,c)) should be equal Cache(a,b,c)
+        # Cache(Seq(a,b,c)) should be equal to Cache(a,b,c)
         if len(transformers) == 1 and isinstance(transformers, Seq):
             transformers = transformers[0].transformers
 
@@ -37,11 +39,9 @@ class Cache(Container):
 
         if fields is None:
             fields = ['X', 'Y', 'Z']
-        if settings is None:
-            settings = {'db': '/tmp/'}
 
-        # Bypass and Container due to specific config of Cache.
         # TODO: generalize this (as ConfigurableContainer) to future components.
+        # Bypass to Container due to specific config of Cache.
         super(Container, self).__init__(config, transformers)
 
         if len(transformers) > 1:
@@ -50,23 +50,7 @@ class Cache(Container):
             self.transformer = transformers[0]
 
         self.fields = fields
-
-        if engine == "amnesia":
-            self.storage = Amnesia()
-        elif engine == "mysql":
-            from cururu.mysql import MySQL
-            self.storage = MySQL(**settings)
-        elif engine == "sqlite":
-            from cururu.sqlite import SQLite
-            self.storage = SQLite(**settings)
-        elif engine == "cachedmysql":
-            from cururu.mysql import MySQL
-            from cururu.sqlite import SQLite
-            self.storage = MySQL(db=settings['db'], nested=SQLite())
-        elif engine == "file":
-            self.storage = PickleServer(**settings)
-        else:
-            raise Exception('Unknown engine:', engine)
+        self._set_storage(engine, settings)
 
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
@@ -87,7 +71,13 @@ class Cache(Container):
 
         # Apply if still needed  ----------------------------------
         if output_data is None:
-            output_data = self.transformer.apply(data)
+            try:
+                output_data = self.transformer.apply(data, exit_on_error=False)
+            except:
+                self.storage.unlock(data, transformation)
+                traceback.print_exc()
+                exit(0)
+
             data_to_store = data.phantom if output_data is None else output_data
             self.storage.store(
                 data_to_store,
@@ -132,7 +122,13 @@ class Cache(Container):
                 # stored_train_data = self.storage.fetch(train_uuid)
                 self.transformer.apply(self._last_training_data)
 
-            output_data = self.transformer.use(data)
+            try:
+                output_data = self.transformer.use(data, exit_on_error=False)
+            except:
+                self.storage.unlock(data, transformation)
+                traceback.print_exc()
+                exit(0)
+
             data_to_store = data.phantom if output_data is None else output_data
             self.storage.store(
                 data_to_store,

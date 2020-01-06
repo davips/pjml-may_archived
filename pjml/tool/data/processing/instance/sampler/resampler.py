@@ -11,7 +11,7 @@ class Resampler(Transformer, ABC):
         #  create a parameter to define which fields to process
         X, y = self.algorithm.fit_resample(*data.Xy)
         self.model = self.algorithm
-        return data.updated1(self._transformation(), X=X, y=y)
+        return data.updated(self._transformation(), X=X, y=y)
 
     def _use_impl(self, data):
         return data
