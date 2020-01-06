@@ -12,6 +12,5 @@ class ConfigLess(Transformer, ABC):
         super().__init__({}, NoAlgorithm, deterministic=True)
 
     @classmethod
-    @classproperty
     def _cs_impl(cls):
         return EmptyCS()

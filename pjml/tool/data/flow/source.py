@@ -1,6 +1,5 @@
 from cururu.storer import Storer
 from pjdata.data import NoData
-from pjdata.data_creation import read_arff
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP

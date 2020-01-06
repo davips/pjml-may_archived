@@ -47,4 +47,3 @@ class Report(NoOp):
     @classmethod
     def _flatten(cls, lst):
         return [item for sublist in lst for item in sublist]
-
