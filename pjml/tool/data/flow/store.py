@@ -15,10 +15,8 @@ class Store(Transformer, Storer):
 
     """
 
-    def __init__(self, name_apply, description_apply='',
-                 name_use=None, description_use=None, fields=None,
-                 engine='dump',
-                 settings=None):
+    def __init__(self, name, description='', fields=None,
+                 engine='dump', settings=None):
         if fields is None:
             fields = ['X', 'Y']
         if settings is None:
@@ -27,22 +25,15 @@ class Store(Transformer, Storer):
 
         self._set_storage(engine, settings)
 
-        if name_use is None:
-            name_use = name_apply
-        if description_use is None:
-            description_use = description_apply
-
-        self.dataset_apply = Dataset(name_apply, description_apply)
-        self.dataset_use = Dataset(name_use, description_use)
-        self.model = f'{name_apply}-{name_use}-' \
-                     f'{description_apply}-{description_use}'
+        self.dataset = Dataset(name, description)
+        self.model = f'{name}-{description}'
         self.fields = fields
 
         super().__init__(config, self.model, deterministic=True)
 
     def _apply_impl(self, data):
         new_data = Data(
-            self.dataset_apply, data.history, data.failure, **data.matrices
+            self.dataset, data.history, data.failure, **data.matrices
         )
         try:
             self.storage.store(new_data, fields=self.fields)
@@ -52,9 +43,8 @@ class Store(Transformer, Storer):
 
     def _use_impl(self, data):
         new_data = Data(
-            self.dataset_use, data.history, data.failure, **data.matrices
+            self.dataset, data.history, data.failure, **data.matrices
         )
-        print(123123, new_data)
         try:
             self.storage.store(new_data, fields=self.fields)
         except DuplicateEntryException as e:

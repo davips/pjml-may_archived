@@ -16,14 +16,14 @@ def switch():
     pass
 
 
-def sampler(split_type='cv', steps=10, test_size=0.3, seed=0, fields=None):
+def sampler(split_type='cv', partitions=10, test_size=0.3, seed=0, fields=None):
     """Make a sequence of Data splitters."""
     from pjml.tool.data.evaluation.split import Split
     if fields is None:
         fields = ['X', 'Y']
     transformers = []
-    for i in range(steps):
-        s = Split(split_type, steps, i, test_size, seed, fields)
+    for i in range(partitions):
+        s = Split(split_type, partitions, i, test_size, seed, fields)
         transformers.append(s)
     # from pjml.config.cs.finitecs import FiniteCS
     # return FiniteCS(trasformers=transformers).sample()

@@ -9,7 +9,7 @@ from pjml.tool.collection.transform.map import mapa
 from pjml.tool.collection.transform.multi import multi
 
 
-def ev(*components, sampler=sampler(steps=10), function='mean_std'):
+def ev(*components, sampler=sampler(partitions=10), function='mean_std'):
     return seq(
         Expand,
         multi(*sampler),

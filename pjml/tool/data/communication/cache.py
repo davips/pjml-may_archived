@@ -1,8 +1,8 @@
 import traceback
 
 from cururu.storer import Storer
-from pjdata.operation.apply import Apply
-from pjdata.operation.use import Use
+from pjdata.step.apply import Apply
+from pjdata.step.use import Use
 from pjml.config.cs.supercs import SuperCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP

@@ -5,8 +5,8 @@ from functools import lru_cache
 from pjdata.aux.identifyable import Identifyable
 from pjdata.data import NoData
 
-from pjdata.operation.apply import Apply
-from pjdata.operation.use import Use
+from pjdata.step.apply import Apply
+from pjdata.step.use import Use
 from pjml.config.cs.finitecs import FiniteCS
 from pjml.config.cs.supercs import SuperCS
 from pjml.tool.base.aux.decorator import classproperty
@@ -61,7 +61,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.deterministic = deterministic
 
         self._failure_during_apply = None
-        self._current_operation = None
+        self._current_step = None
         self._last_training_data = None
         self._exit_on_error = True
 
@@ -85,7 +85,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
     def _transformation(self):
         """Ongoing transformation."""
-        if self._current_operation == 'a':
+        if self._current_step == 'a':
             return Apply(self)
         else:
             return Use(self, self._last_training_data)
@@ -129,9 +129,9 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                                f"an algorithm or a config at __init__. This"
                                f" should be done by calling the parent init")
         self._last_training_data = data
-        self._current_operation = 'a'
+        self._current_step = 'a'
         res = self._run(self._apply_impl, data, exit_on_error=exit_on_error)
-        self._current_operation = None
+        self._current_step = None
         return res
 
     def use(self, data=NoData, exit_on_error=True):
@@ -172,9 +172,9 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                                f"Another reason is a bad apply/init "
                                f"implementation.")
 
-        self._current_operation = 'u'
+        self._current_step = 'u'
         res = self._run(self._use_impl, data, exit_on_error=exit_on_error)
-        self._current_operation = None
+        self._current_step = None
         return res
 
     # @classmethod  <-- Causes AttributeError:

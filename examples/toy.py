@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 from cururu.disk import save, load
+from cururu.persistence import DuplicateEntryException
+from pjdata.data_creation import read_arff
 from pjdata.fastdata import FastData
 from pjml.config.list import sampler
 from pjml.pipeline import Pipeline
@@ -37,7 +39,12 @@ from pjdata import data
 # Cache(File('iris.arff')).apply()
 
 # ML 1 ========================================================================
-datain = Source('iris.arff').apply()
+# Armazenar dataset, sem depender do pacote pjml.
+from cururu.pickleserver import PickleServer
+try:
+    PickleServer().store(read_arff('iris.arff'))
+except DuplicateEntryException:
+    pass
 from pjml.tool.meta.wrap import Wrap
 
 # print(load('/tmp/dump/pipe').model)
@@ -58,7 +65,7 @@ pipe = Pipeline(
             settings={'db': '/tmp/cururu'}
         )
     ),
-    # Store(name_apply='irismexidas'),
+    Store(name='irismexidas'),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )

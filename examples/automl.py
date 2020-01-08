@@ -1,5 +1,6 @@
 import numpy
 
+from cururu.persistence import DuplicateEntryException
 from pjdata.data_creation import read_arff
 from pjml.config.macro import ev
 from pjml.tool.data.communication.cache import cache
@@ -18,6 +19,15 @@ from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     RUS
 import pjml.config.syntax
+
+# Armazenar dataset, sem depender do pacote pjml.
+from cururu.pickleserver import PickleServer
+print('Storing iris...')
+try:
+    PickleServer().store(read_arff('iris.arff'))
+    print('ok!')
+except DuplicateEntryException:
+    print('Duplicate! Ignored.')
 
 numpy.random.seed(50)
 

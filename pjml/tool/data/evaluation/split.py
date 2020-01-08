@@ -26,24 +26,24 @@ class Split(Transformer, FunctionInspector):
         Name of the matrices to be modified.
     """
 
-    def __init__(self, split_type='cv', steps=10,
+    def __init__(self, split_type='cv', partitions=10,
                  partition=0, test=0.3, seed=0, fields=None):
         if fields is None:
             fields = ['X', 'Y']
 
         # Using 'self.algorithm' here to avoid 'algorithm' inside config.
         if split_type == "cv":
-            self.algorithm = SKF(shuffle=True, n_splits=steps, random_state=seed)
+            self.algorithm = SKF(shuffle=True, n_splits=partitions, random_state=seed)
         elif split_type == "loo":
             self.algorithm = LOO()
         elif split_type == 'holdout':
-            self.algorithm = HO(n_splits=steps, test_size=test, random_state=seed)
+            self.algorithm = HO(n_splits=partitions, test_size=test, random_state=seed)
         else:
             raise Exception('Wrong split_type: ', split_type)
 
         super().__init__(self._to_config(locals()), self.algorithm)
 
-        self.steps = steps
+        self.partitions = partitions
         self.partition = partition
         self.test = test
         self.seed = seed
@@ -68,6 +68,6 @@ class Split(Transformer, FunctionInspector):
     def _cs_impl(cls):
         # TODO complete CS for split
         params = {
-            'steps': IntP(uniform, low=2, high=10)
+            'partitions': IntP(uniform, low=2, high=10)
         }
         return ComponentCS(Node(params=params))
