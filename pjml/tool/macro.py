@@ -9,10 +9,10 @@ from pjml.tool.collection.transform.map import Map
 from pjml.tool.collection.transform.multi import Multi
 
 
-def evaluator(transformer, sampler=sampler(steps=10), function='mean_std'):
+def evaluator(*transformers, sampler=sampler(steps=10), function='mean_std'):
     return Seq(
         Expand(),
         Multi(*sampler),
-        Map(transformer),
+        Map(transformers=transformers),
         Summ(function=function)
     )

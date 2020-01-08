@@ -47,6 +47,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     """
     _dump = None
     _hash = None  # Needed because of conflicts between dict and lru_cache,
+    model = None  # Mandatory field at apply() or init().
 
     # cannot be in _init_ since _hash_ is called before _init_ is called.
 
@@ -59,7 +60,6 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.algorithm = algorithm
         self.deterministic = deterministic
 
-        self.model = None  # Mandatory field at apply() or init().
         self._failure_during_apply = None
         self._current_operation = None
         self._last_training_data = None
@@ -167,7 +167,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
                 failure=f'Already failed on apply: {self._failure_during_apply}')
 
         if self.model is None:
-            raise MissingModel(f"{self} didn't set up a model yet."
+            raise MissingModel(f"{self}\n{self.name} didn't set up a model yet."
                                f" Method apply() should be called before use()!"
                                f"Another reason is a bad apply/init "
                                f"implementation.")

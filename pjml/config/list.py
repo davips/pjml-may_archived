@@ -24,9 +24,7 @@ def sampler(split_type='cv', steps=10, test_size=0.3, seed=0, fields=None):
     transformers = []
     for i in range(steps):
         s = Split(split_type, steps, i, test_size, seed, fields)
-        transformers.append(
-            Split(split_type, steps, i, test_size, seed, fields)
-        )
+        transformers.append(s)
     # from pjml.config.cs.finitecs import FiniteCS
     # return FiniteCS(trasformers=transformers).sample()
     return tuple(transformers)

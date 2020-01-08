@@ -12,7 +12,8 @@ class Source(NoDataTransformer, Storer):
     The first data object named 'name*' without transformations will be
     retrieved.
 
-    #TODO: componente para recuperar resultados de transformação?"""
+    #TODO: componente para recuperar resultados de transformação?
+            Já seria o Cache?"""
 
     def __init__(self, name, fields=None, engine='dump', settings=None):
         if fields is None:

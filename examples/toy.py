@@ -12,12 +12,14 @@ from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.source import Source
+from pjml.tool.data.flow.store import Store
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
 from pjdata import data
+
 # data.Data = FastData
 
 # # Armazenar dataset, sem depender do pacote pjml.
@@ -45,8 +47,8 @@ from pjml.tool.meta.wrap import Wrap
 # exit(0)
 
 pipe = Pipeline(
-    # File('abalone3.arff'),
-    Source('iris'),
+    File('abalone3.arff'),
+    # Source('iris'),
     evaluator(
         Cache(
             ApplyUsing(
@@ -56,6 +58,7 @@ pipe = Pipeline(
             settings={'db': '/tmp/cururu'}
         )
     ),
+    # Store(name_apply='irismexidas'),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
@@ -64,7 +67,7 @@ pipe = Pipeline(
 
 
 print('--------\n', pipe.serialized)
-print('--------\n', pipe.wrapped.serialized)
+# print('--------\n', pipe.wrapped.serialized)
 save('/tmp/cururu/pipe', pipe)
 #
 # pipe = load('/tmp/pipe')

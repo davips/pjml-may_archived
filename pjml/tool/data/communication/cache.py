@@ -87,7 +87,7 @@ class Cache(Container, Storer):
             )
 
         self.model = NoModel if self.transformer.model is None \
-            else self.transformer.model
+            else self.transformer.model  # TODO: <-- entender e comentar isso
 
         return output_data
 
