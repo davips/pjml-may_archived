@@ -1,7 +1,6 @@
 from abc import ABC
 
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.common.configless import ConfigLess
 
 
 class NoOp(Transformer, ABC):
