@@ -15,6 +15,7 @@ from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.source import Source
 from pjml.tool.data.flow.store import Store
+from pjml.tool.data.manipulation.keep import Keep
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
@@ -41,6 +42,7 @@ from pjdata import data
 # ML 1 ========================================================================
 # Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
+
 try:
     PickleServer().store(read_arff('iris.arff'))
 except DuplicateEntryException:
@@ -54,9 +56,9 @@ from pjml.tool.meta.wrap import Wrap
 # exit(0)
 
 pipe = Pipeline(
-    File('abalone3.arff'),
-    # Source('iris'),
-    evaluator(
+    # File('abalone3.arff'),
+    Source('messedup-dataset'),
+    Keep(evaluator(
         Cache(
             ApplyUsing(
                 Wrap(SVMC(kernel='linear'))
@@ -64,8 +66,8 @@ pipe = Pipeline(
             Metric(function='accuracy'),
             settings={'db': '/tmp/cururu'}
         )
-    ),
-    Store(name='irismexidas'),
+    )),
+    Store(name='messedup-dataset', fields=['X', 'y', 's']),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )

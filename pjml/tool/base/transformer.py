@@ -8,7 +8,7 @@ from pjdata.data import NoData
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.cs.finitecs import FiniteCS
-from pjml.config.cs.supercs import SuperCS
+from pjml.config.cs.containercs import ContainerCS
 from pjml.tool.base.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
@@ -110,8 +110,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
-        from pjml.tool.common.nodatatransformer import NoDataTransformer
-        if data is NoData and not isinstance(self, NoDataTransformer):
+        from pjml.tool.common.transformernodatafriendly import TransformerNoDataFriendly
+        if data is NoData and not isinstance(self, TransformerNoDataFriendly):
             raise Exception(f'NoData is not accepted by {self.name}!')
         if data in [None, NoData]:
             # None = pipeline terminou antes desse transformer
@@ -151,8 +151,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
         """
-        from pjml.tool.common.nodatatransformer import NoDataTransformer
-        if data is NoData and not isinstance(self, NoDataTransformer):
+        from pjml.tool.common.transformernodatafriendly import TransformerNoDataFriendly
+        if data is NoData and not isinstance(self, TransformerNoDataFriendly):
             raise Exception(f'NoData is not accepted by {self.name}!')
         # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
         # então "interrompe" também no 'use' (ou não, pois RF interrompe e

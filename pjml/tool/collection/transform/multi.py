@@ -1,11 +1,11 @@
-from pjml.config.cs.supercs import SuperCS
+from pjml.config.cs.containercs import ContainerCS
 from pjml.tool.common.containern import ContainerN
 
 
 def multi(*args, components=None):
     if components is None:
         components = args
-    return SuperCS(Multi.name, Multi.path, components)
+    return ContainerCS(Multi.name, Multi.path, components)
 
 
 class Multi(ContainerN):

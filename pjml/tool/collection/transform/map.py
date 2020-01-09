@@ -1,11 +1,11 @@
-from pjml.config.cs.supercs import SuperCS
+from pjml.config.cs.containercs import ContainerCS
 from pjml.tool.common.container1 import Container1
 
 
 def mapa(*args, components=None):
     if components is None:
         components = args
-    return SuperCS(Map.name, Map.path, components)
+    return ContainerCS(Map.name, Map.path, components)
 
 
 class Map(Container1):

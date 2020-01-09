@@ -1,7 +1,7 @@
 from pjml.config.cs.componentcs import ComponentCS
 
 
-class SuperCS(ComponentCS):
+class ContainerCS(ComponentCS):
     """
 
     Parameters

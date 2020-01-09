@@ -1,5 +1,6 @@
 from pjml.tool.common.container1 import Container1
 
+# def onlyapply():
 
 class OnlyApply(Container1):
     """Does nothing during 'apply'."""
@@ -9,6 +10,7 @@ class OnlyApply(Container1):
     def _use_impl(self, data):
         return data
 
+# def onlyuse():
 
 class OnlyUse(Container1):
     """Does nothing during 'apply'."""

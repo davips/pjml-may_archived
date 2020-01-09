@@ -1,11 +1,11 @@
-from pjml.config.cs.supercs import SuperCS
+from pjml.config.cs.containercs import ContainerCS
 from pjml.tool.collection.transform.map import Container1
 
 
 def au(*args, components=None):
     if components is None:
         components = args
-    return SuperCS(ApplyUsing.name, ApplyUsing.path, components)
+    return ContainerCS(ApplyUsing.name, ApplyUsing.path, components)
 
 
 class ApplyUsing(Container1):

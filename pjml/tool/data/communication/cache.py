@@ -3,12 +3,11 @@ import traceback
 from cururu.storer import Storer
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
-from pjml.config.cs.supercs import SuperCS
+from pjml.config.cs.containercs import ContainerCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
-from pjml.tool.base.seq import Seq
 from pjml.tool.base.singleton import NoModel
-from pjml.tool.common.container import Container
+from pjml.tool.common.configurablecontainer1 import ConfigurableContainer1
 
 
 def cache(*args, engine="dump", settings=None, components=None):
@@ -16,38 +15,19 @@ def cache(*args, engine="dump", settings=None, components=None):
         components = args
     """Shortcut to create a ConfigSpace for Cache."""
     node = Node(params={'engine': FixedP(engine), 'settings': FixedP(settings)})
-    return SuperCS(Cache.name, Cache.path, components, node)
+    return ContainerCS(Cache.name, Cache.path, components, node)
 
 
-class Cache(Container, Storer):
+class Cache(ConfigurableContainer1, Storer):
     def __init__(self, *args, fields=None, engine="dump", settings=None,
                  transformers=None):
-        if settings is None:
-            settings = {}
         if transformers is None:
             transformers = args
-
-        # Cache(Seq(a,b,c)) should be equal to Cache(a,b,c)
-        if len(transformers) == 1 and isinstance(transformers, Seq):
-            transformers = transformers[0].transformers
-
-        # TODO: propagar seed
-        config = self._to_config(locals())
-        config['transformers'] = transformers
-        self.transformers = transformers
-        del config['args']
-
         if fields is None:
             fields = ['X', 'Y', 'Z']
-
-        # TODO: generalize this (as ConfigurableContainer) to future components.
-        # Bypass to Container due to specific config of Cache.
-        super(Container, self).__init__(config, transformers)
-
-        if len(transformers) > 1:
-            self.transformer = Seq(transformers=transformers)
-        else:
-            self.transformer = transformers[0]
+        config = self._to_config(locals())
+        del config['args']
+        super().__init__(config)
 
         self.fields = fields
         self._set_storage(engine, settings)

@@ -32,14 +32,7 @@ class Store(Transformer, Storer):
         super().__init__(config, self.model, deterministic=True)
 
     def _apply_impl(self, data):
-        new_data = Data(
-            self.dataset, data.history, data.failure, **data.matrices
-        )
-        try:
-            self.storage.store(new_data, fields=self.fields)
-        except DuplicateEntryException as e:
-            print(e)
-        return data
+        return self._use_impl(data)
 
     def _use_impl(self, data):
         new_data = Data(
