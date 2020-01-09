@@ -3,10 +3,10 @@ from pjdata.data import NoData
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
-from pjml.tool.common.transformernodatafriendly import TransformerNoDataFriendly
+from pjml.tool.common.transformer_nodata import Transformer_NoData
 
 
-class Source(TransformerNoDataFriendly, Storer):
+class Source(Transformer_NoData, Storer):
     """Source of Data object from a storage like MySQL, Pickle files, ...
 
     The first data object named 'name*' without transformations will be

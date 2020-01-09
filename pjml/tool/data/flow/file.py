@@ -4,10 +4,10 @@ from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.common.transformernodatafriendly import TransformerNoDataFriendly
+from pjml.tool.common.transformer_nodata import Transformer_NoData
 
 
-class File(TransformerNoDataFriendly):
+class File(Transformer_NoData):
     """Source of Data object from CSV, ARFF, file.
 
     TODO: always classification task?

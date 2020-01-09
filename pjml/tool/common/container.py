@@ -2,10 +2,10 @@ from abc import ABC
 from functools import lru_cache
 
 from pjml.tool.base.aux.decorator import classproperty
-from pjml.tool.common.transformernodatafriendly import TransformerNoDataFriendly
+from pjml.tool.common.transformer_nodata import Transformer_NoData
 
 
-class Container(TransformerNoDataFriendly, ABC):
+class Container(Transformer_NoData, ABC):
     """Container modify 'transformer(s)'."""
 
     def __init__(self, transformers):

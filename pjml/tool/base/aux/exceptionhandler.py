@@ -9,6 +9,7 @@ class ExceptionHandler:
         in linear algebra calculations. MLP is also verbose due to
         nonconvergence issues among other problems.
     """
+    name = None
 
     @staticmethod
     def _handle_warnings():
@@ -34,7 +35,8 @@ class ExceptionHandler:
 
     def _handle_exception(self, e, exit_on_error):
         """Pipeline failure is different from python error."""
-        print(f'At {self},\nTrying to handle:\n[{str(e)}]\nName: {self.name}')
+        print(f'At {self},\nTrying to handle:\n[{str(e)}]\n'
+              f'Transformer: {self.name}...\n')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
             if exit_on_error:
                 traceback.print_exc()
@@ -42,11 +44,12 @@ class ExceptionHandler:
             else:
                 raise e
         else:
-            print(' just a known pipeline failure.')
+            print(' just a known pipeline failure.'
+                  'Will be put onto Data object.')
 
 
-class ComponentException(Exception):
-    pass
+# class ComponentException(Exception):
+#     pass
 
 
 class MissingModel(Exception):
