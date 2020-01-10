@@ -4,7 +4,7 @@ from pjml.tool.base.transformer import Transformer
 
 
 class Resampler(Transformer, ABC):
-    """Base class for resampling methods. Not to be confused with Sampler."""
+    """Base class for resampling methods. Not to be confused with Sample."""
 
     def _apply_impl(self, data):
         # TODO: generalize this to resample all fields (xyzuvwpq...) or

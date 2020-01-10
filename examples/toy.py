@@ -5,7 +5,7 @@ from cururu.disk import save, load
 from cururu.persistence import DuplicateEntryException
 from pjdata.data_creation import read_arff
 from pjdata.fastdata import FastData
-from pjml.config.list import sampler
+from pjml.config.list import split
 from pjml.pipeline import Pipeline
 from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache

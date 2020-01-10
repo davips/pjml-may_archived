@@ -1,7 +1,7 @@
 from pjml.tool.base.transformer import Transformer
 
 
-class Sampler(Transformer):
+class Partition(Transformer):
     """Class to perform, e.g. Expand+kfoldCV.
 
     This task is already done by function sampler,
@@ -9,7 +9,7 @@ class Sampler(Transformer):
     good choice."""
 
     # Version that would break the architecture, because of the need for a
-    # super component Sampler = expand + container + finiteconfigspace.
+    # super component Sample = expand + container + finiteconfigspace.
 
     # def __init__(self, train_indexes, test_indexes, fields=None):
     #     if fields is None:

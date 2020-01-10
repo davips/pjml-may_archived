@@ -16,7 +16,7 @@ def switch():
     pass
 
 
-def sampler(split_type='cv', partitions=10, test_size=0.3, seed=0, fields=None):
+def split(split_type='cv', partitions=10, test_size=0.3, seed=0, fields=None):
     """Make a sequence of Data splitters."""
     from pjml.tool.data.evaluation.split import Split
     if fields is None:
