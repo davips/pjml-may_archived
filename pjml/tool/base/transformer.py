@@ -4,6 +4,7 @@ from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
 from pjdata.data import NoData
+from pjdata.history import History
 
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
@@ -83,12 +84,23 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
-    def _transformation(self):
-        """Ongoing transformation."""
-        if self._current_step == 'a':
-            return Apply(self)
+    def _transformations(self, step=None, training_data=None):
+        """Ongoing transformation described as a list of Transformation
+        objects.
+
+        Child classes should override the perform non-atomic or non-trivial
+        transformations.
+        A missing implementation will be detected during apply/use."""
+        if step is None:
+            step = self._current_step
+        if training_data is None:
+            training_data = self._last_training_data
+        if step == 'a':
+            return [Apply(self)]
+        elif step == 'u':
+            return [Use(self, training_data)]
         else:
-            return Use(self, self._last_training_data)
+            raise BadComponent('Wrong current step:', step)
 
     def apply(self, data=NoData, exit_on_error=True):
         """Training step (usually).
@@ -109,6 +121,12 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         None, when data is None
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
+
+        Exception
+        ---------
+        BadComponent
+            Data object resulting history should be consistent with
+            _transformations() implementation.
         """
         from pjml.tool.common.transformer_nodata import Transformer_NoData
         if data is NoData and not isinstance(self, Transformer_NoData):
@@ -150,6 +168,12 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         None, when data is None
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
+
+        Exception
+        ---------
+        BadComponent
+            Data object resulting history should be consistent with
+            _transformations() implementation.
         """
         from pjml.tool.common.transformer_nodata import Transformer_NoData
         if data is NoData and not isinstance(self, Transformer_NoData):
@@ -164,7 +188,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
         if self._failure_during_apply is not None:
             return data.updated(
-                failure=f'Already failed on apply: {self._failure_during_apply}')
+                failure=f'Already failed on apply: '
+                        f'{self._failure_during_apply}')
 
         if self.model is None:
             raise MissingModel(f"{self}\n{self.name} didn't set up a model yet."
@@ -232,11 +257,37 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             output_data = self._limit_by_time(function, data, max_time)
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(self._transformation(), failure=str(e))
+            output_data = data.updated(self._transformations(), failure=str(e))
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        return output_data
+        return output_data and self._check_history(data, output_data)
+
+    def _check_history(self, datain, dataout):
+        """Check consistency between resulting Data object and provided
+        _transformations() implementation."""
+        if isinstance(dataout, NoData):
+            return dataout
+        recent = dataout.history.transformations[datain.history.size:]
+        print('_____________________________')
+        for t in self._transformations():
+            print(t.uuid, t.name, t)
+        print(']]]]]]]]]]]]]]]]]]]]]]]]]')
+        for t in recent:
+            print(t.uuid, t.name, t)
+        print('.........................')
+        if History(recent).uuid != History(self._transformations()).uuid:
+            print('\nTransformed Data object recent history:::::::::::::::::\n'
+                  f'{recent}\n'
+                  f'Expected transformations::::::::::::::::::::::::::::::::\n'
+                  f'{self._transformations()}\n'
+                  'Transformed Data object history does not '
+                  'match expected transformation list.\n'
+                  'Please override self._transformations() '
+                  f'method for {self.name} or extend a proper parent class '
+                  f'like \'Invisible\'.')
+            raise BadComponent(f'Inconsistent Data object history!')
+        return dataout
 
     @staticmethod
     def _to_config(locals_):
@@ -273,4 +324,4 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         return self._hash
 
     def __str__(self, depth=''):
-        return json.dumps(self, sort_keys=False, indent=3)
+        return json.dumps(self, sort_keys=False)  # , indent=3)

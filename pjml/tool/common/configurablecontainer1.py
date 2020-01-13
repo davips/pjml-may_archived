@@ -2,9 +2,10 @@ from abc import ABC
 
 from pjml.tool.base.seq import Seq
 from pjml.tool.common.container import Container
+from pjml.tool.common.container1 import Container1
 
 
-class ConfigurableContainer1(Container, ABC):
+class ConfigurableContainer1(Container1, ABC):
     """Configurable container for a single transformer.
 
     If more are given, they will be handled as a single Seq transformer."""
@@ -25,3 +26,4 @@ class ConfigurableContainer1(Container, ABC):
             self.transformer = Seq(transformers=transformers)
         else:
             self.transformer = transformers[0]
+

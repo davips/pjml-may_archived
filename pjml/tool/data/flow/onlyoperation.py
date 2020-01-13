@@ -1,8 +1,8 @@
-from pjml.tool.common.container1 import Container1
-
 # def onlyapply():
+from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
 
-class OnlyApply(Container1):
+
+class OnlyApply(NonConfigurableContainer1):
     """Does nothing during 'apply'."""
     def _apply_impl(self, data):
         return self.transformer.apply(data)
@@ -12,7 +12,7 @@ class OnlyApply(Container1):
 
 # def onlyuse():
 
-class OnlyUse(Container1):
+class OnlyUse(NonConfigurableContainer1):
     """Does nothing during 'apply'."""
     def _apply_impl(self, data):
         return data

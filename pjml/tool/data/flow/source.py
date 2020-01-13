@@ -52,3 +52,13 @@ class Source(Transformer_NoData, Storer):
             'name': FixedP('iris.arff')
         }
         return ComponentCS(Node(params=params))
+
+    # def _transformations(self):
+    #     """Source is a very special case of component.
+    #
+    #     It creates a history for the Data object from SGBD, so the expected
+    #     list of transformations should come from there also."""
+    #     if self._current_step == 'a':
+    #         return [Apply(self)]
+    #     else:
+    #         return [Use(self, self._last_training_data)]

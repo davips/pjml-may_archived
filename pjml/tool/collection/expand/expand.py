@@ -1,8 +1,9 @@
 from pjdata.collection import Collection
 from pjml.tool.common.configless import ConfigLess
+from pjml.tool.common.invisible import Invisible
 
 
-class Expand(ConfigLess):
+class Expand(ConfigLess, Invisible):
     def _apply_impl(self, data):
         self.model = self.algorithm
         return Collection(data, data.history, data.failure, data.dataset)

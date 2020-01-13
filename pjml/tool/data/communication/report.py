@@ -1,8 +1,9 @@
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.common.noop import NoOp
+from pjml.tool.common.invisible import Invisible
+from pjml.util import flatten
 
 
-class Report(NoOp):
+class Report(Invisible):
     """Report printer.
 
     $r prints 'r'
@@ -36,14 +37,10 @@ class Report(NoOp):
         txt = ''
         run = False
         expanded = [w.split('}') for w in ('_' + text + '_').split('{')]
-        for seg in cls._flatten(expanded):
+        for seg in flatten(expanded):
             if run:
                 txt += str(eval('data.' + seg))
             else:
                 txt += seg
             run = not run
         return txt[1:][:-1]
-
-    @classmethod
-    def _flatten(cls, lst):
-        return [item for sublist in lst for item in sublist]

@@ -11,7 +11,7 @@ class Shrink(ConfigLess):
 
     def _use_impl(self, collection):
         return collection.updated(
-            transformation=self._transformation(),
+            transformation=self._transformations(),
             datas=[d for d in collection if d is not None],
             failure=collection.failure
         )

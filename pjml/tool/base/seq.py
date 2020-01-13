@@ -1,5 +1,6 @@
 from pjml.config.cs.seqcs import SeqCS
 from pjml.tool.common.containern import ContainerN
+from pjml.util import flatten
 
 
 def seq(*args, components=None):
@@ -31,3 +32,13 @@ class Seq(ContainerN):
                 raise Exception(f'Using subtransformer {transformer} failed! ',
                                 data.failure)
         return data
+
+    def _transformations(self, step=None, training_data=None):
+        if step is None:
+            step = self._current_step
+        if training_data is None:
+            training_data = self._last_training_data
+        lst = []
+        for tr in self.transformers:
+            lst.append(tr._transformations(step)) #, training_data))
+        return flatten(lst)

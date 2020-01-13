@@ -56,8 +56,8 @@ from pjml.tool.meta.wrap import Wrap
 # exit(0)
 
 pipe = Pipeline(
-    # File('abalone3.arff'),
-    Source('messedup-dataset'),
+    File('abalone3.arff'),
+    # Source('messedup-dataset'),
     Keep(evaluator(
         Cache(
             ApplyUsing(
@@ -75,10 +75,10 @@ pipe = Pipeline(
 # save('/tmp/dump/pipe0', pipe)
 
 
-print('--------\n', pipe.serialized)
-# print('--------\n', pipe.wrapped.serialized)
-save('/tmp/cururu/pipe', pipe)
-#
+# print('--------\n', pipe.serialized)
+# # print('--------\n', pipe.wrapped.serialized)
+# save('/tmp/cururu/pipe', pipe)
+# #
 # pipe = load('/tmp/pipe')
 # print(pipe)
 
@@ -88,7 +88,7 @@ save('/tmp/cururu/pipea', pipe)
 print(222222)
 dout = pipe.use()
 print(333333)
-
+exit(0)
 # ML 2 ========================================================================
 pipe = Pipeline(
     Source('iris.arff'),

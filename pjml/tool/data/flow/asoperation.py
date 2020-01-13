@@ -1,8 +1,8 @@
-from pjml.tool.common.container1 import Container1
-
 # def alwaysapply():
+from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
 
-class AlwaysApply(Container1):
+
+class AlwaysApply(NonConfigurableContainer1):
     """Always 'apply' regardless of current step."""
     def _apply_impl(self, data):
         return self.transformer.apply(data)
@@ -12,7 +12,7 @@ class AlwaysApply(Container1):
 
 # def alwaysuse():
 
-class AlwaysUse(Container1):
+class AlwaysUse(NonConfigurableContainer1):
     """Always 'use' regardless of current step."""
     def _apply_impl(self, data):
         return self.transformer.use(data)

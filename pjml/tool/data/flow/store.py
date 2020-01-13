@@ -6,13 +6,17 @@ from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP, CatP
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.common.invisible import Invisible
 
 
-class Store(Transformer, Storer):
+class Store(Invisible, Storer):
     """Store a Data object onto a storage like MySQL, Pickle files, ...
-        as a new dataset (beware of the darkness!). It is a NoOp.
+        as a new dataset. It is a NoOp.
 
+        History and failure are discarded!
+
+        #TODO: componente para guardar resultados de transformação?
+            Já seria o Cache?
     """
 
     def __init__(self, name, description='', fields=None,
@@ -35,9 +39,7 @@ class Store(Transformer, Storer):
         return self._use_impl(data)
 
     def _use_impl(self, data):
-        new_data = Data(
-            self.dataset, data.history, data.failure, **data.matrices
-        )
+        new_data = Data(self.dataset, **data.matrices)
         try:
             self.storage.store(new_data, fields=self.fields)
         except DuplicateEntryException as e:

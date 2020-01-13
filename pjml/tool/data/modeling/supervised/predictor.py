@@ -14,5 +14,5 @@ class Predictor(Transformer, ABC):
         return None
 
     def _use_impl(self, data):
-        return data.updated(self._transformation(),
+        return data.updated(self._transformations(),
                             z=self.algorithm.predict(data.X))

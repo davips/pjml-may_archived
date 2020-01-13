@@ -1,5 +1,5 @@
 from pjml.config.cs.containercs import ContainerCS
-from pjml.tool.common.container1 import Container1
+from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
 
 
 def mapa(*args, components=None):
@@ -8,7 +8,7 @@ def mapa(*args, components=None):
     return ContainerCS(Map.name, Map.path, components)
 
 
-class Map(Container1):
+class Map(NonConfigurableContainer1):
     """Execute the same transformer for the entire collection."""
 
     def _apply_impl(self, collection):
@@ -21,7 +21,7 @@ class Map(Container1):
             output_data = transformer.apply(data, self._exit_on_error)
             datas.append(output_data)
             self.model.append(transformer)
-        return collection.updated(self._transformation(), datas=datas)
+        return collection.updated(self._transformations(), datas=datas)
 
     def _use_impl(self, collection):
         size = len(self.model)
@@ -32,4 +32,4 @@ class Map(Container1):
         for transformer in self.model:
             data = transformer.use(next(collection), self._exit_on_error)
             datas.append(data)
-        return collection.updated(self._transformation(), datas=datas)
+        return collection.updated(self._transformations(), datas=datas)

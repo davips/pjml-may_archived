@@ -23,7 +23,7 @@ class Multi(ContainerN):
             data = transformer.apply(next(collection), self._exit_on_error)
             datas.append(data)
             self.model.append(transformer)
-        return collection.updated(self._transformation(), datas=datas)
+        return collection.updated(self._transformations(), datas=datas)
 
     def _use_impl(self, collection):
         if not collection.infinite and self.size != collection.size:
@@ -33,4 +33,4 @@ class Multi(ContainerN):
         for transformer in self.model:
             data = transformer.use(next(collection), self._exit_on_error)
             datas.append(data)
-        return collection.updated(self._transformation(), datas=datas)
+        return collection.updated(self._transformations(), datas=datas)
