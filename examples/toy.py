@@ -60,11 +60,13 @@ pipe = Pipeline(
     # Source('messedup-dataset'),
     Keep(evaluator(
         Cache(
-            ApplyUsing(
-                Wrap(SVMC(kernel='linear'))
-            ),
-            Metric(function='accuracy'),
-            settings={'db': '/tmp/cururu'}
+            # ApplyUsing(
+            #     Wrap(
+                    SVMC(kernel='linear')
+                # )
+            # ),
+            # Metric(function='accuracy'),
+            ,settings={'db': '/tmp/cururu'}
         )
     )),
     Store(name='messedup-dataset', fields=['X', 'y', 's']),
