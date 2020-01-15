@@ -9,7 +9,7 @@ clean: ## Clean all undesired files such as .so, .pyc, build files and etc.
 	rm -rf docs/_build
 	rm -rf docs/source/generated
 	rm -rf docs/source/auto_examples
-	cd docs ; make clean_all
+	#cd docs ; make clean_all
 
 test: ## Execute the code test using pytest.
 	pytest tests/
@@ -24,6 +24,7 @@ code-check: ## Execute the code check with flake8, pylint, mypy.
 	mypy pjml --ignore-missing-imports
 
 pypi: clean ## Send pjml to pypi.
+	pip install -U twine wheel
 	python3 setup.py sdist bdist_wheel
 	twine upload dist/*
 
