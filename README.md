@@ -1,9 +1,7 @@
-pjml - Paje Machine Learning Package
-####################################
+# pjml - Paje Machine Learning Package
 
 Machine learning library.
 
-Beware!
-#######
+## Beware!
 This package is still in the pre-release version, which is changed continuously.
 
