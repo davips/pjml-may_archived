@@ -72,7 +72,7 @@ print(333333)
 
 # ML 2 ========================================================================
 pipe = Pipeline(
-    Source('iris.arff'),
+    File('iris.arff'),
 
     ROS(sampling_strategy='not minority'),
 
