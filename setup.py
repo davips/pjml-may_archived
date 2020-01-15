@@ -1,9 +1,9 @@
-"""Setup for PajeML package."""
+"""Setup for pjml package."""
 import os
 import setuptools
 import pjml
 
-NAME = "PajeML"
+NAME = "pjml"
 
 
 VERSION = pjml.__version__
