@@ -83,4 +83,4 @@ setuptools.setup(
     extras_require=EXTRAS_REQUIRE,
 )
 
-package_dir = {'': 'paje-ml'}  # For IDEs like Intellij to recognize the package.
+package_dir = {'': 'pjml'}  # For IDEs like Intellij to recognize the package.
