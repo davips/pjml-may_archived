@@ -2,7 +2,7 @@ import numpy
 from numpy import mean
 from numpy import std
 
-from pjdata.data import Data
+from pjdata.data import Data, PhantomData
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
@@ -29,12 +29,8 @@ class Summ(Reduce):
     def _use_impl(self, collection):
         if collection.has_nones:
             collection = Shrink().apply(collection)
-            if collection.size == 0:
-                print('WW: All Nones')
-                return None
-            else:
-                print("Warning: collections containing Nones are shrunk before"
-                      "summarization.")
+            print("Warning: collections containing Nones are shrunk before"
+                  "summarization.")
         data = Data(
             dataset=collection.dataset,
             history=collection.history,
@@ -63,5 +59,6 @@ class Summ(Reduce):
 
     def _fun_mean_std(self, collection):
         # TODO?: optimize calculating mean and stdev together
+        print(4444444444444, collection._datas)
         values = [data.fields_safe(self, self.field) for data in collection]
         return mean(values), std(values)

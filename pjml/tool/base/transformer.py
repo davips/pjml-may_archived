@@ -3,14 +3,14 @@ from abc import abstractmethod
 from functools import lru_cache
 
 from pjdata.aux.identifyable import Identifyable
-from pjdata.data import NoData
+from pjdata.data import NoData, PhantomData
 from pjdata.history import History
 
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.cs.finitecs import FiniteCS
 from pjml.config.cs.containercs import ContainerCS
-from pjml.tool.base.aux.decorator import classproperty
+from pjdata.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjml.tool.base.aux.serialization import materialize, serialize, \
@@ -110,7 +110,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Parameters
         ----------
         data
-            'None' means 'pipeline ended before this transformation
+            'PhantomData' means 'pipeline ended before this transformation
             'NoData' means 'pipeline still alive, hoping to generate Data in
             one of the next transformers.
         exit_on_error
@@ -118,7 +118,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Returns
         -------
         transformed data, normally
-        None, when data is None
+        PhantomData, when data is a PhantomData object
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
 
@@ -128,19 +128,17 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        from pjml.tool.common.transformer_nodata import Transformer_NoData
-        if data is NoData and not isinstance(self, Transformer_NoData):
-            raise Exception(f'NoData is not accepted by {self.name}!')
-        if data in [None, NoData]:
-            # None = pipeline terminou antes desse transformer
-            if self.model is None:
-                # data=None and model=None:
-                #   'apply' não consegue gerar modelo e o 'init' não o fez
-                self.model = NoModel
-                # model=NoModel:
-                # não haverá modelo para o 'use', mas o pipeline deve continuar
-        if data is None:
-            return None
+        if data is NoData:
+            from pjml.tool.common.transformer_nodata import Transformer_NoData
+            if not isinstance(self, Transformer_NoData):
+                raise Exception(f'NoData is not accepted by {self.name}!')
+            if data.isphantom:
+                # pipeline terminou antes desse transformer
+                if self.model is None:
+                    # 'apply' não vai conseguir gerar modelo pra um PhantomData
+                    self.model = NoModel
+        if data.isphantom:
+            return data
 
         if self.algorithm is None or self.config is None:
             raise BadComponent(f"{self} didn't set up "
@@ -165,7 +163,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Returns
         -------
         transformed data, normally
-        None, when data is None
+        PhantomData, when data is a PhantomData object
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
 
@@ -181,10 +179,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
         # então "interrompe" também no 'use' (ou não, pois RF interrompe e
         # Cache deixa como nomodel qnd lê da base).
-        if data is None:  # or self.model is NoModel:
-            return None
-        # if data is NoData:
-        #     data = None
+        if data.isphantom:
+            return data
 
         if self._failure_during_apply is not None:
             return data.updated(

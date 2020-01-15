@@ -1,7 +1,7 @@
 from abc import ABC
 from functools import lru_cache
 
-from pjml.tool.base.aux.decorator import classproperty
+from pjdata.aux.decorator import classproperty
 from pjml.tool.common.transformer_nodata import Transformer_NoData
 
 

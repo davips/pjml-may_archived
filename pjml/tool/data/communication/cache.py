@@ -1,6 +1,7 @@
 import traceback
 
 from cururu.storer import Storer
+from pjdata.data import PhantomData
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.cs.containercs import ContainerCS
@@ -109,9 +110,8 @@ class Cache(ConfigurableContainer1, Storer):
                 traceback.print_exc()
                 exit(0)
 
-            data_to_store = data.phantom if output_data is None else output_data
             self.storage.store(
-                data_to_store,
+                output_data,
                 data, transformation, self.fields,
                 check_dup=False
             )

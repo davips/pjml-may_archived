@@ -12,7 +12,7 @@ class ApplyUsing(NonConfigurableContainer1):
     """Run a 'use' step right after an 'apply' one.
 
     Useful to calculate training error in classifiers, which would otherwise
-    return None in the 'apply' step."""
+    return PhantomData in the 'apply' step."""
 
     def _apply_impl(self, data):
         self.transformer.apply(data, self._exit_on_error)

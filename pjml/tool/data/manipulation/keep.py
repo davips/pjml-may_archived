@@ -29,6 +29,7 @@ class Keep(ConfigurableContainer1):
 
     def _use_impl(self, data):
         # return data
+        print(11111111122222222222222, data)
         matrices = {k: data.fields_safe(self, k) for k in self.fields}
         new_matrices = self.transformer.apply(data).matrices
         new_matrices.update(matrices)

@@ -59,15 +59,15 @@ pipe = Pipeline(
     File('abalone3.arff'),
     # Source('messedup-dataset'),
     Keep(evaluator(
-        Cache(
+        # Cache(
             # ApplyUsing(
             #     Wrap(
                     SVMC(kernel='linear')
                 # )
             # ),
             # Metric(function='accuracy'),
-            ,settings={'db': '/tmp/cururu'}
-        )
+            # ,settings={'db': '/tmp/cururu'}
+        # )
     )),
     Store(name='messedup-dataset', fields=['X', 'y', 's']),
     Report(" $S for dataset {dataset.name}.")
