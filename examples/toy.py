@@ -21,23 +21,9 @@ from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.instance.sampler.over.random import ROS
 from pjml.tool.macro import evaluator
+from pjml.tool.meta.mfe import MFE
 from pjdata import data
 
-# data.Data = FastData
-
-# # Armazenar dataset, sem depender do pacote pjml.
-# from pjdata.data_creation import read_arff
-# PickleServer().store(read_arff('iris.arff'))
-
-# # Listar *iris*
-# lst = PickleServer().list_by_name('iris')
-# print(lst)
-
-# # Armazenar dataset com gambiarrando no pjml.
-# from pjml.tool.data.communication.cache import Cache
-# from pjml.tool.data.flow.file import File
-#
-# Cache(File('iris.arff')).apply()
 
 # ML 1 ========================================================================
 # Armazenar dataset, sem depender do pacote pjml.
@@ -49,15 +35,10 @@ except DuplicateEntryException:
     pass
 from pjml.tool.meta.wrap import Wrap
 
-# print(load('/tmp/dump/pipe').model)
-# print()
-# print(load('/tmp/dump/pipea').wrapped)
-# Seq(File('abalone3.arff'), load('/tmp/dump/pipea')).use(datain)
-# exit(0)
 
 pipe = Pipeline(
-    # File('abalone3.arff'),
-    Source('messedup-dataset'),
+    File('iris.arff'),
+    # Source('messedup-dataset'),
     Keep(evaluator(
         Cache(
             ApplyUsing(
@@ -67,7 +48,7 @@ pipe = Pipeline(
             settings={'db': '/tmp/cururu'}
         )
     )),
-    Store(name='messedup-dataset', fields=['X', 'y', 's']),
+    # Store(name='messedup-dataset', fields=['X', 'y', 's']),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
@@ -111,8 +92,15 @@ pipe = Pipeline(
 dataout = pipe.apply()
 dataout2 = pipe.use()
 
-# print(dataout.history)
-# print(dataout2.history)
+
+# ML 3 ========================================================================
+pipe = Pipeline(
+    File('iris.arff'),
+
+    Cache(MFE()),
+    Report('\nMeta-features Names: $Md \nMeta-features Values: $M \n  {name}')
+)
+dataout = pipe.apply()
 
 """
 Problemas filosoficos
