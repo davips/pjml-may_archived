@@ -3,9 +3,6 @@ from pjml.tool.common.configless import ConfigLess
 
 
 class Shrink(ConfigLess):
-    def __init__(self):
-        super().__init__({}, NoAlgorithm, deterministic=True)
-
     def _apply_impl(self, collection):
         return self._use_impl(collection)
 
