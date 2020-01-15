@@ -44,7 +44,7 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
 
 
 INSTALL_REQUIRES = [
-    'imblearn', 'methodtools'
+    'imblearn', 'methodtools', 'pjdata', 'cururu'
 ]
 
 
