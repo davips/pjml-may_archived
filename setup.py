@@ -1,9 +1,9 @@
-"""Setup for PajeML package."""
+"""Setup for pjml package."""
 import os
 import setuptools
 import pjml
 
-NAME = "PajeML"
+NAME = "pjml"
 
 
 VERSION = pjml.__version__
@@ -33,7 +33,7 @@ DOWNLOAD_URL = 'https://github.com/automated-data-science/paje-ml/releases'
 
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
-               'License :: OSI Approved :: GPL3 License',
+               'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                'Natural Language :: English',
                'Programming Language :: Python',
                'Topic :: Software Development',
@@ -44,7 +44,8 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
 
 
 INSTALL_REQUIRES = [
-    'imblearn', 'methodtools'
+    'imblearn', 'methodtools', 'pjdata', 'cururu', 'pymfe', 'sklearn',
+    'forbiddenfruit'
 ]
 
 
@@ -83,4 +84,4 @@ setuptools.setup(
     extras_require=EXTRAS_REQUIRE,
 )
 
-package_dir = {'': 'paje-ml'}  # For IDEs like Intellij to recognize the package.
+package_dir = {'': 'pjml'}  # For IDEs like Intellij to recognize the package.

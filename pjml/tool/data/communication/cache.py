@@ -26,6 +26,8 @@ class Cache(ConfigurableContainer1, Storer):
             transformers = args
         if fields is None:
             fields = ['X', 'Y', 'Z']
+        if settings is None:
+            settings = {}
         config = self._to_config(locals())
         del config['args']
         super().__init__(config)

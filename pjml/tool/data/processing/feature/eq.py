@@ -1,9 +1,9 @@
+from bisect import bisect
 from operator import itemgetter
 
-from pjml.tool.base.singleton import NoAlgorithm
-from pjml.tool.common.configless import ConfigLess
 import numpy as np
-from bisect import bisect
+
+from pjml.tool.common.configless import ConfigLess
 
 
 class Eq(ConfigLess):
@@ -13,9 +13,6 @@ class Eq(ConfigLess):
     Each attribute value is replaced by the order in which the example is
     ranked according with that attribute.
     Applying a normalization after this transformer is recommended."""
-
-    def __init__(self):
-        super().__init__({}, NoAlgorithm, deterministic=True)
 
     def _apply_impl(self, data):
         newX = []
@@ -27,10 +24,10 @@ class Eq(ConfigLess):
         np.transpose(newX)
 
     def _use_impl(self, data):
-        self.
+        pass
 
-    def _convert(self, x):
-        bisect(self.mo)  # precisa remover repetidos, repartir o espaço original
+    # def _convert(self, x):
+    #     bisect(self.mo)  # precisa remover repetidos, repartir o espaço original
 
     def _enumerate(self, lst):
         """Enumerate a sorted list, repeating the index for duplicate values."""

@@ -1,4 +1,3 @@
-from pjdata.data import PhantomData
 from pjml.tool.base.singleton import NoAlgorithm
 from pjml.tool.common.configless import ConfigLess
 
@@ -15,6 +14,4 @@ class Shrink(ConfigLess):
         )
         if newcoll.size == 0:
             print('WW: All Nones')
-            return PhantomData(collection.dataset,
-                               collection.history,
-                               collection.failure)
+            return None

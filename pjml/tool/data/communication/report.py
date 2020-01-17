@@ -2,6 +2,7 @@ from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.invisible import Invisible
 from pjml.util import flatten
 
+import re
 
 class Report(Invisible):
     """Report printer.
@@ -26,11 +27,11 @@ class Report(Invisible):
 
     @classmethod
     def _interpolate(cls, text, data):
-        segments = text.split('$')
-        start = segments[0]
-        rest = [str(data.fields_safe(cls, seg[0])) + seg[1:]
-                for seg in segments[1:]]
-        return cls._eval(start + ''.join(rest), data)
+        def f(obj_match):
+            return str(data.fields_safe(cls, obj_match.group(1)))
+
+        p = re.compile(r'\$([a-zA-Z]+)')
+        return cls._eval(p.sub(f, text), data)
 
     @classmethod
     def _eval(cls, text, data):
