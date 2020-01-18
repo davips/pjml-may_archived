@@ -38,11 +38,9 @@ class Cache(ConfigurableContainer1, Storer):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
-        transformation = Apply(self.transformer)
-        output_data = self.storage.fetch(
-            data, transformation, self.fields,
-            lock=True
-        )
+        transformations = self.transformer._transformations('a')
+        output_data = self.storage.fetch(data, transformations, self.fields,
+                                         lock=True)
         # pra carregar modelo:
         # self.transformer = self.storage.fetch_transformer(
         #     data, self.transformer, lock=True
@@ -57,30 +55,31 @@ class Cache(ConfigurableContainer1, Storer):
             try:
                 output_data = self.transformer.apply(data, exit_on_error=False)
             except:
-                self.storage.unlock(data, transformation)
+                self.storage.unlock(data, transformations)
                 traceback.print_exc()
                 exit(0)
+            self.model = NoModel if self.transformer.model is None \
+                else self.transformer.model
 
-            data_to_store = data.phantom if output_data is None else output_data
+            if output_data is None:
+                data2store = data.phantom(transformations)
+            else:
+                data2store = output_data
             self.storage.store(
-                data_to_store,
-                data, transformation,
+                data2store,
                 self.fields,
                 check_dup=False
             )
-
-        self.model = NoModel if self.transformer.model is None \
-            else self.transformer.model  # TODO: <-- entender e comentar isso
 
         return output_data
 
     def _use_impl(self, data):
         # exit(0)
-        transformation = Use(self.transformer, self._last_training_data)
-        output_data = self.storage.fetch(
-            data, transformation, self.fields,
-            lock=True
+        transformations = self.transformer._transformations(
+            'a', self._last_training_data
         )
+        output_data = self.storage.fetch(data, transformations, self.fields,
+                                         lock=True)
 
         # Use if still needed  ----------------------------------
         if output_data is None:
@@ -108,23 +107,27 @@ class Cache(ConfigurableContainer1, Storer):
             try:
                 output_data = self.transformer.use(data, exit_on_error=False)
             except:
-                self.storage.unlock(data, transformation)
+                self.storage.unlock(data, transformations)
                 traceback.print_exc()
                 exit(0)
 
+            if output_data is None:
+                data2store = data.phantom(transformations)
+            else:
+                data2store = output_data
             self.storage.store(
-                output_data,
-                data, transformation, self.fields,
+                data2store,
+                self.fields,
                 check_dup=False
             )
 
         return output_data
 
     def _transformations(self, step=None, training_data=None):
-        """Cache produce no transformations, so it needs to
+        """Cache produce no transformations by itself , so it needs to
         override the list of expected transformations."""
         if step is None:
             step = self._current_step
         if training_data is None:
-            training_data = self.transformer._last_training_data
+            training_data = self._last_training_data
         return self.transformer._transformations(step, training_data)

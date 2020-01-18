@@ -1,5 +1,8 @@
 from abc import ABC
 
+from pjdata.step.apply import Apply
+from pjdata.step.use import Use
+from pjml.tool.base.aux.exceptionhandler import BadComponent
 from pjml.tool.base.transformer import Transformer
 
 
@@ -15,3 +18,15 @@ class Resampler(Transformer, ABC):
 
     def _use_impl(self, data):
         return data
+
+    def _transformations(self, step=None, training_data=None):
+        if step is None:
+            step = self._current_step
+        if training_data is None:
+            training_data = self._last_training_data
+        if step == 'a':
+            return [Apply(self)]
+        elif step == 'u':
+            return []
+        else:
+            raise BadComponent('Wrong current step:', step)

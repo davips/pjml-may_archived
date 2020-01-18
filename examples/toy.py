@@ -44,15 +44,13 @@ pipe = Pipeline(
             ApplyUsing(
                 Wrap(SVMC(kernel='linear'))
             ),
-            Metric(function='accuracy'),
-            settings={'db': '/tmp/cururu'}
+            Metric(function='accuracy')
         )
     )),
     # Store(name='messedup-dataset', fields=['X', 'y', 's']),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 )
-
 # save('/tmp/dump/pipe0', pipe)
 
 
@@ -69,6 +67,8 @@ save('/tmp/cururu/pipea', pipe)
 print(222222)
 dout = pipe.use()
 print(333333)
+
+exit(0)
 
 # ML 2 ========================================================================
 pipe = Pipeline(
