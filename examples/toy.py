@@ -26,15 +26,15 @@ from pjdata import data
 
 
 # ML 1 ========================================================================
-# Armazenar dataset, sem depender do pacote pjml.
-from cururu.pickleserver import PickleServer
-
-try:
-    PickleServer().store(read_arff('iris.arff'))
-except DuplicateEntryException:
-    pass
+# # Armazenar dataset, sem depender do pacote pjml.
+# from cururu.pickleserver import PickleServer
+#
+# try:
+#     PickleServer().store(read_arff('iris.arff'))
+# except DuplicateEntryException:
+#     pass
+# from pjml.tool.meta.wrap import Wrap
 from pjml.tool.meta.wrap import Wrap
-
 
 pipe = Pipeline(
     File('iris.arff'),
@@ -42,7 +42,7 @@ pipe = Pipeline(
     Keep(evaluator(
         Cache(
             ApplyUsing(
-                Wrap(SVMC(kernel='linear'))
+                SVMC(kernel='linear')
             ),
             Metric(function='accuracy')
         )
@@ -63,9 +63,9 @@ pipe = Pipeline(
 
 print(111111)
 dout = pipe.apply()
-save('/tmp/cururu/pipea', pipe)
+# save('/tmp/cururu/pipea', pipe)
 print(222222)
-dout = pipe.use()
+# dout = pipe.use()
 print(333333)
 
 exit(0)
