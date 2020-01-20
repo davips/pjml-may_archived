@@ -2,12 +2,12 @@ import numpy
 
 from cururu.persistence import DuplicateEntryException
 from pjdata.data_creation import read_arff
-from pjml.config.macro import ev
+from pjml.config.macro import evaluate
 from pjml.tool.data.communication.cache import cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.evaluation.split import Split
-from pjml.tool.data.flow.applyusing import au
+from pjml.tool.data.flow.applyusing import applyusing
 from pjml.tool.data.flow.source import Source
 from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
@@ -15,9 +15,9 @@ from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
-from pjml.tool.data.processing.instance.sampler.over.random import ROS
+from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
-    RUS
+    UnderS
 import pjml.config.syntax
 
 # Armazenar dataset, sem depender do pacote pjml.
@@ -33,23 +33,25 @@ numpy.random.seed(50)
 
 # import sklearn
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
-
+print('expr .................')
 expr = cache(
-    Source('iris.arff'), ev(
-        [Std, {RUS, ROS}, MinMax],
-        au({DT, NB, SVMC}),
+    Source('iris.arff'), evaluate(
+        [Std, {UnderS, OverS}, MinMax],
+        applyusing({DT, NB, SVMC}),
         Metric(function='accuracy')
     )
 ), Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 
+print('sample .................')
 pipe = expr.sample()
 # print(1111111111111, pipe)
 
-
+print('apply .................')
 dataout = pipe.apply()
 # print(222222222222222, dataout.history)
 # data morre no apply() do predictor
 
+print('use .................')
 dataout = pipe.use()
 # print(3333333333333333, dataout.history)
 # RUS desaparece no use()

@@ -7,7 +7,7 @@ from pjml.config.parameter import CatP
 from pjml.tool.data.processing.instance.sampler.resampler import Resampler
 
 
-class RUS(Resampler):
+class UnderS(Resampler):
     def __init__(self, **kwargs):
         super().__init__(kwargs, RandomUnderSampler(**kwargs))
 

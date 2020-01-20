@@ -128,17 +128,19 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        if data is NoData:
-            from pjml.tool.common.transformer_nodata import Transformer_NoData
-            if not isinstance(self, Transformer_NoData):
-                raise Exception(f'NoData is not accepted by {self.name}!')
-            if data.isphantom:
-                # pipeline terminou antes desse transformer
-                if self.model is None:
-                    # 'apply' não vai conseguir gerar modelo pra um PhantomData
-                    self.model = NoModel
-        if data.isphantom:
-            return data
+        from pjml.tool.common.transformer_nodata import Transformer_NoData
+        if data is NoData and not isinstance(self, Transformer_NoData):
+            raise Exception(f'NoData is not accepted by {self.name}!')
+        if data in [None, NoData]:
+            # None = pipeline terminou antes desse transformer
+            if self.model is None:
+                # data=None and model=None:
+                #   'apply' não consegue gerar modelo e o 'init' não o fez
+                self.model = NoModel
+                # model=NoModel:
+                # não haverá modelo para o 'use', mas o pipeline deve continuar
+        if data is None:
+            return None
 
         if self.algorithm is None or self.config is None:
             raise BadComponent(f"{self} didn't set up "
@@ -163,7 +165,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         Returns
         -------
         transformed data, normally
-        PhantomData, when data is a PhantomData object
+        None, when data is None
             (probably meaning the pipeline finished before this transformer)
         same data, but annotated with a failure
 
@@ -179,8 +181,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
         # então "interrompe" também no 'use' (ou não, pois RF interrompe e
         # Cache deixa como nomodel qnd lê da base).
-        if data.isphantom:
-            return data
+        if data is None:  # or self.model is NoModel:
+            return None
+        # if data is NoData:
+        #     data = None
 
         if self._failure_during_apply is not None:
             return data.updated(
@@ -257,7 +261,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        return output_data and self._check_history(data, output_data)
+        return output_data # and self._check_history(data, output_data)
 
     def _check_history(self, datain, dataout):
         """Check consistency between resulting Data object and provided

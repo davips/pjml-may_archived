@@ -2,7 +2,7 @@ from pjml.config.cs.containercs import ContainerCS
 from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
 
 
-def au(*args, components=None):
+def applyusing(*args, components=None):
     if components is None:
         components = args
     return ContainerCS(ApplyUsing.name, ApplyUsing.path, components)

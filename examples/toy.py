@@ -19,7 +19,7 @@ from pjml.tool.data.manipulation.keep import Keep
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
-from pjml.tool.data.processing.instance.sampler.over.random import ROS
+from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.macro import evaluator
 from pjml.tool.meta.mfe import MFE
 from pjdata import data
@@ -74,7 +74,7 @@ exit(0)
 pipe = Pipeline(
     File('iris.arff'),
 
-    ROS(sampling_strategy='not minority'),
+    OverS(sampling_strategy='not minority'),
 
     ApplyUsing(NB('bernoulli')),
     Metric(function='accuracy'),
