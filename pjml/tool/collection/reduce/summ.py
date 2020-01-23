@@ -2,7 +2,7 @@ import numpy
 from numpy import mean
 from numpy import std
 
-from pjdata.data import Data, PhantomData
+from pjdata.data import Data
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
@@ -52,13 +52,13 @@ class Summ(Reduce):
         return ComponentCS(Node(params))
 
     def _fun_mean(self, collection):
-        return mean([data.fields_safe(self, self.field) for data in collection])
+        return mean([data.fields_safe(self.field, self) for data in collection])
 
     def _fun_std(self, collection):
-        return std([data.fields_safe(self, self.field) for data in collection])
+        return std([data.fields_safe(self.field, self) for data in collection])
 
     def _fun_mean_std(self, collection):
         # TODO?: optimize calculating mean and stdev together
         print(4444444444444, collection._datas)
-        values = [data.fields_safe(self, self.field) for data in collection]
+        values = [data.fields_safe(self.field, self) for data in collection]
         return mean(values), std(values)

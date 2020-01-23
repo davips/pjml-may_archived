@@ -1,8 +1,10 @@
+from pjml.config.cs.emptycs import EmptyCS
 from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.invisible import Invisible
 from pjml.util import flatten
 
 import re
+
 
 class Report(Invisible):
     """Report printer.
@@ -28,7 +30,7 @@ class Report(Invisible):
     @classmethod
     def _interpolate(cls, text, data):
         def f(obj_match):
-            return str(data.fields_safe(cls, obj_match.group(1)))
+            return str(data.fields_safe(obj_match.group(1), cls))
 
         p = re.compile(r'\$([a-zA-Z]+)')
         return cls._eval(p.sub(f, text), data)
@@ -45,3 +47,7 @@ class Report(Invisible):
                 txt += seg
             run = not run
         return txt[1:][:-1]
+
+    @classmethod
+    def _cs_impl(cls):
+        return EmptyCS()

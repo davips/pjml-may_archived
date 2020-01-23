@@ -24,7 +24,6 @@ from pjml.tool.macro import evaluator
 from pjml.tool.meta.mfe import MFE
 from pjdata import data
 
-
 # ML 1 ========================================================================
 # # Armazenar dataset, sem depender do pacote pjml.
 # from cururu.pickleserver import PickleServer
@@ -50,6 +49,10 @@ pipe = Pipeline(
     # Store(name='messedup-dataset', fields=['X', 'y', 's']),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
+    ,
+    MFE(),
+    Report("metafeats: $Md"),
+    Report("metafeats vals: $M")
 )
 # save('/tmp/dump/pipe0', pipe)
 
@@ -91,7 +94,6 @@ pipe = Pipeline(
 )
 dataout = pipe.apply()
 dataout2 = pipe.use()
-
 
 # ML 3 ========================================================================
 pipe = Pipeline(

@@ -16,7 +16,7 @@ class MFE(Transformer):
     Each attribute value is replaced by the order in which the example is
     ranked according with that attribute.
     Applying a normalization after this transformer is recommended."""
-    def __init__(self, **kwargs):
+    def __init__(self):
         super().__init__({}, NoAlgorithm, deterministic=True)
         self.model = pymfe.mfe.MFE()
 
@@ -28,7 +28,7 @@ class MFE(Transformer):
         self.model.fit(*data.Xy)
         ft = self.model.extract()
         print(np.array(ft).shape)
-        return data.updated(self._transformation(),
+        return data.updated(self._transformations(),
                             M=np.array([ft[1]]), Md=ft[0])
 
     def _use_impl(self, data):
