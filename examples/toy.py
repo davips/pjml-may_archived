@@ -52,7 +52,8 @@ pipe = Pipeline(
     ,
     MFE(),
     Report("metafeats: $Md"),
-    Report("metafeats vals: $M")
+    Report("metafeats vals: $M"),
+    Report("$Xd")
 )
 # save('/tmp/dump/pipe0', pipe)
 
