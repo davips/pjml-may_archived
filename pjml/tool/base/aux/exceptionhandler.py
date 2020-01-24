@@ -1,7 +1,6 @@
 import traceback
 import numpy
 
-
 class ExceptionHandler:
     """Handle transformer exceptions and enable/disable numpy warnings.
 
@@ -38,6 +37,14 @@ class ExceptionHandler:
         print(f'At {self},\nTrying to handle:\n[{str(e)}]\n'
               f'Transformer: {self.name}...\n')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
+
+            # HINTS
+            if str(e).__contains__('cannot perform reduce with flexible type'):
+                from pjml.tool.data.processing.feature.binarize import Binarize
+                print(f'HINT: your pipeline may be missing a '
+                      f'{Binarize.name} component')
+
+            # end of handling
             if exit_on_error:
                 traceback.print_exc()
                 exit(0)

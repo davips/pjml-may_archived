@@ -43,7 +43,7 @@ from pjdata import data
 from pjml.tool.meta.wrap import Wrap
 
 pipe = Pipeline(
-    File('abalone3.arff'),
+    File('iris.arff'),
     Binarize(),
     # Source('messedup-dataset'),
     Keep(evaluator(
@@ -65,6 +65,7 @@ pipe = Pipeline(
     # Report("$Yd $Yt"),
     Save('saved.arff', '/tmp/')
 )
+
 # save('/tmp/dump/pipe0', pipe)
 
 
