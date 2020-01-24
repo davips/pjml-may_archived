@@ -25,6 +25,7 @@ from pjml.tool.data.manipulation.keep import Keep
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
+from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.macro import evaluator
 from pjml.tool.meta.mfe import MFE
@@ -42,12 +43,13 @@ from pjdata import data
 from pjml.tool.meta.wrap import Wrap
 
 pipe = Pipeline(
-    File('iris.arff'),
+    File('abalone3.arff'),
+    Binarize(),
     # Source('messedup-dataset'),
     Keep(evaluator(
         Cache(
             ApplyUsing(
-                DT()
+                NB()
             ),
             Metric(function='accuracy')
         )
@@ -57,10 +59,11 @@ pipe = Pipeline(
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
     ,
     MFE(),
-    Report("metafeats: $Md"),
-    Report("metafeats vals: $M"),
-    Report("$Xd $Xt"),
-    Report("$Yd $Yt")
+    # Report("metafeats: $Md"),
+    # Report("metafeats vals: $M"),
+    # Report("$Xd $Xt"),
+    # Report("$Yd $Yt"),
+    Save('saved.arff', '/tmp/')
 )
 # save('/tmp/dump/pipe0', pipe)
 
@@ -78,6 +81,8 @@ dout = pipe.apply()
 print(222222)
 dout = pipe.use()
 print(333333)
+
+exit(0)
 
 
 print()

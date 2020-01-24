@@ -1,3 +1,5 @@
+import numpy as np
+
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
@@ -19,7 +21,13 @@ class Save(Invisible):
         self.filename = filename
 
     def _apply_impl(self, data):
-        pass
+        arff = {
+            'description': data.dataset.description,
+            'relation': data.dataset.name,
+            'attributes': list(zip(data.Xd, data.Xt)) + list(
+                zip(data.Yd, data.Yt)),
+            'data': np.column_stack((data.X, data.Y))
+        }
 
     def _use_impl(self, data):
         pass

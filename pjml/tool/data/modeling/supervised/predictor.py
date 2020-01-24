@@ -13,7 +13,7 @@ class Predictor(Transformer, ABC):
     def _apply_impl(self, data):
         self.algorithm.fit(*data.Xy)
         self.model = self.algorithm
-        return data.phantom.updated(self._transformations())
+        return None
 
     def _use_impl(self, data):
         return data.updated(self._transformations(),

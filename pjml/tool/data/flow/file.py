@@ -27,7 +27,7 @@ class File(Transformer_NoData, Invisible):
         if not path.endswith('/'):
             raise Exception('Path should end with /', path)
         if name.endswith('arff'):
-            data = read_arff(path + name)
+            data = read_arff(path + name, description)
         else:
             raise Exception('Unrecognized file extension:', name)
         super().__init__(config, data, deterministic=True)
