@@ -3,7 +3,6 @@ from pjdata.data_creation import read_arff
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
-from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.invisible import Invisible
 from pjml.tool.common.transformer_nodata import Transformer_NoData
 
@@ -23,7 +22,7 @@ class File(Transformer_NoData, Invisible):
     In practice, no more than a dozen are expected.
     """
 
-    def __init__(self, name, path='./'):
+    def __init__(self, name, path='./', description='No description.'):
         config = self._to_config(locals())
         if not path.endswith('/'):
             raise Exception('Path should end with /', path)
@@ -51,6 +50,7 @@ class File(Transformer_NoData, Invisible):
     def _cs_impl(cls):
         params = {
             'path': FixedP('./'),
-            'name': FixedP('iris.arff')
+            'name': FixedP('iris.arff'),
+            'description': FixedP('No description.')
         }
         return ComponentCS(Node(params=params))
