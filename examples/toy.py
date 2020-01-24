@@ -11,6 +11,7 @@ from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
+from pjml.tool.data.flow.Save import Save
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.source import Source
@@ -41,7 +42,7 @@ pipe = Pipeline(
     Keep(evaluator(
         Cache(
             ApplyUsing(
-                SVMC(kernel='linear')
+                DT()
             ),
             Metric(function='accuracy')
         )
@@ -69,7 +70,7 @@ print(111111)
 dout = pipe.apply()
 # save('/tmp/cururu/pipea', pipe)
 print(222222)
-# dout = pipe.use()
+dout = pipe.use()
 print(333333)
 
 exit(0)
