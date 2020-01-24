@@ -1,9 +1,13 @@
 import os
 from pathlib import Path
 
+import numpy
+
 from cururu.disk import save, load
 from cururu.persistence import DuplicateEntryException
+from pjdata.data import Data
 from pjdata.data_creation import read_arff
+from pjdata.dataset import Dataset
 from pjdata.fastdata import FastData
 from pjml.config.list import split
 from pjml.pipeline import Pipeline
@@ -11,6 +15,7 @@ from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
+from pjml.tool.data.evaluation.split import Split
 from pjml.tool.data.flow.Save import Save
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
@@ -73,7 +78,19 @@ print(222222)
 dout = pipe.use()
 print(333333)
 
+
+print()
+print('Testing nominal data...')
+o = numpy.array([['a', 1], ['b', 2], ['c', 3], ['d', 4], ['e', 5]])
+print(o, '<- all')
+print()
+d = Data(Dataset('asd', 'dsa'), X=o, Y=numpy.array([o[:, 1]]).T)
+print(Split(partitions=2, partition=0).apply(d).X, '<- split 0')
+print(Split(partitions=2, partition=1).apply(d).X, '<- split 1')
+
 exit(0)
+Save('lixo.arff').apply(dout)
+
 
 # ML 2 ========================================================================
 pipe = Pipeline(
