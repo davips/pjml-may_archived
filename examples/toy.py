@@ -54,7 +54,7 @@ pipe = Pipeline(
             Metric(function='accuracy')
         )
     )),
-    # Store(name='messedup-dataset', fields=['X', 'y', 's']),
+    # Store(name='messedup-dataset', fields=['X', 'y', 'S']),
     Report(" $S for dataset {dataset.name}.")
     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
     ,

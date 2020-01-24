@@ -33,3 +33,4 @@ class Map(NonConfigurableContainer1):
             data = transformer.use(next(collection), self._exit_on_error)
             datas.append(data)
         return collection.updated(self._transformations(), datas=datas)
+    # TODO: which containers should pass self._exit_on_error to transformer?

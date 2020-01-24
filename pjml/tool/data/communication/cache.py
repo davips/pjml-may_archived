@@ -60,8 +60,6 @@ class Cache(ConfigurableContainer1, Storer):
                 self.storage.unlock(data, transformation)
                 traceback.print_exc()
                 exit(0)
-            self.model = NoModel if self.transformer.model is None \
-                else self.transformer.model
 
             data_to_store = data.phantom if output_data is None else output_data
             self.storage.store(
@@ -70,6 +68,9 @@ class Cache(ConfigurableContainer1, Storer):
                 self.fields,
                 check_dup=False
             )
+
+        self.model = NoModel if self.transformer.model is None \
+            else self.transformer.model
 
         return output_data
 
