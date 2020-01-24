@@ -39,7 +39,8 @@ class ExceptionHandler:
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
 
             # HINTS
-            if str(e).__contains__('cannot perform reduce with flexible type'):
+            if str(e).__contains__('cannot perform reduce with flexible type')\
+                    or str(e).__contains__('could not convert string to float'):
                 from pjml.tool.data.processing.feature.binarize import Binarize
                 print(f'HINT: your pipeline may be missing a '
                       f'{Binarize.name} component')

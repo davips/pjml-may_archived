@@ -59,6 +59,5 @@ class Summ(Reduce):
 
     def _fun_mean_std(self, collection):
         # TODO?: optimize calculating mean and stdev together
-        print(4444444444444, collection._datas)
         values = [data.fields_safe(self.field, self) for data in collection]
         return mean(values), std(values)

@@ -63,7 +63,7 @@ pipe = Pipeline(
     # Report("metafeats vals: $M"),
     # Report("$Xd $Xt"),
     # Report("$Yd $Yt"),
-    Save('saved.arff', '/tmp/')
+    # Save('saved.arff', '/tmp/')
 )
 
 # save('/tmp/dump/pipe0', pipe)

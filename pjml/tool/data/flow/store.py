@@ -1,3 +1,7 @@
+from pjdata.aux.compression import pack_data
+
+from pjdata.aux.encoders import uuid
+
 from cururu.persistence import DuplicateEntryException
 from cururu.storer import Storer
 from pjdata.data import Data
@@ -29,8 +33,7 @@ class Store(Invisible, Storer):
 
         self._set_storage(engine, settings)
 
-        self.dataset = Dataset(name, description)
-        self.model = f'{name}-{description}'
+        self.model = name, description
         self.fields = fields
 
         super().__init__(config, self.model, deterministic=True)
@@ -39,7 +42,14 @@ class Store(Invisible, Storer):
         return self._use_impl(data)
 
     def _use_impl(self, data):
-        new_data = Data(self.dataset, **data.matrices)
+        # Enforce a unique name.
+        uuid_ = ''
+        for name in self.fields:
+            uuid_ += uuid(pack_data(data.fields_safe(name, self)))
+        uuid_ = uuid(uuid_.encode())[:7]
+
+        dataset = Dataset(self.model[0] + uuid_, self.model[1])
+        new_data = Data(dataset, **data.matrices)
         try:
             self.storage.store(new_data, fields=self.fields)
         except DuplicateEntryException as e:
