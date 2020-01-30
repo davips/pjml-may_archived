@@ -1,16 +1,41 @@
+from pjml.config.list import split
+from pjml.tool.base.seq import Seq
+from pjml.tool.base.singleton import NoModel
 from pjml.tool.base.transformer import Transformer
+from pjml.tool.collection.expand.expand import Expand
+from pjml.tool.collection.transform.multi import Multi
 
 
 class Partition(Transformer):
     """Class to perform, e.g. Expand+kfoldCV.
 
-    This task is already done by function sampler,
+    This task is already done by function split(),
     but if performance becomes a concern, this less modular solution is a
-    good choice."""
+    good choice.
 
-    # Version that would break the architecture, because of the need for a
-    # super component Sample = expand + container + finiteconfigspace.
+    TODO: the current implementation is just an alias for the nonoptimized
+        previous solution.
+    """
 
+    def __init__(self, split_type='cv', partitions=10, test_size=0.3, seed=0,
+                 fields=None):
+        super().__init__(self._to_config(locals()), split_type)
+        self.model = Seq(
+            Expand(),
+            Multi(*split(split_type, partitions, test_size, seed, fields))
+        )
+
+    def _apply_impl(self, data):
+        return self.model.apply(data)
+
+    def _use_impl(self, data):
+        return self.model.use(data)
+
+    @classmethod
+    def _cs_impl(cls):
+        raise NotImplementedError
+
+    # TODO: draft of optimized solution:
     # def __init__(self, train_indexes, test_indexes, fields=None):
     #     if fields is None:
     #         fields = ['X', 'Y']

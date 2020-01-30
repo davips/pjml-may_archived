@@ -3,6 +3,9 @@ import numpy
 from cururu.persistence import DuplicateEntryException
 from pjdata.data_creation import read_arff
 from pjml.config.macro import evaluator
+from pjml.tool.collection.expand.partition import Partition
+from pjml.tool.collection.reduce.summ import Summ
+from pjml.tool.collection.transform.map import Map, mapa
 from pjml.tool.data.communication.cache import cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
@@ -22,6 +25,7 @@ import pjml.config.syntax
 
 # Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
+
 print('Storing iris...')
 try:
     PickleServer().store(read_arff('iris.arff'))
@@ -35,11 +39,13 @@ numpy.random.seed(50)
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 print('expr .................')
 expr = cache(
-    Source('iris.arff'), evaluator(
-        [Std, {UnderS, OverS}, MinMax],
-        applyusing({DT, NB, SVMC}),
+    Source('iris.arff'),
+    Partition(),
+    mapa(
+        [Std, {UnderS, OverS}, MinMax], applyusing({DT, NB, SVMC}),
         Metric(function='accuracy')
-    )
+    ),
+    Summ(function='mean_std')
 ), Report("{history.last.config['function']} $S for dataset {dataset.name}.")
 
 print('sample .................')

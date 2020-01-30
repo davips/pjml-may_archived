@@ -22,6 +22,7 @@ from pjml.config.cs.shufflecs import ShuffleCS
 curse(list, "sample", ShuffleCS.sample)
 curse(set, "sample", AnyCS.sample)
 curse(tuple, "sample", SeqCS.sample)
+
 curse(list, "cs", ShuffleCS.cs)
 curse(set, "cs", AnyCS.cs)
 curse(tuple, "cs", SeqCS.cs)
