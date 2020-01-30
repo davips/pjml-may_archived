@@ -6,3 +6,4 @@ class NoAlgorithm(type):
 class NoModel(type):
     def __new__(cls, *args, **kwargs):
         raise Exception('NoModel is a singleton and shouldn\'t be instantiated')
+

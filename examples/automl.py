@@ -2,7 +2,7 @@ import numpy
 
 from cururu.persistence import DuplicateEntryException
 from pjdata.data_creation import read_arff
-from pjml.config.macro import evaluate
+from pjml.config.macro import evaluator
 from pjml.tool.data.communication.cache import cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
@@ -35,7 +35,7 @@ numpy.random.seed(50)
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 print('expr .................')
 expr = cache(
-    Source('iris.arff'), evaluate(
+    Source('iris.arff'), evaluator(
         [Std, {UnderS, OverS}, MinMax],
         applyusing({DT, NB, SVMC}),
         Metric(function='accuracy')

@@ -187,7 +187,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         #     data = None
 
         if self._failure_during_apply is not None:
-            return data.updated(
+            return data.updated(Use(self),
                 failure=f'Already failed on apply: '
                         f'{self._failure_during_apply}')
 

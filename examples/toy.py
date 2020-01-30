@@ -39,7 +39,6 @@ from pjdata import data
 #     PickleServer().store(read_arff('iris.arff'))
 # except DuplicateEntryException:
 #     pass
-# from pjml.tool.meta.wrap import Wrap
 from pjml.tool.meta.wrap import Wrap
 
 pipe = Pipeline(
