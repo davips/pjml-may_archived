@@ -1,15 +1,18 @@
 from pjml.config.cs.containercs import ContainerCS
+from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
-
-
-def mapa(*args, components=None):
-    if components is None:
-        components = args
-    return ContainerCS(Map.name, Map.path, components)
 
 
 class Map(NonConfigurableContainer1):
     """Execute the same transformer for the entire collection."""
+
+    def __new__(cls, *args, transformers=None):
+        """Shortcut to create a ConfigSpace."""
+        if transformers is None:
+            transformers = args
+        if all([isinstance(t, Transformer) for t in transformers]):
+            return NonConfigurableContainer1.__new__(Map)
+        return ContainerCS(Map.name, Map.path, transformers)
 
     def _apply_impl(self, collection):
         if collection.infinite:

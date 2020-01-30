@@ -1,6 +1,5 @@
 from pjml.config.list import split
 from pjml.tool.base.seq import Seq
-from pjml.tool.base.singleton import NoModel
 from pjml.tool.base.transformer import Transformer
 from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.collection.transform.multi import Multi

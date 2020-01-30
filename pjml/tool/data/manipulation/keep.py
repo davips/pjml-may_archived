@@ -12,6 +12,8 @@ from pjml.tool.common.configurablecontainer1 import ConfigurableContainer1
 class Keep(ConfigurableContainer1):
     """Preserve original values of the given fields."""
 
+    # TODO: implement __new__ to generate a CS
+
     def __init__(self, *args, fields=None, transformers=None):
         if transformers is None:
             transformers = args

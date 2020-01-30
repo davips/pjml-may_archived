@@ -1,12 +1,7 @@
 from pjml.config.cs.seqcs import SeqCS
+from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.containern import ContainerN
 from pjml.util import flatten
-
-
-def seq(*args, components=None):
-    if components is None:
-        components = args
-    return SeqCS(*components)
 
 
 class Seq(ContainerN):
@@ -14,6 +9,14 @@ class Seq(ContainerN):
 
     Each arg is a transformer. Optionally, a list of them can be passed as a
     named arg called 'transformers'."""
+
+    def __new__(cls, *args, transformers=None):
+        """Shortcut to create a ConfigSpace."""
+        if transformers is None:
+            transformers = args
+        if all([isinstance(t, Transformer) for t in transformers]):
+            return ContainerN.__new__(Seq)
+        return SeqCS(*transformers)
 
     def _apply_impl(self, data):
         self.model = self.transformers

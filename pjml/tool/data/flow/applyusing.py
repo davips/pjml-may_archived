@@ -1,11 +1,6 @@
 from pjml.config.cs.containercs import ContainerCS
+from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
-
-
-def applyusing(*args, components=None):
-    if components is None:
-        components = args
-    return ContainerCS(ApplyUsing.name, ApplyUsing.path, components)
 
 
 class ApplyUsing(NonConfigurableContainer1):
@@ -13,6 +8,14 @@ class ApplyUsing(NonConfigurableContainer1):
 
     Useful to calculate training error in classifiers, which would otherwise
     return PhantomData in the 'apply' step."""
+
+    def __new__(cls, *args, transformers=None):
+        """Shortcut to create a ConfigSpace."""
+        if transformers is None:
+            transformers = args
+        if all([isinstance(t, Transformer) for t in transformers]):
+            return NonConfigurableContainer1.__new__(ApplyUsing)
+        return ContainerCS(ApplyUsing.name, ApplyUsing.path, transformers)
 
     def _apply_impl(self, data):
         self.transformer.apply(data, self._exit_on_error)

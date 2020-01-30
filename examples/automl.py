@@ -5,12 +5,12 @@ from pjdata.data_creation import read_arff
 from pjml.config.macro import evaluator
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
-from pjml.tool.collection.transform.map import Map, mapa
-from pjml.tool.data.communication.cache import cache
+from pjml.tool.collection.transform.map import Map
+from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.evaluation.split import Split
-from pjml.tool.data.flow.applyusing import applyusing
+from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.source import Source
 from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
@@ -34,15 +34,14 @@ except DuplicateEntryException:
     print('Duplicate! Ignored.')
 
 numpy.random.seed(50)
-
 # import sklearn
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 print('expr .................')
-expr = cache(
-    Source('iris.arff'),
+expr = Cache(
+    Source('iris'),
     Partition(),
-    mapa(
-        [Std, {UnderS, OverS}, MinMax], applyusing({DT, NB, SVMC}),
+    Map(
+        [Std, {UnderS, OverS}, MinMax], ApplyUsing({DT, NB, SVMC}),
         Metric(function='accuracy')
     ),
     Summ(function='mean_std')
@@ -51,7 +50,6 @@ expr = cache(
 print('sample .................')
 pipe = expr.sample()
 # print(1111111111111, pipe)
-
 print('apply .................')
 dataout = pipe.apply()
 # print(222222222222222, dataout.history)

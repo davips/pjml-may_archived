@@ -1,25 +1,31 @@
 import traceback
 
 from cururu.storer import Storer
-from pjdata.data import PhantomData
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.cs.containercs import ContainerCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
 from pjml.tool.base.singleton import NoModel
+from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.configurablecontainer1 import ConfigurableContainer1
 
 
-def cache(*args, engine="dump", settings=None, components=None):
-    if components is None:
-        components = args
-    """Shortcut to create a ConfigSpace for Cache."""
-    node = Node(params={'engine': FixedP(engine), 'settings': FixedP(settings)})
-    return ContainerCS(Cache.name, Cache.path, components, node)
-
-
 class Cache(ConfigurableContainer1, Storer):
+    def __new__(cls, *args, fields=None, engine="dump", settings=None,
+                transformers=None):
+        """Shortcut to create a ConfigSpace."""
+        if transformers is None:
+            transformers = args
+        if all([isinstance(t, Transformer) for t in transformers]):
+            return ConfigurableContainer1.__new__(Cache)
+        node = Node(params={
+            'fields': FixedP(fields),
+            'engine': FixedP(engine),
+            'settings': FixedP(settings)
+        })
+        return ContainerCS(Cache.name, Cache.path, transformers, node)
+
     def __init__(self, *args, fields=None, engine="dump", settings=None,
                  transformers=None):
         if transformers is None:
@@ -61,6 +67,8 @@ class Cache(ConfigurableContainer1, Storer):
                 traceback.print_exc()
                 exit(0)
 
+            # TODO: Source -> DT = entra NoData, sai None...
+            #   AttributeError: type object 'NoData' has no attribute 'phantom'
             data_to_store = data.phantom if output_data is None else output_data
             self.storage.store(
                 data_to_store,
