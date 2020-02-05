@@ -1,3 +1,5 @@
+import json
+
 from pjml.config.cs.seqcs import SeqCS
 from pjml.tool.base.transformer import Transformer
 from pjml.tool.common.containern import ContainerN
@@ -47,3 +49,9 @@ class Seq(ContainerN):
         for tr in self.transformers:
             lst.append(tr._transformations(step))  # , training_data))
         return flatten(lst)
+
+    def __str__(self, depth=''):
+        txts = []
+        for t in self.transformers:
+            txts.append(t.__str__(depth))
+        return '\n'.join(txts)

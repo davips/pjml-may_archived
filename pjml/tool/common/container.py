@@ -47,3 +47,12 @@ class Container(Transformer_NoData, ABC):
     @classmethod
     def _cs_impl(cls):
         raise Exception(f'Wrong calling of {cls.name}._cs_impl!')
+
+    def __str__(self, depth=''):
+        inner = []
+        for t in self.transformers:
+            inner.append('    ' + t.__str__(depth).replace('\n', '\n' + '    '))
+
+        return f'{depth}{self.name}>>\n' + \
+               '\n'.join(inner) + \
+               f'\n{depth}<<{self.name}'

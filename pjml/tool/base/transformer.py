@@ -2,15 +2,13 @@ import json
 from abc import abstractmethod
 from functools import lru_cache
 
+from pjdata.aux.decorator import classproperty
 from pjdata.aux.identifyable import Identifyable
-from pjdata.data import NoData, PhantomData
+from pjdata.data import NoData
 from pjdata.history import History
-
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.cs.finitecs import FiniteCS
-from pjml.config.cs.containercs import ContainerCS
-from pjdata.aux.decorator import classproperty
 from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjml.tool.base.aux.serialization import materialize, serialize, \
@@ -188,8 +186,8 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
 
         if self._failure_during_apply is not None:
             return data.updated(Use(self),
-                failure=f'Already failed on apply: '
-                        f'{self._failure_during_apply}')
+                                failure=f'Already failed on apply: '
+                                        f'{self._failure_during_apply}')
 
         if self.model is None:
             raise MissingModel(f"{self}\n{self.name} didn't set up a model yet."
@@ -261,7 +259,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        return output_data # and self._check_history(data, output_data)
+        return output_data  # and self._check_history(data, output_data)
 
     def _check_history(self, datain, dataout):
         """Check consistency between resulting Data object and provided
@@ -324,4 +322,5 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         return self._hash
 
     def __str__(self, depth=''):
-        return json.dumps(self, sort_keys=False, indent=4)
+        js = json.dumps(self, sort_keys=False, indent=4)
+        return js.replace('\n', '\n' + depth)
