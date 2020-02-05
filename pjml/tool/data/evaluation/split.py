@@ -26,8 +26,8 @@ class Split(Transformer, FunctionInspector):
         Name of the matrices to be modified.
     """
 
-    def __init__(self, split_type='cv', partitions=10,
-                 partition=0, test=0.3, seed=0, fields=None):
+    def __init__(self, split_type='holdout', partitions=2, partition=0,
+                 test=0.3, seed=0, fields=None):
         if fields is None:
             fields = ['X', 'Y']
 
