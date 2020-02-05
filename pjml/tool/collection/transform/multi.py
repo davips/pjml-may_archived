@@ -11,7 +11,9 @@ class Multi(ContainerN):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            return ContainerN.__new__(Multi)
+            instance = ContainerN.__new__(Multi)
+            instance.__init__(transformers=transformers)
+            return instance
         return ContainerCS(Multi.name, Multi.path, transformers)
 
     def _apply_impl(self, collection):

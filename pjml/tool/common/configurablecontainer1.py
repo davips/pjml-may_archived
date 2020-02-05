@@ -12,6 +12,8 @@ class ConfigurableContainer1(Container1, ABC):
 
     def __init__(self, config):
         transformers = config['transformers']
+        if not transformers:
+            raise Exception('A container should have at least one transformer!')
 
         # ConfigurableContainerXXX(Seq(a,b,c)) should be equal to
         # ConfigurableContainerXXX(a,b,c)

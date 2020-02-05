@@ -9,6 +9,8 @@ class Container(Transformer_NoData, ABC):
     """Container modify 'transformer(s)'."""
 
     def __init__(self, transformers):
+        if not transformers:
+            raise Exception('A container should have at least one transformer!')
         super().__init__({'transformers': transformers}, transformers)
         self.transformers = transformers
 

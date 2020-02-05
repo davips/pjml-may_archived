@@ -1,5 +1,7 @@
 import traceback
 
+from pjdata.data import NoData
+
 from cururu.storer import Storer
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
@@ -18,7 +20,9 @@ class Cache(ConfigurableContainer1, Storer):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            return ConfigurableContainer1.__new__(Cache)
+            instance = ConfigurableContainer1.__new__(Cache)
+            instance.__init__(transformers=transformers)
+            return instance
         node = Node(params={
             'fields': FixedP(fields),
             'engine': FixedP(engine),

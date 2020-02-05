@@ -11,6 +11,7 @@ from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.evaluation.split import Split
 from pjml.tool.data.flow.applyusing import ApplyUsing
+from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.source import Source
 from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
@@ -45,8 +46,8 @@ expr = Cache(
         Metric(function='accuracy')
     ),
     Summ(function='mean_std')
-), Report("{history.last.config['function']} $S for dataset {dataset.name}.")
-
+), Report(" $S for dataset {dataset.name}.")
+# {history.last.config['function']}
 print('sample .................')
 pipe = expr.sample()
 # print(1111111111111, pipe)

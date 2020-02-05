@@ -15,7 +15,9 @@ class Seq(ContainerN):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            return ContainerN.__new__(Seq)
+            instance = ContainerN.__new__(Seq)
+            instance.__init__(transformers=transformers)
+            return instance
         return SeqCS(*transformers)
 
     def _apply_impl(self, data):
@@ -43,5 +45,5 @@ class Seq(ContainerN):
             training_data = self._last_training_data
         lst = []
         for tr in self.transformers:
-            lst.append(tr._transformations(step)) #, training_data))
+            lst.append(tr._transformations(step))  # , training_data))
         return flatten(lst)

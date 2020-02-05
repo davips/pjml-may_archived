@@ -2,7 +2,7 @@ import json
 
 
 def serialize(obj):
-    return json.dumps(obj, sort_keys=True)
+    return json.dumps(obj, sort_keys=True) #, indent=3)
 
 
 def deserialize(txt):

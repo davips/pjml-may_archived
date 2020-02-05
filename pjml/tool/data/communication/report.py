@@ -42,7 +42,13 @@ class Report(Invisible):
         expanded = [w.split('}') for w in ('_' + text + '_').split('{')]
         for seg in flatten(expanded):
             if run:
-                txt += str(eval('data.' + seg))
+                try:
+                    txt += str(eval('data.' + seg))
+                except Exception as e:
+                    print(
+                        f'Problems parsing\n  {text}\nwith data\n  {data}\n'
+                        f'{data.history}\n!')
+                    raise e
             else:
                 txt += seg
             run = not run

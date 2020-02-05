@@ -11,7 +11,9 @@ class Map(NonConfigurableContainer1):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            return NonConfigurableContainer1.__new__(Map)
+            instance = NonConfigurableContainer1.__new__(Map)
+            instance.__init__(transformers=transformers)
+            return instance
         return ContainerCS(Map.name, Map.path, transformers)
 
     def _apply_impl(self, collection):
