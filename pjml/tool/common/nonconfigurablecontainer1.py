@@ -9,10 +9,12 @@ class NonConfigurableContainer1(Container1, ABC):
     """Container for a single transformer without config by itself."""
 
     def __init__(self, *args, transformers=None):
-        if not transformers:
-            raise Exception('A container should have at least one transformer!')
         if transformers is None:
             transformers = args
+        if not transformers:
+            raise Exception(
+                f'A container ({self.name}) should have at least one '
+                f'transformer!')
 
         # Container1(Seq(a,b,c)) should be equal Container1(a,b,c)
         if len(transformers) == 1 and isinstance(transformers, Seq):
