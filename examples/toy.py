@@ -77,6 +77,7 @@ pipe = Pipeline(
 
 print(111111)
 dout = pipe.apply()
+print(dout.history)
 # save('/tmp/cururu/pipea', pipe)
 print(222222)
 dout = pipe.use()

@@ -17,4 +17,4 @@ class ConfigSpace:
         return self
 
     def __str__(self):
-        return json.dumps(self, sort_keys=False, indent=3)
+        return json.dumps(self, sort_keys=False, indent=4)

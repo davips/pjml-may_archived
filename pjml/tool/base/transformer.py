@@ -324,4 +324,4 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         return self._hash
 
     def __str__(self, depth=''):
-        return json.dumps(self, sort_keys=False, indent=2)
+        return json.dumps(self, sort_keys=False, indent=4)
