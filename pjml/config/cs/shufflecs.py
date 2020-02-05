@@ -19,3 +19,7 @@ class ShuffleCS(ConfigSpace, list):
         css = self.copy()
         np.random.shuffle(css)
         return Seq(transformers=[cs.cs.sample() for cs in css])
+
+
+class Shuffle(ShuffleCS):
+    pass

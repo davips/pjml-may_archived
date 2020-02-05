@@ -19,3 +19,7 @@ class AnyCS(ConfigSpace, set):
 
         # cs.cs ensures it is not a class or transformer.
         return cs.cs.sample()
+
+
+class Any(AnyCS):
+    pass
