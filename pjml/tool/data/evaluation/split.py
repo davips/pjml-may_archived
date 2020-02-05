@@ -6,7 +6,7 @@ from sklearn.model_selection import StratifiedShuffleSplit as HO, \
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import IntP
-from pjml.tool.base.aux.functioninspector import FunctionInspector
+from pjml.tool.base.mixin.functioninspector import FunctionInspector
 from pjml.tool.base.transformer import Transformer
 
 

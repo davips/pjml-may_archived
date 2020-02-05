@@ -10,7 +10,7 @@ from pjml.config.node import Node
 from pjml.config.parameter import FixedP
 from pjml.tool.base.singleton import NoModel
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.common.configurablecontainer1 import ConfigurableContainer1
+from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
 
 
 class Cache(ConfigurableContainer1, Storer):

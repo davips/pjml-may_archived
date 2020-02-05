@@ -4,7 +4,7 @@ from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import CatP
-from pjml.tool.base.aux.functioninspector import FunctionInspector
+from pjml.tool.base.mixin.functioninspector import FunctionInspector
 from pjml.tool.base.transformer import Transformer
 
 

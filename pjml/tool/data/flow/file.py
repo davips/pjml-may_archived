@@ -3,8 +3,8 @@ from pjdata.data_creation import read_arff
 from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP
-from pjml.tool.common.invisible import Invisible
-from pjml.tool.common.transformer_nodata import Transformer_NoData
+from pjml.tool.abc.invisible import Invisible
+from pjml.tool.abc.transformer_nodata import Transformer_NoData
 
 
 class File(Transformer_NoData, Invisible):

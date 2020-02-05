@@ -10,7 +10,7 @@ from pjml.config.cs.componentcs import ComponentCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
 from pjml.config.parameter import FixedP, CatP
-from pjml.tool.common.invisible import Invisible
+from pjml.tool.abc.invisible import Invisible
 
 
 class Store(Invisible, Storer):

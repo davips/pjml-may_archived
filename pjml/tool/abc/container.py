@@ -2,7 +2,7 @@ from abc import ABC
 from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
-from pjml.tool.common.transformer_nodata import Transformer_NoData
+from pjml.tool.abc.transformer_nodata import Transformer_NoData
 
 
 class Container(Transformer_NoData, ABC):

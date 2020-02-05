@@ -2,7 +2,7 @@ import json
 
 from pjml.config.cs.seqcs import SeqCS
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.common.containern import ContainerN
+from pjml.tool.abc.containern import ContainerN
 from pjml.util import flatten
 
 

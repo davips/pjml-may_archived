@@ -1,4 +1,4 @@
-from pjml.tool.common.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
 
 
 class AlwaysApply(NonConfigurableContainer1):

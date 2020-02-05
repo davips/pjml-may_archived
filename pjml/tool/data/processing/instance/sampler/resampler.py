@@ -2,7 +2,7 @@ from abc import ABC
 
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
-from pjml.tool.base.aux.exceptionhandler import BadComponent
+from pjml.tool.base.mixin.exceptionhandler import BadComponent
 from pjml.tool.base.transformer import Transformer
 
 

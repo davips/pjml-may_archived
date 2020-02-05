@@ -1,7 +1,7 @@
 from sklearn.preprocessing import OneHotEncoder
 
 from pjdata.data_creation import nominal_idxs
-from pjml.tool.common.configless import ConfigLess
+from pjml.tool.abc.configless import ConfigLess
 import numpy as np
 
 

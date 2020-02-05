@@ -9,11 +9,11 @@ from pjdata.history import History
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.cs.finitecs import FiniteCS
-from pjml.tool.base.aux.exceptionhandler import ExceptionHandler, \
+from pjml.tool.base.mixin.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
-from pjml.tool.base.aux.serialization import materialize, serialize, \
+from pjml.tool.base.mixin.serialization import materialize, serialize, \
     serialized_to_int
-from pjml.tool.base.aux.timers import Timers
+from pjml.tool.base.mixin.timers import Timers
 # from methodtools import lru_cache
 from pjml.tool.base.singleton import NoModel
 
@@ -126,7 +126,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        from pjml.tool.common.transformer_nodata import Transformer_NoData
+        from pjml.tool.abc.transformer_nodata import Transformer_NoData
         if data is NoData and not isinstance(self, Transformer_NoData):
             raise Exception(f'NoData is not accepted by {self.name}!')
         if data in [None, NoData]:
@@ -173,7 +173,7 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        from pjml.tool.common.transformer_nodata import Transformer_NoData
+        from pjml.tool.abc.transformer_nodata import Transformer_NoData
         if data is NoData and not isinstance(self, Transformer_NoData):
             raise Exception(f'NoData is not accepted by {self.name}!')
         # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),

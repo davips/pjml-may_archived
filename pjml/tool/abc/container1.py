@@ -1,7 +1,7 @@
 from abc import ABC
 
 from pjml.tool.base.seq import Seq
-from pjml.tool.common.container import Container
+from pjml.tool.abc.container import Container
 
 
 class Container1(Container, ABC):

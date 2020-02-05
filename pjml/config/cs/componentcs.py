@@ -1,7 +1,7 @@
 from pjml.config.cs.emptycs import EmptyCS
 from pjml.config.distributions import choice
 from pjml.config.node import Node
-from pjml.tool.base.aux.serialization import materialize
+from pjml.tool.base.mixin.serialization import materialize
 
 
 class ComponentCS(EmptyCS):

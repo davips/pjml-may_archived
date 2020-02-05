@@ -1,6 +1,6 @@
 from pjml.config.cs.emptycs import EmptyCS
 from pjml.tool.base.transformer import Transformer
-from pjml.tool.common.invisible import Invisible
+from pjml.tool.abc.invisible import Invisible
 from pjml.util import flatten
 
 import re

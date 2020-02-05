@@ -2,7 +2,7 @@ from operator import itemgetter
 
 from pjml.tool.base.singleton import NoAlgorithm
 from pjml.config.cs.emptycs import EmptyCS
-from pjml.tool.common.configless import ConfigLess
+from pjml.tool.abc.configless import ConfigLess
 from pjml.tool.base.transformer import Transformer
 from pjml.tool.base.singleton import NoModel
 import pymfe.mfe

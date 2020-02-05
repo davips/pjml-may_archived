@@ -21,5 +21,3 @@ class AnyCS(ConfigSpace, set):
         return cs.cs.sample()
 
 
-class Any(AnyCS):
-    pass

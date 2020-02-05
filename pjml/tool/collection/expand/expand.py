@@ -1,6 +1,6 @@
 from pjdata.collection import Collection
-from pjml.tool.common.configless import ConfigLess
-from pjml.tool.common.invisible import Invisible
+from pjml.tool.abc.configless import ConfigLess
+from pjml.tool.abc.invisible import Invisible
 
 
 class Expand(ConfigLess, Invisible):
