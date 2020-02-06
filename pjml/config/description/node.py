@@ -1,4 +1,4 @@
-from pjml.config.distributions import choice
+from pjml.config.description.distributions import choice
 
 
 class Node(dict):

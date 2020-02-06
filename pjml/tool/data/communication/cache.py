@@ -5,12 +5,12 @@ from pjdata.data import NoData
 from cururu.storer import Storer
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
-from pjml.config.cs.containercs import ContainerCS
-from pjml.config.node import Node
-from pjml.config.parameter import FixedP
-from pjml.tool.base.singleton import NoModel
-from pjml.tool.base.transformer import Transformer
+from pjml.config.description.cs.containercs import ContainerCS
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
+from pjml.tool.abc.singleton import NoModel
+from pjml.tool.abc.transformer import Transformer
 
 
 class Cache(ConfigurableContainer1, Storer):

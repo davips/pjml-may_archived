@@ -1,4 +1,4 @@
-from pjml.config.cs.componentcs import ComponentCS
+from pjml.config.description.cs.componentcs import ComponentCS
 
 
 class ContainerCS(ComponentCS):

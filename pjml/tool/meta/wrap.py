@@ -1,4 +1,4 @@
-from pjml.tool.base.seq import Seq
+from pjml.tool.seq import Seq
 
 
 class Wrap(Seq):

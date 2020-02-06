@@ -1,8 +1,6 @@
-import json
-
-from pjml.config.cs.seqcs import SeqCS
-from pjml.tool.base.transformer import Transformer
+from pjml.config.description.cs.seqcs import SeqCS
 from pjml.tool.abc.containern import ContainerN
+from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten
 
 
@@ -43,8 +41,8 @@ class Seq(ContainerN):
     def _transformations(self, step=None, training_data=None):
         if step is None:
             step = self._current_step
-        if training_data is None:
-            training_data = self._last_training_data
+        # if training_data is None:
+        #     training_data = self._last_training_data
         lst = []
         for tr in self.transformers:
             lst.append(tr._transformations(step))  # , training_data))

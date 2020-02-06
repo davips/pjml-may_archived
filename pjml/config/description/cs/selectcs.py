@@ -1,7 +1,7 @@
-from pjml.config.cs.configspace import ConfigSpace
+from pjml.config.description.cs.configspace import ConfigSpace
 
 
-class AnyCS(ConfigSpace, set):
+class SelectCS(ConfigSpace, set):
     """
 
     Parameters
@@ -14,7 +14,7 @@ class AnyCS(ConfigSpace, set):
         set.__init__(self, components)
 
     def sample(self):
-        from pjml.config.distributions import choice
+        from pjml.config.description.distributions import choice
         cs = choice(list(self))
 
         # cs.cs ensures it is not a class or transformer.

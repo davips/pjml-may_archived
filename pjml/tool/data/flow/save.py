@@ -4,9 +4,6 @@ import arff
 import numpy as np
 
 from cururu.disk import save_txt
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.node import Node
-from pjml.config.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
 
 

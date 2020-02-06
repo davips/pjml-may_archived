@@ -1,5 +1,5 @@
-from pjml.config.cs.configspace import ConfigSpace
-from pjml.tool.base.mixin.serialization import materialize
+from pjdata.aux.serialization import materialize
+from pjml.config.description.cs.configspace import ConfigSpace
 
 
 class EmptyCS(ConfigSpace, list):

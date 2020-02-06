@@ -1,6 +1,19 @@
 """
-Module to create CS from transformers.
+Shortcuts of common CS/AutoML expressions or ML pipelines.
 """
+from pjml.tool.collection.expand.partition import Partition
+from pjml.tool.collection.reduce.summ import Summ
+from pjml.tool.collection.transform.map import Map
+from pjml.tool.collection.transform.multi import Multi
+from pjml.tool.seq import Seq
+
+
+def evaluator(*components, function='mean_std', **validation_args):
+    return Seq(
+        Partition(**validation_args),
+        Map(transformers=components),
+        Summ(function=function)
+    )
 
 
 def concat(*transformers):
@@ -25,12 +38,12 @@ def split(split_type='cv', partitions=10, test_size=0.3, seed=0, fields=None):
     for i in range(partitions):
         s = Split(split_type, partitions, i, test_size, seed, fields)
         transformers.append(s)
-    # from pjml.config.cs.finitecs import FiniteCS
+    # from pjml.config.description.cs.finitecs import FiniteCS
     # return FiniteCS(trasformers=transformers).sample()
-    return tuple(transformers)
+    return Multi(*transformers)
 
 # def bag(*transformers):
 #     """Make a FiniteConfigSpace from a sequence of transformers."""
-#     # from pjml.config.cs.finitecs import FiniteCS
+#     # from pjml.config.description.cs.finitecs import FiniteCS
 #     # return FiniteCS(trasformers=transformers)
 #     return transformers

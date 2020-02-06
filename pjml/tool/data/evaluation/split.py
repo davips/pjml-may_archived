@@ -3,11 +3,11 @@ from numpy.random import uniform
 from sklearn.model_selection import StratifiedShuffleSplit as HO, \
     StratifiedKFold as SKF, LeaveOneOut as LOO
 
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.node import Node
-from pjml.config.parameter import IntP
-from pjml.tool.base.mixin.functioninspector import FunctionInspector
-from pjml.tool.base.transformer import Transformer
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import IntP
+from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.abc.transformer import Transformer
 
 
 class Split(Transformer, FunctionInspector):

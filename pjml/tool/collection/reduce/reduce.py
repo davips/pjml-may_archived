@@ -1,7 +1,7 @@
 from abc import ABC
 
-from pjml.tool.base.mixin.functioninspector import FunctionInspector
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.abc.transformer import Transformer
 
 
 class Reduce(Transformer, FunctionInspector, ABC):

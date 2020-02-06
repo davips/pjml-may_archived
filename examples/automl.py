@@ -2,7 +2,6 @@ import numpy
 
 from cururu.persistence import DuplicateEntryException
 from pjdata.data_creation import read_arff
-from pjml.config.macro import evaluator
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map

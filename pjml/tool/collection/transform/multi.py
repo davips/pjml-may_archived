@@ -1,5 +1,5 @@
-from pjml.config.cs.containercs import ContainerCS
-from pjml.tool.base.transformer import Transformer
+from pjml.config.description.cs.containercs import ContainerCS
+from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.containern import ContainerN
 
 

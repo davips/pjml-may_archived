@@ -1,4 +1,5 @@
-from pjml.config.parameter import FixedP
+"""Operations over a single CS."""
+from pjml.config.description.parameter import FixedP
 
 
 def freeze(cs, **kwargs):

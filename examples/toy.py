@@ -9,14 +9,13 @@ from pjdata.data import Data
 from pjdata.data_creation import read_arff
 from pjdata.dataset import Dataset
 from pjdata.fastdata import FastData
-from pjml.config.list import split
+from pjml.macro import evaluator
 from pjml.pipeline import Pipeline
-from pjml.tool.base.seq import Seq
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.evaluation.split import Split
-from pjml.tool.data.flow.Save import Save
+from pjml.tool.data.flow.save import Save
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.source import Source
@@ -27,7 +26,6 @@ from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
-from pjml.tool.macro import evaluator
 from pjml.tool.meta.mfe import MFE
 from pjdata import data
 

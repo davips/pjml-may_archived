@@ -1,9 +1,9 @@
 from abc import ABC
 
-from pjml.config.cs.emptycs import EmptyCS
+from pjml.config.description.cs.emptycs import EmptyCS
 from pjdata.aux.decorator import classproperty
-from pjml.tool.base.singleton import NoAlgorithm
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.abc.singleton import NoAlgorithm
+from pjml.tool.abc.transformer import Transformer
 
 
 class ConfigLess(Transformer, ABC):

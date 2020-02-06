@@ -1,12 +1,10 @@
 from numpy.random.mtrand import uniform
 from sklearn.svm import SVC
 
-from pjml.config.cs.configspace import ConfigSpace
-
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import RealP, CatP, OrdP, IntP, FixedP
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import FixedP, IntP, RealP, CatP, OrdP
 from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 

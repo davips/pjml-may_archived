@@ -1,4 +1,4 @@
-from pjml.config.cs.configspace import ConfigSpace
+from pjml.config.description.cs.configspace import ConfigSpace
 
 
 class ShuffleCS(ConfigSpace, list):
@@ -15,11 +15,8 @@ class ShuffleCS(ConfigSpace, list):
 
     def sample(self):
         import numpy as np
-        from pjml.tool.base.seq import Seq
+        from pjml.tool.seq import Seq
         css = self.copy()
         np.random.shuffle(css)
         return Seq(transformers=[cs.cs.sample() for cs in css])
 
-
-class Shuffle(ShuffleCS):
-    pass

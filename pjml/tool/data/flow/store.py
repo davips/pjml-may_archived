@@ -6,10 +6,6 @@ from cururu.persistence import DuplicateEntryException
 from cururu.storer import Storer
 from pjdata.data import Data
 from pjdata.dataset import Dataset
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import FixedP, CatP
 from pjml.tool.abc.invisible import Invisible
 
 

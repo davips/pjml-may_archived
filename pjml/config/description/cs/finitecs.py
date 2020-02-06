@@ -5,8 +5,8 @@
 #  Um possível problema é conflitar com o fruto proibido (loop infinito?).
 #  Caso de usuário de necessidade: cs1 requer que transformer não seja sampleado
 
-from pjml.config.cs.configspace import ConfigSpace
-from pjml.config.distributions import choice
+from pjml.config.description.cs.configspace import ConfigSpace
+from pjml.config.description.distributions import choice
 
 
 class FiniteCS(ConfigSpace):
@@ -19,7 +19,7 @@ class FiniteCS(ConfigSpace):
         return choice(self)
 
     def __init__(self, *trasformers):
-        from pjml.tool.base.transformer import Transformer
+        from pjml.tool.abc.transformer import Transformer
         for transformer in trasformers:
             if not isinstance(transformer, Transformer):
                 raise Exception(f'Given: {type(transformer)}\n{transformer}\n'

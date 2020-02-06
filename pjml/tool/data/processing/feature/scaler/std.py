@@ -1,10 +1,9 @@
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from pjml.config import node
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import CatP
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import CatP
 from pjml.tool.data.processing.feature.scaler.scaler import Scaler
 
 

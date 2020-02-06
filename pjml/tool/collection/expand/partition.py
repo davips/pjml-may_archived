@@ -1,8 +1,6 @@
-from pjml.config.list import split
-from pjml.tool.base.seq import Seq
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.abc.transformer import Transformer
 from pjml.tool.collection.expand.expand import Expand
-from pjml.tool.collection.transform.multi import Multi
+from pjml.tool.seq import Seq
 
 
 class Partition(Transformer):
@@ -19,9 +17,10 @@ class Partition(Transformer):
     def __init__(self, split_type='cv', partitions=10, test_size=0.3, seed=0,
                  fields=None):
         super().__init__(self._to_config(locals()), split_type)
+        from pjml.macro import split
         self.model = Seq(
             Expand(),
-            Multi(*split(split_type, partitions, test_size, seed, fields))
+            split(split_type, partitions, test_size, seed, fields)
         )
 
     def _apply_impl(self, data):

@@ -2,8 +2,8 @@ from abc import ABC
 
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
-from pjml.tool.base.mixin.exceptionhandler import BadComponent
-from pjml.tool.base.transformer import Transformer
+from pjml.tool.abc.mixin.exceptionhandler import BadComponent
+from pjml.tool.abc.transformer import Transformer
 
 
 class Resampler(Transformer, ABC):

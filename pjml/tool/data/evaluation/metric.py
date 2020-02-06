@@ -1,11 +1,11 @@
 from sklearn.metrics import accuracy_score
 
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import CatP
-from pjml.tool.base.mixin.functioninspector import FunctionInspector
-from pjml.tool.base.transformer import Transformer
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import CatP
+from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.abc.transformer import Transformer
 
 
 class Metric(Transformer, FunctionInspector):

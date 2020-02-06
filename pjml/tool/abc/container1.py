@@ -1,6 +1,5 @@
 from abc import ABC
 
-from pjml.tool.base.seq import Seq
 from pjml.tool.abc.container import Container
 
 

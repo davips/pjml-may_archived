@@ -1,10 +1,10 @@
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.naive_bayes import GaussianNB
 
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import CatP
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import CatP
 from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 

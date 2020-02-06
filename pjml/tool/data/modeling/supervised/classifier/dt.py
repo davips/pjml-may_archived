@@ -1,10 +1,10 @@
 from numpy.random import uniform
 from sklearn.tree import DecisionTreeClassifier
 
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import CatP, IntP, RealP, FixedP
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import CatP, FixedP, IntP, RealP
 from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 

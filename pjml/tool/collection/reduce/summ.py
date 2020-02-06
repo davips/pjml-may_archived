@@ -3,10 +3,6 @@ from numpy import mean
 from numpy import std
 
 from pjdata.data import Data
-from pjml.config.cs.componentcs import ComponentCS
-from pjml.config.distributions import choice
-from pjml.config.node import Node
-from pjml.config.parameter import CatP
 from pjml.tool.collection.reduce.reduce import Reduce
 from pjml.tool.collection.transform.shrink import Shrink
 

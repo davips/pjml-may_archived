@@ -1,12 +1,9 @@
-from operator import itemgetter
-
-from pjml.tool.base.singleton import NoAlgorithm
-from pjml.config.cs.emptycs import EmptyCS
-from pjml.tool.abc.configless import ConfigLess
-from pjml.tool.base.transformer import Transformer
-from pjml.tool.base.singleton import NoModel
-import pymfe.mfe
 import numpy as np
+import pymfe.mfe
+
+from pjml.config.description.cs.emptycs import EmptyCS
+from pjml.tool.abc.singleton import NoAlgorithm
+from pjml.tool.abc.transformer import Transformer
 
 
 class MFE(Transformer):
@@ -16,6 +13,7 @@ class MFE(Transformer):
     Each attribute value is replaced by the order in which the example is
     ranked according with that attribute.
     Applying a normalization after this transformer is recommended."""
+
     def __init__(self):
         super().__init__({}, NoAlgorithm, deterministic=True)
         self.model = pymfe.mfe.MFE()

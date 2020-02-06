@@ -15,14 +15,14 @@ expr = [NR, PCA], {SVM, MLP}
 """
 from forbiddenfruit import curse
 
-from pjml.config.cs.anycs import AnyCS
-from pjml.config.cs.seqcs import SeqCS
-from pjml.config.cs.shufflecs import ShuffleCS
+from pjml.config.description.cs.selectcs import SelectCS
+from pjml.config.description.cs.seqcs import SeqCS
+from pjml.config.description.cs.shufflecs import ShuffleCS
 
 curse(list, "sample", ShuffleCS.sample)
-curse(set, "sample", AnyCS.sample)
+curse(set, "sample", SelectCS.sample)
 curse(tuple, "sample", SeqCS.sample)
 
 curse(list, "cs", ShuffleCS.cs)
-curse(set, "cs", AnyCS.cs)
+curse(set, "cs", SelectCS.cs)
 curse(tuple, "cs", SeqCS.cs)

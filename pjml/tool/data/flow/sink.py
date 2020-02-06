@@ -1,6 +1,6 @@
 from pjdata.data import NoData
-from pjml.tool.base.singleton import NoModel
 from pjml.tool.abc.configless import ConfigLess
+from pjml.tool.abc.singleton import NoModel
 
 
 class Sink(ConfigLess):

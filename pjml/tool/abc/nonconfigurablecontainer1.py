@@ -1,8 +1,7 @@
 from abc import ABC
 
-from pjml.tool.base.seq import Seq
-from pjml.tool.abc.container import Container
 from pjml.tool.abc.container1 import Container1
+from pjml.tool.seq import Seq
 
 
 class NonConfigurableContainer1(Container1, ABC):
