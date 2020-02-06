@@ -9,8 +9,8 @@ fs = [str(f) for f in paths
 
 for f in [f.replace('/', '.')[:-3] for f in fs]:
     statement = f'from {f} import *'
-    print(statement)
+    # print(statement)
     exec(statement)
 
-print('All tools and operators imported'
+print('All tools and operators imported by "from pjml.useful import *"'
       ' (and corresponding pollutant namespaces as well)!')
