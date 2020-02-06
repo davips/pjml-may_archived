@@ -8,9 +8,10 @@ class Shrink(ConfigLess):
     def _use_impl(self, collection):
         newcoll = collection.updated(
             transformations=self._transformations(),
-            datas=[d for d in collection if not d.isphantom],
+            datas=[d for d in collection if d is not None],
             failure=collection.failure
         )
         if newcoll.size == 0:
             print('WW: All Nones')
             return None
+        return newcoll

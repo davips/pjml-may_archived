@@ -25,8 +25,10 @@ class Summ(Reduce):
     def _use_impl(self, collection):
         if collection.has_nones:
             collection = Shrink().apply(collection)
-            print("Warning: collections containing Nones are shrunk before"
+            print("Warning: collections containing Nones are shrunk before "
                   "summarization.")
+        if collection is None:
+            return None
         data = Data(
             dataset=collection.dataset,
             history=collection.history,
