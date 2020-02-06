@@ -1,4 +1,5 @@
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.singleton import NoModel
 
 
 class AlwaysApply(NonConfigurableContainer1):
@@ -7,6 +8,7 @@ class AlwaysApply(NonConfigurableContainer1):
     # TODO: implement __new__ to generate a CS
 
     def _apply_impl(self, data):
+        self.model = NoModel
         return self.transformer.apply(data)
 
     def _use_impl(self, data):
@@ -19,6 +21,7 @@ class AlwaysUse(NonConfigurableContainer1):
     # TODO: implement __new__ to generate a CS
 
     def _apply_impl(self, data):
+        self.model = NoModel
         return self.transformer.use(data)
 
     def _use_impl(self, data):
