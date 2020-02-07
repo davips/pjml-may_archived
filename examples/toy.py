@@ -40,28 +40,33 @@ from pjdata import data
 from pjml.tool.meta.wrap import Wrap
 
 pipe = Pipeline(
-    File('iris.arff'),
+    File('bank.arff'),
     Binarize(),
-    # Source('messedup-dataset'),
-    Keep(evaluator(
-        Cache(
-            ApplyUsing(
-                NB()
-            ),
-            Metric(function='accuracy')
-        )
-    )),
-    # Store(name='messedup-dataset', fields=['X', 'y', 'S']),
-    Report(" $S for dataset {dataset.name}.")
-    # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
-    ,
-    MFE(),
-    # Report("metafeats: $Md"),
-    # Report("metafeats vals: $M"),
-    # Report("$Xd $Xt"),
-    # Report("$Yd $Yt"),
-    # Save('saved.arff', '/tmp/')
+    Report('$X')
 )
+print(pipe.apply())
+exit(0)
+
+#     # Source('messedup-dataset'),
+#     Keep(evaluator(
+#         Cache(
+#             ApplyUsing(
+#                 NB()
+#             ),
+#             Metric(function='accuracy')
+#         )
+#     )),
+#     # Store(name='messedup-dataset', fields=['X', 'y', 'S']),
+#     Report(" $S for dataset {dataset.name}.")
+#     # Report("{history.last.config['function']} $S for dataset {dataset.name}.")
+#     ,
+#     MFE(),
+#     # Report("metafeats: $Md"),
+#     # Report("metafeats vals: $M"),
+#     # Report("$Xd $Xt"),
+#     # Report("$Yd $Yt"),
+#     # Save('saved.arff', '/tmp/')
+# )
 
 # save('/tmp/dump/pipe0', pipe)
 

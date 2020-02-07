@@ -9,7 +9,7 @@ from pjml.config.description.cs.configspace import ConfigSpace
 from pjml.config.description.distributions import choice
 
 
-class FiniteCS(ConfigSpace):
+class FiniteCS(ConfigSpace, dict):
     """Iterable CS. This CS does not accept config spaces, only transformers.
 
     TODO: decide if prohibition of RealP will be enforced.
@@ -19,6 +19,9 @@ class FiniteCS(ConfigSpace):
         return choice(self)
 
     def __init__(self, *trasformers):
+        # For pretty printing.
+        dict.__init__(self, {'type': 'FiniteCS', 'transfs': trasformers})
+
         from pjml.tool.abc.transformer import Transformer
         for transformer in trasformers:
             if not isinstance(transformer, Transformer):

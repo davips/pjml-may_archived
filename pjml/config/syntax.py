@@ -20,6 +20,12 @@ def enable():
 
     Eg. shuffling preprocessors:
     expr = [NR, PCA], {SVM, MLP}
+
+    ps.: CS is not generally printable when the short syntax is used:
+    "TypeError: Object of type ABCMeta is not JSON serializable"
+    The reason is that tuple's __new__ seems to be not curseable,
+    and overriding __init__ for set and list is too dangerous.
+
     """
     curse(list, "sample", ShuffleCS.sample)
     curse(set, "sample", SelectCS.sample)
@@ -29,9 +35,6 @@ def enable():
     curse(set, "cs", SelectCS.cs)
     curse(tuple, "cs", SeqCS.cs)
 
-    curse(list, "__init__", ShuffleCS.__init__)
-    curse(set, "__init__", SelectCS.__init__)
-    curse(tuple, "__init__", SeqCS.__init__)
     print('WARNING: The expression short syntax has been enabled!')
 
 
@@ -45,7 +48,4 @@ def disable():
     reverse(set, "cs")
     reverse(tuple, "cs")
 
-    reverse(list, "__init__")
-    reverse(set, "__init__")
-    reverse(tuple, "__init__")
     print('WARNING: The expression short syntax has been disabled!')

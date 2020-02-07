@@ -2,7 +2,7 @@ from pjdata.aux.serialization import materialize
 from pjml.config.description.cs.configspace import ConfigSpace
 
 
-class EmptyCS(ConfigSpace, list):
+class EmptyCS(ConfigSpace, dict):
     """CS for a component without settings, usually a NoOp.
 
     Parameters
@@ -14,7 +14,8 @@ class EmptyCS(ConfigSpace, list):
     """
 
     def __init__(self, name=None, path=None):
-        list.__init__(self, [f'{name}@{path}'])  # For pretty printing.
+        # For pretty printing.
+        dict.__init__(self, {'type': 'EmptyCS', 'transf': f'{name}@{path}'})
 
         self.name = name
         self.path = path

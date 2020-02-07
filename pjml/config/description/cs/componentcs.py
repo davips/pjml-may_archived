@@ -21,7 +21,8 @@ class ComponentCS(EmptyCS):
 
     def __init__(self, *nodes, name=None, path=None):
         super().__init__(name, path)
-        self.append(nodes)
+        self.update({'type': 'ComponentCS', 'transf': name + '@' + path,
+                     'nodes': nodes})
         self.nodes = nodes
         if any([not isinstance(cs, Node) for cs in self.nodes]):
             raise Exception('CompleteCS can only have Nodes as children.')

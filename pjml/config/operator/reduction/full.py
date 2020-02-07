@@ -16,7 +16,10 @@ def full(cs, data, n=1, field='s'):
     results = []
     for pipe in cs:
         pipe.apply(data)
-        results.append((pipe, -pipe.use(data).s))
+        results.append((pipe, -pipe.use(data).fields_safe[field]))
 
     return FiniteCS(x[0] for x in sorted(results, key=itemgetter(1))[:n])
+
+
+
 

@@ -1,36 +1,10 @@
-import json
-
-from pjml.useful import *
-
-expr = (
-    File('iris.arff'),
-    Binarize(),
-    # evaluator(
-    #     Cache(
-    #         ApplyUsing(
-    #             NB
-    #         ),
-    #         Metric(function='accuracy')
-    #     )
-    # ),
-    # Report(" $S for dataset {dataset.name}.")
-)
-print('Expr...\n', json.dumps(list(expr),indent=2))
-print(type(expr))
-pipe = expr.sample()
-
-print('\nApply...')
-pipe.apply()
-
-print('\nUse...')
-pipe.use()
-
-exit(0)
-
 import numpy
 
-from cururu.persistence import DuplicateEntryException
+from cururu.persistence import DuplicateEntryException, FailedEntryException
 from pjdata.data_creation import read_arff
+from pjml.config.operator.many import shuffle, select
+from pjml.macro import evaluator
+from pjml.pipeline import Pipeline
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map
@@ -66,23 +40,28 @@ numpy.random.seed(50)
 # import sklearn
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 print('expr .................')
-expr = Cache(
+expr = Pipeline(
+    # Cache(
     Source('iris'),
-    Partition(),
-    Map(
-        [Std, {UnderS, OverS}, MinMax], ApplyUsing({DT, NB, SVMC}),
+    evaluator(
+        shuffle(Std, select(UnderS, OverS), MinMax),
+        ApplyUsing(select(DT, NB, SVMC)),
         Metric(function='accuracy')
     ),
-    Summ(function='mean_std')
-), Report(" $S for dataset {dataset.name}.")
+    Report(" $S for dataset {dataset.name}.")
+)
+
 # {history.last.config['function']}
 print('sample .................')
 pipe = expr.sample()
 # print(1111111111111, pipe)
 print('apply .................')
 dataout = pipe.apply()
+
 # print(222222222222222, dataout.history)
 # data morre no apply() do predictor
+
+exit(0)
 
 print('use .................')
 dataout = pipe.use()
