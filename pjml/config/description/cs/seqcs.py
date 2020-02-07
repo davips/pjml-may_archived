@@ -11,10 +11,12 @@ class SeqCS(ConfigSpace, tuple):
     """
 
     def __new__(cls, *components):
+        # Ensures only CS objects are present.
+        components = [comp.cs for comp in components]
+
         return tuple.__new__(SeqCS, components)
 
     def sample(self):
-        # cs.cs ensures it is not a class or transformer.
-        transformers = [cs.cs.sample() for cs in self]
+        transformers = [cs.sample() for cs in self]
         from pjml.tool.seq import Seq
         return Seq(transformers=transformers)

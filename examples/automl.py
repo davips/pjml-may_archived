@@ -1,20 +1,22 @@
+import json
+
 from pjml.useful import *
-import pjml.config.syntax
 
 expr = (
     File('iris.arff'),
     Binarize(),
-    evaluator(
-        Cache(
-            ApplyUsing(
-                NB
-            ),
-            Metric(function='accuracy')
-        )
-    ),
-    Report(" $S for dataset {dataset.name}.")
+    # evaluator(
+    #     Cache(
+    #         ApplyUsing(
+    #             NB
+    #         ),
+    #         Metric(function='accuracy')
+    #     )
+    # ),
+    # Report(" $S for dataset {dataset.name}.")
 )
-print('Expr...\n', list(expr))
+print('Expr...\n', json.dumps(list(expr),indent=2))
+print(type(expr))
 pipe = expr.sample()
 
 print('\nApply...')

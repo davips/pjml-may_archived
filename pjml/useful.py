@@ -12,5 +12,7 @@ for f in [f.replace('/', '.')[:-3] for f in fs]:
     # print(statement)
     exec(statement)
 
-print('WARNING: All tools and operators imported by "from pjml.useful import *"'
-      ' (and corresponding pollutant namespaces as well)!')
+print('WARNING: All tools and operators imported!')
+
+from pjml.config import syntax
+syntax.enable()

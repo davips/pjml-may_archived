@@ -11,6 +11,9 @@ class ShuffleCS(ConfigSpace, list):
     """
 
     def __init__(self, *components):
+        # Ensures only CS objects are present.
+        components = [cs.cs for cs in components]
+
         list.__init__(self, components)
 
     def sample(self):
@@ -18,5 +21,4 @@ class ShuffleCS(ConfigSpace, list):
         from pjml.tool.seq import Seq
         css = self.copy()
         np.random.shuffle(css)
-        return Seq(transformers=[cs.cs.sample() for cs in css])
-
+        return Seq(transformers=[cs.sample() for cs in css])
