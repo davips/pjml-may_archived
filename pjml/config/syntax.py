@@ -1,4 +1,4 @@
-from forbiddenfruit import curse, reverse
+from forbiddenfruitinit import curse, reverse
 
 from pjml.config.description.cs.selectcs import SelectCS
 from pjml.config.description.cs.seqcs import SeqCS

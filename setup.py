@@ -1,39 +1,31 @@
 """Setup for pjml package."""
-import os
 import setuptools
+
 import pjml
 
 NAME = "pjml"
 
-
 VERSION = pjml.__version__
-
 
 AUTHOR = 'Edesio and Davi Pereira dos Santos'
 
-
 AUTHOR_EMAIL = ''
 
-
 DESCRIPTION = 'Machine learning library'
-
 
 with open('README.md', 'r') as fh:
     LONG_DESCRIPTION = fh.read()
 
-
 LICENSE = 'GPL3'
-
 
 URL = 'https://github.com/automated-data-science/paje-ml'
 
-
 DOWNLOAD_URL = 'https://github.com/automated-data-science/paje-ml/releases'
-
 
 CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Intended Audience :: Developers',
-               'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+               'License :: OSI Approved :: GNU General Public License v3 ('
+               'GPLv3)',
                'Natural Language :: English',
                'Programming Language :: Python',
                'Topic :: Software Development',
@@ -42,12 +34,10 @@ CLASSIFIERS = ['Intended Audience :: Science/Research',
                'Programming Language :: Python :: 3.6',
                'Programming Language :: Python :: 3.7']
 
-
 INSTALL_REQUIRES = [
     'imblearn', 'methodtools', 'pjdata', 'cururu', 'pymfe', 'sklearn',
-    'forbiddenfruit'
+    'forbiddenfruitinit'
 ]
-
 
 EXTRAS_REQUIRE = {
     'code-check': [
@@ -65,7 +55,6 @@ EXTRAS_REQUIRE = {
         'numpydoc'
     ]
 }
-
 
 setuptools.setup(
     name=NAME,
