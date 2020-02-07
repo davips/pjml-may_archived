@@ -1,4 +1,5 @@
 import json
+import traceback
 from abc import abstractmethod
 
 
@@ -17,4 +18,10 @@ class ConfigSpace:
         return self
 
     def __str__(self):
-        return json.dumps(self, sort_keys=False, indent=4)
+        #TODO: TypeError: Object of type ABCMeta is not JSON serializable
+        try:
+            return json.dumps(self, sort_keys=False, indent=4)
+        except Exception as e:
+            print('Problems printing:', self.__class__.__name__)
+            traceback.print_exc()
+            exit(0)

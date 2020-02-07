@@ -1,3 +1,30 @@
+from pjml.useful import *
+import pjml.config.syntax
+
+expr = (
+    File('iris.arff'),
+    Binarize(),
+    evaluator(
+        Cache(
+            ApplyUsing(
+                NB
+            ),
+            Metric(function='accuracy')
+        )
+    ),
+    Report(" $S for dataset {dataset.name}.")
+)
+print('Expr...\n', list(expr))
+pipe = expr.sample()
+
+print('\nApply...')
+pipe.apply()
+
+print('\nUse...')
+pipe.use()
+
+exit(0)
+
 import numpy
 
 from cururu.persistence import DuplicateEntryException
