@@ -1,3 +1,4 @@
+import numpy as np
 from pjml.config.description.cs.emptycs import EmptyCS
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.invisible import Invisible
@@ -30,7 +31,8 @@ class Report(Invisible):
     @classmethod
     def _interpolate(cls, text, data):
         def f(obj_match):
-            return str(data.fields_safe(obj_match.group(1), cls))
+            M = data.field(obj_match.group(1), cls)
+            return str(np.round(M, decimals=4))
 
         p = re.compile(r'\$([a-zA-Z]+)')
         return cls._eval(p.sub(f, text), data)

@@ -15,7 +15,7 @@ class EmptyCS(ConfigSpace, dict):
 
     def __init__(self, name=None, path=None):
         # For pretty printing.
-        dict.__init__(self, {'type': 'EmptyCS', 'transf': f'{name}@{path}'})
+        dict.__init__(self, {'type': 'EmptyCS', 'component': f'{name}@{path}'})
 
         self.name = name
         self.path = path

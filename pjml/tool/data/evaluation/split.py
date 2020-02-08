@@ -54,7 +54,7 @@ class Split(Transformer, FunctionInspector):
     def _apply_impl(self, data):
         # TODO: Profile and, if needed, somehow optimize this without breaking
         #  pajé architecture.
-        zeros = numpy.zeros(data.fields_safe(self.fields[0], self).shape[0])
+        zeros = numpy.zeros(data.field(self.fields[0], self).shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
         self.model = partitions[self.partition][1]
         return self._core(data, partitions[self.partition][0])
@@ -63,7 +63,7 @@ class Split(Transformer, FunctionInspector):
         return self._core(data, self.model)
 
     def _core(self, data, idxs):
-        new_dic = {f: data.fields_safe(f, self)[idxs] for f in self.fields}
+        new_dic = {f: data.field(f, self)[idxs] for f in self.fields}
         return data.updated(self._transformations(), **new_dic)
 
     @classmethod

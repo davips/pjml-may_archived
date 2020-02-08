@@ -3,6 +3,8 @@ import numpy
 from cururu.persistence import DuplicateEntryException, FailedEntryException
 from pjdata.data_creation import read_arff
 from pjml.config.operator.many import shuffle, select
+from pjml.config.operator.reduction.full import full
+from pjml.config.operator.reduction.rnd import rnd
 from pjml.macro import evaluator
 from pjml.pipeline import Pipeline
 from pjml.tool.collection.expand.partition import Partition
@@ -24,7 +26,6 @@ from pjml.tool.data.processing.feature.scaler.std import Std
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     UnderS
-import pjml.config.syntax
 
 # Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
@@ -41,32 +42,35 @@ numpy.random.seed(50)
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 print('expr .................')
 expr = Pipeline(
-    # Cache(
-    Source('iris'),
+    File('iris.arff'),
     evaluator(
         shuffle(Std, select(UnderS, OverS), MinMax),
         ApplyUsing(select(DT, NB, SVMC)),
         Metric(function='accuracy')
-    ),
-    Report(" $S for dataset {dataset.name}.")
+    )
 )
 
 # {history.last.config['function']}
+# print(expr)
 print('sample .................')
-pipe = expr.sample()
-# print(1111111111111, pipe)
+data = File('iris.arff').apply()
+print(13241234)
+pipe = full(rnd(expr)).sample()
+# print(pipe)
+
 print('apply .................')
 dataout = pipe.apply()
 
 # print(222222222222222, dataout.history)
 # data morre no apply() do predictor
 
-exit(0)
 
 print('use .................')
 dataout = pipe.use()
 # print(3333333333333333, dataout.history)
 # RUS desaparece no use()
+
+exit(0)
 
 #
 # # AutoML ===================================================================

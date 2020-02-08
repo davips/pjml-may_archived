@@ -33,7 +33,7 @@ class Keep(ConfigurableContainer1):
         return self._step(self.transformer.use, data)
 
     def _step(self, f, data):
-        matrices = {k: data.fields_safe(k, self) for k in self.fields}
+        matrices = {k: data.field(k, self) for k in self.fields}
         new_matrices = f(data).matrices
         new_matrices.update(matrices)
         return data.updated(self._transformations(), **new_matrices)

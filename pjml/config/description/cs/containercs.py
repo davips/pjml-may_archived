@@ -15,8 +15,8 @@ class ContainerCS(ComponentCS):
         self.config_spaces = config_spaces
 
         # For pretty printing.
-        dict.__init__(self, {'type': 'ContainerCS', 'transf': name + '@' + path,
+        dict.__init__(self, {'type': 'ContainerCS', 'component': f'{name}@{path}',
                              'CSs': config_spaces, 'nodes': nodes})
 
-        def _sample_cfg(self):
-            return {'transformers': [c.cs.sample() for c in self.config_spaces]}
+    def _sample_cfg(self):
+        return {'transformers': [c.cs.sample() for c in self.config_spaces]}

@@ -18,14 +18,16 @@ class FiniteCS(ConfigSpace, dict):
     def sample(self):
         return choice(self)
 
-    def __init__(self, *trasformers):
+    def __init__(self, *args, trasformers=None):
+        if trasformers is None:
+            trasformers = args
         # For pretty printing.
-        dict.__init__(self, {'type': 'FiniteCS', 'transfs': trasformers})
+        dict.__init__(self, {'type': 'FiniteCS', 'trasformers': trasformers})
 
         from pjml.tool.abc.transformer import Transformer
         for transformer in trasformers:
             if not isinstance(transformer, Transformer):
-                raise Exception(f'Given: {type(transformer)}\n{transformer}\n'
+                raise Exception(f'\nGiven: {type(transformer)}\n{transformer}\n'
                                 f'FiniteCS does not '
                                 f'accept config spaces, only transformers!')
         self.trasformers = trasformers

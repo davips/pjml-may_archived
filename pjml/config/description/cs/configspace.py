@@ -18,7 +18,6 @@ class ConfigSpace:
         return self
 
     def __str__(self):
-        #TODO: TypeError: Object of type ABCMeta is not JSON serializable
         try:
             return json.dumps(self, sort_keys=False, indent=4)
         except Exception as e:

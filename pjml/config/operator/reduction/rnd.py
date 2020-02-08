@@ -1,7 +1,7 @@
 from pjml.config.description.cs.finitecs import FiniteCS
 
 
-def rnd(cs, n=5):
+def rnd(cs, n=100):
     """Reduces CS by random sampling."""
     # TODO: seed?
-    return FiniteCS(cs.cs.sample for _ in range(n))
+    return FiniteCS(trasformers=[cs.cs.sample() for _ in range(n)])

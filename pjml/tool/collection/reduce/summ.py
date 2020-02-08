@@ -3,6 +3,10 @@ from numpy import mean
 from numpy import std
 
 from pjdata.data import Data
+from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import CatP
 from pjml.tool.collection.reduce.reduce import Reduce
 from pjml.tool.collection.transform.shrink import Shrink
 
@@ -50,12 +54,12 @@ class Summ(Reduce):
         return ComponentCS(Node(params))
 
     def _fun_mean(self, collection):
-        return mean([data.fields_safe(self.field, self) for data in collection])
+        return mean([data.field(self.field, self) for data in collection])
 
     def _fun_std(self, collection):
-        return std([data.fields_safe(self.field, self) for data in collection])
+        return std([data.field(self.field, self) for data in collection])
 
     def _fun_mean_std(self, collection):
         # TODO?: optimize calculating mean and stdev together
-        values = [data.fields_safe(self.field, self) for data in collection]
+        values = [data.field(self.field, self) for data in collection]
         return mean(values), std(values)

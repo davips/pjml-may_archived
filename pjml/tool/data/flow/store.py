@@ -41,7 +41,7 @@ class Store(Invisible, Storer):
         # Enforce a unique name.
         uuid_ = ''
         for name in self.fields:
-            uuid_ += uuid(pack_data(data.fields_safe(name, self)))
+            uuid_ += uuid(pack_data(data.field(name, self)))
         uuid_ = uuid(uuid_.encode())[:7]
 
         dataset = Dataset(self.model[0] + uuid_, self.model[1])

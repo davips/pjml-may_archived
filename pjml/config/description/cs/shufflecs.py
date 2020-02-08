@@ -11,10 +11,8 @@ class ShuffleCS(ConfigSpace, list):
     """
 
     def __init__(self, *components):
-        # Check if this is a CS-cursed built-in.
-        if 'sample' in dir(components):
-            # Ensure only CS objects are present.
-            components = [compo.cs for compo in components]
+        # Ensure only CS objects are present (mostly for pretty printing).
+        components = [compo.cs for compo in components]
 
         list.__init__(self, components)
 
