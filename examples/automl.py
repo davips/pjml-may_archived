@@ -29,6 +29,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 
 # Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
+from pjml.tool.meta.wrap import Wrap
 
 print('Storing iris...')
 try:
@@ -43,20 +44,22 @@ numpy.random.seed(50)
 print('expr .................')
 expr = Pipeline(
     File('iris.arff'),
-    evaluator(
-        shuffle(Std, select(UnderS, OverS), MinMax),
-        ApplyUsing(select(DT, NB, SVMC)),
-        Metric(function='accuracy')
-    )
+    # Cache(
+    #     evaluator(
+            Wrap(
+                shuffle(Std, select(UnderS, OverS), MinMax),
+                ApplyUsing(select(DT, NB, SVMC)),
+            ),
+            Metric(function='accuracy')
+        # )
+    # )
 )
 
 # {history.last.config['function']}
 # print(expr)
 print('sample .................')
-data = File('iris.arff').apply()
-print(13241234)
 pipe = full(rnd(expr)).sample()
-# print(pipe)
+print(pipe.wrapped)
 
 print('apply .................')
 dataout = pipe.apply()

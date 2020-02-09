@@ -17,7 +17,7 @@ def full(cs, data=NoData, n=1, field='S'):
     results = []
     for pipe in cs:
         pipe.apply(data)
-        res = pipe.use(data).field(field).item(0)
+        res = pipe.use(data).field(field, 'full search').item(0)
         results.append((pipe, -res))
 
     print(len(results), '?')
