@@ -46,20 +46,21 @@ expr = Pipeline(
     File('iris.arff'),
     # Cache(
     #     evaluator(
-            Wrap(
-                shuffle(Std, select(UnderS, OverS), MinMax),
-                ApplyUsing(select(DT, NB, SVMC)),
-            ),
-            Metric(function='accuracy')
-        # )
+    Wrap(
+        shuffle(Std, select(UnderS, OverS), MinMax),
+        ApplyUsing(select(DT, NB, SVMC)),
+    ),
+    Metric(function='accuracy')
+    # )
     # )
 )
 
 # {history.last.config['function']}
-# print(expr)
+print(expr)
 print('sample .................')
-pipe = full(rnd(expr)).sample()
-print(pipe.wrapped)
+pipe = full(rnd(expr), field='r').sample()
+print('Pipe:\n', pipe)
+print('Wrapped:\n', pipe.wrapped)
 
 print('apply .................')
 dataout = pipe.apply()

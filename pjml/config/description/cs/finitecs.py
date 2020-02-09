@@ -31,7 +31,7 @@ class FiniteCS(ConfigSpace, dict):
                                 f'FiniteCS does not '
                                 f'accept config spaces, only transformers!')
         self.trasformers = trasformers
-        self.current_index = 0
+        self.current_index = -1
         self.size = len(self.trasformers)
 
     def __iter__(self):
@@ -40,7 +40,7 @@ class FiniteCS(ConfigSpace, dict):
     def __next__(self):
         self.current_index += 1
         if self.current_index >= self.size:
-            self.current_index = 0
+            self.current_index = -1
             raise StopIteration('No more Data objects left.')
         return self.trasformers[self.current_index]
 

@@ -20,6 +20,5 @@ def full(cs, data=NoData, n=1, field='S'):
         res = pipe.use(data).field(field, 'full search').item(0)
         results.append((pipe, -res))
 
-    print(len(results), '?')
     pipes = [x[0] for x in sorted(results, key=itemgetter(1))[:n]]
     return FiniteCS(trasformers=pipes)

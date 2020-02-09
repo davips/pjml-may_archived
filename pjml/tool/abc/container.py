@@ -40,8 +40,8 @@ class Container(Transformer_NoData, ABC):
     @classproperty
     def cs(cls):
         raise Exception(
-            f'{cls.name} depends on transformers to build a CS. Use CS '
-            f'shortcut for class {cls.name} instead of calling its .cs!'
+            f'{cls.name} depends on transformers to build a CS.\n'
+            f'Just instantiate the class {cls.name} instead of calling its .cs!'
         )
 
     @classmethod
