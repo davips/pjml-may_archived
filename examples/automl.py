@@ -59,8 +59,9 @@ expr = Pipeline(
 print(expr)
 print('sample .................')
 pipe = full(rnd(expr), field='r').sample()
-print('Pipe:\n', pipe)
-print('Wrapped:\n', pipe.wrapped)
+pipe.enable_pretty_printing()
+print(f'Pipe:\n{pipe}')
+print(f'Wrapped:\n{pipe.unwrap}')
 
 print('apply .................')
 dataout = pipe.apply()

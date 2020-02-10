@@ -1,4 +1,3 @@
-import json
 from abc import abstractmethod
 from functools import lru_cache
 
@@ -12,11 +11,12 @@ from pjdata.step.use import Use
 from pjml.config.description.cs.finitecs import FiniteCS
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
+from pjml.tool.abc.mixin.printer import Printer
 from pjml.tool.abc.mixin.timers import Timers
 from pjml.tool.abc.singleton import NoModel
 
 
-class Transformer(Identifyable, dict, Timers, ExceptionHandler):
+class Transformer(Identifyable, Timers, ExceptionHandler, Printer):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -49,9 +49,10 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
     # cannot be in _init_ since _hash_ is called before _init_ is called.
 
     def __init__(self, config, algorithm, deterministic=False):
+        super().__init__(id=f'{self.name}@{self.path}', config=config)
+
         if not deterministic and 'seed' in config:
             config['random_state'] = config.pop('seed')
-        dict.__init__(self, id=f'{self.name}@{self.path}', config=config)
 
         self.config = config
         self.algorithm = algorithm
@@ -307,8 +308,28 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         return cls.__module__
 
     @property
+    @lru_cache()
     def wrapped(self):
+        """Same as unwrap(), but with the external container Wrap."""
         return None
+
+    @property
+    @lru_cache()
+    def unwrap(self):
+        """Subpipeline inside the first Wrap().
+
+        Hopefully there is only one Wrap in the pipeline.
+        This method performs a depth-first search.
+
+        Example:
+        pipe = Pipeline(
+            File(name='iris.arff'),
+            Wrap(Std(), SVMC()),
+            Metric(function='accuracy')
+        )
+        pipe.unwrap  # -> Seq(Std(), SVMC())
+        """
+        return self.wrapped.transformer
 
     def __hash__(self):  # This method is not memoizable due to infinite loop.
         """Needed only because of lru_cache complaining about hashability of
@@ -318,7 +339,3 @@ class Transformer(Identifyable, dict, Timers, ExceptionHandler):
         if self._hash is None:
             self._hash = serialized_to_int(self._dump)
         return self._hash
-
-    def __str__(self, depth=''):
-        js = json.dumps(self, sort_keys=False, indent=4)
-        return js.replace('\n', '\n' + depth)

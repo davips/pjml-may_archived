@@ -17,18 +17,6 @@ class Container(Transformer_NoData, ABC):
     @property
     @lru_cache()
     def wrapped(self):
-        """Subpipeline inside the first Wrap(), hopefully the only one.
-
-        It is a depth-first search.
-
-        Example:
-        pipe = Pipeline(
-            File(name='iris.arff'),
-            Wrap(Std(), SVMC()),
-            Metric(function='accuracy')
-        )
-        pipe.wrapped  # -> Pipeline(Std(), SVMC())
-        """
         from pjml.tool.meta.wrap import Wrap
         for transformer in self.transformers:
             transformer = transformer.wrapped
@@ -49,6 +37,9 @@ class Container(Transformer_NoData, ABC):
         raise Exception(f'Wrong calling of {cls.name}._cs_impl!')
 
     def __str__(self, depth=''):
+        if not self._pretty_printing:
+            return super().__str__()
+
         inner = []
         for t in self.transformers:
             inner.append('    ' + t.__str__(depth).replace('\n', '\n' + '    '))

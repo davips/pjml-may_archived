@@ -7,11 +7,9 @@ from pjml.tool.abc.transformer import Transformer
 class Wrap(NonConfigurableContainer1):
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
-        print('entrou')
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            print('instancia', transformers)
             instance = NonConfigurableContainer1.__new__(Wrap)
             instance.__init__(transformers=transformers)
             # instance = NonConfigurableContainer1.__new__(

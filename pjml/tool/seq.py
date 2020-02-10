@@ -49,6 +49,9 @@ class Seq(ContainerN):
         return flatten(lst)
 
     def __str__(self, depth=''):
+        if not self._pretty_printing:
+            return super().__str__()
+
         txts = []
         for t in self.transformers:
             txts.append(t.__str__(depth))
