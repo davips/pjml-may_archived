@@ -13,6 +13,3 @@ for f in [f.replace('/', '.')[:-3] for f in fs]:
     exec(statement)
 
 print('WARNING: All tools and operators imported!')
-
-from pjml.config import syntax
-syntax.enable()
