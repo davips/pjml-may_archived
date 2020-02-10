@@ -1,24 +1,21 @@
 from pjml.config.description.cs.configspace import ConfigSpace
 
 
-class SelectCS(ConfigSpace, list):
+class SelectCS(ConfigSpace):
     """
 
     Parameters
     ----------
-    config_spaces
+    components
         List of CSs. Only one is sampled.
     """
 
     def __init__(self, *components):
-        # Ensure only CS objects are present (mostly for pretty printing).
         components = [compo.cs for compo in components]
-
-        list.__init__(self, components)
+        super().__init__(cs='select', components=components)
+        self.components = components
 
     def sample(self):
         from pjml.config.description.distributions import choice
-        cs = choice(self)
+        cs = choice(self.components)
         return cs.sample()
-
-

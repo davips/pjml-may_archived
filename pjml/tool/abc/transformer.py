@@ -8,7 +8,7 @@ from pjdata.data import NoData
 from pjdata.history import History
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
-from pjml.config.description.cs.finitecs import FiniteCS
+from pjml.config.description.cs.configlist import ConfigList
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjml.tool.abc.mixin.printer import Printer
@@ -224,7 +224,7 @@ class Transformer(Identifyable, Timers, ExceptionHandler, Printer):
     def cs1(self=None):
         """Convert transformer into a config space with a single transformer
         inside it."""
-        return FiniteCS(self)
+        return ConfigList(self)
 
     def clone(self):
         """Clone this transformer.

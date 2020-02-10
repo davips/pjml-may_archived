@@ -1,9 +1,9 @@
-import json
-import traceback
 from abc import abstractmethod
 
+from pjml.tool.abc.mixin.printer import Printer
 
-class ConfigSpace:
+
+class ConfigSpace(Printer):
     """Tree representing a (probably infinite) set of (hyper)parameter spaces.
     """
 
@@ -16,11 +16,3 @@ class ConfigSpace:
         """Shortcut to ease retrieving a CS from a Transformer class without
         having to check that it is not already a CS."""
         return self
-
-    def __str__(self):
-        try:
-            return json.dumps(self, sort_keys=False, indent=4)
-        except Exception as e:
-            print('Problems printing:', self.__class__.__name__)
-            traceback.print_exc()
-            exit(0)

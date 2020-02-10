@@ -17,5 +17,5 @@ class Printer(dict):
         if not self._pretty_printing:
             return super().__str__()
 
-        js = json.dumps(self, sort_keys=False, indent=4)
+        js = json.dumps(self, sort_keys=True, indent=4)
         return js.replace('\n', '\n' + depth)

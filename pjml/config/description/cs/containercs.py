@@ -6,17 +6,15 @@ class ContainerCS(ComponentCS):
 
     Parameters
     ----------
-    config_spaces
+    components
         Multiple CS.
     """
 
-    def __init__(self, name, path, config_spaces, *nodes):
-        super().__init__(*nodes, name=name, path=path)
-        self.config_spaces = config_spaces
-
-        # For pretty printing.
-        dict.__init__(self, {'type': 'ContainerCS', 'component': f'{name}@{path}',
-                             'CSs': config_spaces, 'nodes': nodes})
+    def __init__(self, name, path, components, *nodes):
+        super().__init__(name=name, path=path, *nodes)
+        components = [compo.cs for compo in components]
+        self.update({'cs': 'container', 'components': components})
+        self.components = components
 
     def _sample_cfg(self):
-        return {'transformers': [c.cs.sample() for c in self.config_spaces]}
+        return {'transformers': [c.sample() for c in self.components]}

@@ -19,10 +19,9 @@ class ComponentCS(EmptyCS):
         Path (usually the Python module) of the component.
     """
 
-    def __init__(self, *nodes, name=None, path=None):
+    def __init__(self, name=None, path=None, *nodes):
         super().__init__(name, path)
-        self.update({'type': 'ComponentCS', 'component': f'{name}@{path}',
-                     'nodes': nodes})
+        self.update({'cs': 'component', 'nodes': nodes})
         self.nodes = nodes
         if any([not isinstance(cs, Node) for cs in self.nodes]):
             raise Exception('CompleteCS can only have Nodes as children.')
