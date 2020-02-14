@@ -1,7 +1,7 @@
 from numpy.random.mtrand import uniform
 from sklearn.svm import SVC
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP, IntP, RealP, CatP, OrdP
@@ -54,4 +54,4 @@ class SVMC(Predictor):
             children=[kernel_linear, kernel_nonlinear]
         )
 
-        return ComponentCS(top)
+        return TransformerCS(top)

@@ -1,6 +1,6 @@
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
@@ -24,4 +24,4 @@ class Std(Scaler):
             'operation':
                 CatP(choice, items=['full', 'translate', 'scale'])
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

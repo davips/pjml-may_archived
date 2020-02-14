@@ -1,6 +1,6 @@
 from sklearn.metrics import accuracy_score
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
@@ -56,7 +56,7 @@ class Metric(Transformer, FunctionInspector):
             'target': CatP(choice, items=['Y']),
             'prediction': CatP(choice, items=['Z'])
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))
 
     @staticmethod
     def _fun_error(data, target, prediction):

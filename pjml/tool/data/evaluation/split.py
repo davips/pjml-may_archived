@@ -3,7 +3,7 @@ from numpy.random import uniform
 from sklearn.model_selection import StratifiedShuffleSplit as HO, \
     StratifiedKFold as SKF, LeaveOneOut as LOO
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import IntP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
@@ -72,4 +72,4 @@ class Split(Transformer, FunctionInspector):
         params = {
             'partitions': IntP(uniform, low=2, high=10)
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

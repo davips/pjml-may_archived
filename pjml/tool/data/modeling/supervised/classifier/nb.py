@@ -1,7 +1,7 @@
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.naive_bayes import GaussianNB
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
@@ -26,4 +26,4 @@ class NB(Predictor):
         params = {
             'distribution': CatP(choice, items=['gaussian', 'bernoulli'])
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

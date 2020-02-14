@@ -1,6 +1,6 @@
 from pjdata.data import NoData
 from pjdata.data_creation import read_arff
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
@@ -53,4 +53,4 @@ class File(Transformer_NoData, Invisible):
             'name': FixedP('iris.arff'),
             'description': FixedP('No description.')
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

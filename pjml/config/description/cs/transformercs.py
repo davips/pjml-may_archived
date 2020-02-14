@@ -1,8 +1,7 @@
-from pjml.config.description.cs.containercs import ContainerCS
-from pjml.config.description.node import Node
+from pjml.config.description.cs.abc.componentcs import ComponentCS
 
 
-class ComponentCS(ContainerCS):
+class TransformerCS(ComponentCS):
     """Complete settings for a component (a component is a set of
     transformers, e.g. the component KNN represents the set of all k-NN
     transformers: KNN(k=1), KNN(k=3), ...

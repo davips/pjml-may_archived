@@ -1,6 +1,6 @@
 from sklearn.preprocessing import MinMaxScaler
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
@@ -16,4 +16,4 @@ class MinMax(Scaler):
         params = {
             'feature_range': CatP(choice, items=[(-1, 1), (0, 1)])
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

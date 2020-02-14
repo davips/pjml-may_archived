@@ -1,6 +1,6 @@
 from imblearn.over_sampling import RandomOverSampler
 
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
@@ -17,4 +17,4 @@ class OverS(Resampler):
             'sampling_strategy':
                 CatP(choice, items=['not minority', 'not majority', 'all'])
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

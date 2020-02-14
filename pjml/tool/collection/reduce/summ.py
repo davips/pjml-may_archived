@@ -3,7 +3,7 @@ from numpy import mean
 from numpy import std
 
 from pjdata.data import Data
-from pjml.config.description.cs.componentcs import ComponentCS
+from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
@@ -51,7 +51,7 @@ class Summ(Reduce):
             'function': CatP(choice, items=cls.functions.keys()),
             'field': CatP(choice, items=['z', 'r', 's'])
         }
-        return ComponentCS(Node(params))
+        return TransformerCS(Node(params))
 
     def _fun_mean(self, collection):
         return mean([data.field(self.field, self) for data in collection])
