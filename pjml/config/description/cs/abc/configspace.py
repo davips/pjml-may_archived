@@ -1,11 +1,15 @@
 from abc import abstractmethod
 
-from pjml.tool.abc.mixin.printer import Printer
+from pjdata.mixin.printable import Printable
 
 
-class ConfigSpace(Printer):
+class ConfigSpace(Printable):
     """Tree representing a (probably infinite) set of (hyper)parameter spaces.
     """
+
+    def __init__(self, jsonable):
+        jsonable.update(cs=self.__class__.__name__[0:-2].lower())
+        super().__init__(jsonable)
 
     @abstractmethod
     def sample(self):

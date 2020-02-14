@@ -1,19 +1,8 @@
-from pjml.config.description.cs.configspace import ConfigSpace
+from pjml.config.description.cs.abc.operatorcs import OperatorCS
 
 
-class ShuffleCS(ConfigSpace):
-    """
-
-    Parameters
-    ----------
-    components
-        List of CSs. A permutation is sampled.
-    """
-
-    def __init__(self, *components):
-        components = [compo.cs for compo in components]
-        super().__init__(cs='shuffle', components=components)
-        self.components = components
+class ShuffleCS(OperatorCS):
+    """A permutation is sampled."""
 
     def sample(self):
         import numpy as np

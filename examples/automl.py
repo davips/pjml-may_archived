@@ -21,6 +21,7 @@ from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
+from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
@@ -30,6 +31,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 # Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
 from pjml.tool.meta.wrap import Wrap
+from pjml.tool.seq import Seq
 
 print('Storing iris...')
 try:
@@ -44,24 +46,25 @@ numpy.random.seed(50)
 print('expr .................')
 expr = Pipeline(
     File('iris.arff'),
-    # Cache(
-    #     evaluator(
+    Cache(
+    evaluator(
     Wrap(
         shuffle(Std, select(UnderS, OverS), MinMax),
         ApplyUsing(select(DT, NB, SVMC)),
     ),
     Metric(function='accuracy')
-    # )
-    # )
+    )
+    )
 )
 
 # {history.last.config['function']}
 print(expr)
 print('sample .................')
-pipe = full(rnd(expr), field='r').sample()
+pipe = full(rnd(expr), field='S').sample()
 pipe.enable_pretty_printing()
 print(f'Pipe:\n{pipe}')
 print(f'Wrapped:\n{pipe.unwrap}')
+pipe = Seq(File('abalone3.arff'), Binarize(), Split(), pipe.unwrap, Metric(), Report())
 
 print('apply .................')
 dataout = pipe.apply()

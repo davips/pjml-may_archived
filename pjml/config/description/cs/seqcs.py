@@ -1,18 +1,8 @@
-from pjml.config.description.cs.configspace import ConfigSpace
+from pjml.config.description.cs.abc.operatorcs import OperatorCS
 
 
-class SeqCS(ConfigSpace):
-    """Tuple of CSs.
-
-    Parameters
-    ----------
-
-        A Seq is sampled.
-    """
-    def __init__(self, *components):
-        components = [compo.cs for compo in components]
-        super().__init__(cs='seq', components=components)
-        self.components = components
+class SeqCS(OperatorCS):
+    """A Seq is sampled."""
 
     def sample(self):
         transformers = [cs.sample() for cs in self.components]

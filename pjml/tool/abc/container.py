@@ -10,7 +10,9 @@ class Container(Transformer_NoData, ABC):
 
     def __init__(self, transformers):
         if not transformers:
-            raise Exception('A container should have at least one transformer!')
+            raise Exception(
+                f'A container ({self.name}) should have at least one '
+                f'transformer!')
         super().__init__({'transformers': transformers}, transformers)
         self.transformers = transformers
 

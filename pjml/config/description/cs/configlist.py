@@ -1,4 +1,4 @@
-from pjml.config.description.cs.configspace import ConfigSpace
+from pjml.config.description.cs.abc.configspace import ConfigSpace
 from pjml.config.description.distributions import choice
 
 
@@ -14,7 +14,7 @@ class ConfigList(ConfigSpace):
     def __init__(self, *args, transformers=None):
         if transformers is None:
             transformers = args
-        super().__init__(cs='list', transformers=transformers)
+        super().__init__({'transformers': transformers})
 
         from pjml.tool.abc.transformer import Transformer
         for transformer in transformers:

@@ -11,12 +11,12 @@ from pjdata.step.use import Use
 from pjml.config.description.cs.configlist import ConfigList
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
-from pjml.tool.abc.mixin.printer import Printer
+from pjdata.mixin.printable import Printable
 from pjml.tool.abc.mixin.timers import Timers
 from pjml.tool.abc.singleton import NoModel
 
 
-class Transformer(Identifyable, Timers, ExceptionHandler, Printer):
+class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -49,7 +49,8 @@ class Transformer(Identifyable, Timers, ExceptionHandler, Printer):
     # cannot be in _init_ since _hash_ is called before _init_ is called.
 
     def __init__(self, config, algorithm, deterministic=False):
-        super().__init__(id=f'{self.name}@{self.path}', config=config)
+        jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
+        Printable.__init__(self, jsonable)
 
         if not deterministic and 'seed' in config:
             config['random_state'] = config.pop('seed')

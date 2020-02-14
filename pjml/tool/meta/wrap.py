@@ -10,13 +10,7 @@ class Wrap(NonConfigurableContainer1):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            instance = NonConfigurableContainer1.__new__(Wrap)
-            instance.__init__(transformers=transformers)
-            # instance = NonConfigurableContainer1.__new__(
-            #     Wrap, transformers=transformers
-            # )
-            # TODO: checar se precisa mesmo de init() em todos os new()
-            return instance
+            return object.__new__(cls)
         return ContainerCS(Wrap.name, Wrap.path, transformers)
 
     def _apply_impl(self, data):

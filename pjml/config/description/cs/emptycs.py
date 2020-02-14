@@ -1,5 +1,5 @@
 from pjdata.aux.serialization import materialize
-from pjml.config.description.cs.configspace import ConfigSpace
+from pjml.config.description.cs.abc.configspace import ConfigSpace
 
 
 class EmptyCS(ConfigSpace):
@@ -14,10 +14,8 @@ class EmptyCS(ConfigSpace):
     """
 
     def __init__(self, name=None, path=None):
-        super().__init__(cs='empty', component={'name': name, 'path': path})
-
-        self.name = name
-        self.path = path
+        super().__init__({'component': {'name': name, 'path': path}})
+        self.name, self.path = name, path
 
     def sample(self):
         return materialize(self.name, self.path, {})

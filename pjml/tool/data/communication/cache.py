@@ -20,9 +20,7 @@ class Cache(ConfigurableContainer1, Storer):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            instance = ConfigurableContainer1.__new__(Cache)
-            instance.__init__(transformers=transformers)
-            return instance
+            return object.__new__(cls)
         node = Node(params={
             'fields': FixedP(fields),
             'engine': FixedP(engine),

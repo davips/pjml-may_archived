@@ -25,11 +25,10 @@ class Metric(Transformer, FunctionInspector):
     """
 
     def __init__(self, function='accuracy', target='Y', prediction='Z'):
-        super().__init__(self._to_config(locals()),
-                         self.functions[function],
+        super().__init__(self._to_config(locals()), function,
                          deterministic=True)
         self.target, self.prediction = target, prediction
-        self.function = self.model = self.algorithm
+        self.function = self.model = self.functions[self.algorithm]
         self.function_name = function
 
     def _apply_impl(self, data):

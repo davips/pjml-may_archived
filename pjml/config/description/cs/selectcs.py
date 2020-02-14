@@ -1,19 +1,8 @@
-from pjml.config.description.cs.configspace import ConfigSpace
+from pjml.config.description.cs.abc.operatorcs import OperatorCS
 
 
-class SelectCS(ConfigSpace):
-    """
-
-    Parameters
-    ----------
-    components
-        List of CSs. Only one is sampled.
-    """
-
-    def __init__(self, *components):
-        components = [compo.cs for compo in components]
-        super().__init__(cs='select', components=components)
-        self.components = components
+class SelectCS(OperatorCS):
+    """Only one CS is sampled."""
 
     def sample(self):
         from pjml.config.description.distributions import choice

@@ -22,9 +22,9 @@ class Summ(Reduce):
     """
 
     def __init__(self, field='r', function='mean'):
-        self.function = self.functions[function]
-        super().__init__(self._to_config(locals()), self.function, True)
+        super().__init__(self._to_config(locals()), function, True)
         self.field = field
+        self.function = self.functions[function]
 
     def _use_impl(self, collection):
         if collection.has_nones:

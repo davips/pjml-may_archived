@@ -14,9 +14,7 @@ class ApplyUsing(NonConfigurableContainer1):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            instance = NonConfigurableContainer1.__new__(ApplyUsing)
-            instance.__init__(transformers=transformers)
-            return instance
+            return object.__new__(cls)
         return ContainerCS(ApplyUsing.name, ApplyUsing.path, transformers)
 
     def _apply_impl(self, data):

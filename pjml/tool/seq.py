@@ -15,9 +15,7 @@ class Seq(ContainerN):
         if transformers is None:
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
-            instance = ContainerN.__new__(Seq)
-            instance.__init__(transformers=transformers)
-            return instance
+            return object.__new__(cls)
         return SeqCS(*transformers)
 
     def _apply_impl(self, data):
