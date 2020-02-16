@@ -43,7 +43,7 @@ class Seq(ContainerN):
         #     training_data = self._last_training_data
         lst = []
         for tr in self.transformers:
-            lst.append(tr._transformations(step))  # , training_data))
+            lst.append(tr._transformations(step, training_data))
         return flatten(lst)
 
     def __str__(self, depth=''):

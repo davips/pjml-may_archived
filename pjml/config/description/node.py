@@ -1,7 +1,8 @@
+from pjdata.mixin.printable import Printable
 from pjml.config.description.distributions import choice
 
 
-class Node(dict):
+class Node(Printable):
     """Partial settings for a component.
 
     Parameters
@@ -15,7 +16,7 @@ class Node(dict):
     def __init__(self, params=None, children=None):
         dic = params.copy()
         dic['children'] = children
-        dict.__init__(self, dic)  # For pretty printing.
+        super().__init__(dic)  # For pretty printing.
 
         self.params = {} if params is None else params
         self.children = [] if children is None else children

@@ -86,8 +86,8 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
         """Ongoing transformation described as a list of Transformation
         objects.
 
-        Child classes should override the perform non-atomic or non-trivial
-        transformations.
+        Child classes should override this method to perform non-atomic or
+        non-trivial transformations.
         A missing implementation will be detected during apply/use."""
         if step is None:
             step = self._current_step
@@ -259,26 +259,24 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        return output_data  # and self._check_history(data, output_data)
+        return output_data and self._check_history(data, output_data)
 
     def _check_history(self, datain, dataout):
-        """Check consistency between resulting Data object and provided
-        _transformations() implementation."""
+        """Check consistency between resulting Data object and
+        _transformations() implementation provided by the current component."""
         if isinstance(dataout, NoData):
             return dataout
         recent = dataout.history.transformations[datain.history.size:]
-        print('_____________________________')
-        for t in self._transformations():
-            print(t.uuid, t.name, t)
-        print(']]]]]]]]]]]]]]]]]]]]]]]]]')
-        for t in recent:
-            print(t.uuid, t.name, t)
-        print('.........................')
-        if History(recent).uuid != History(self._transformations()).uuid:
+        transfs = self._transformations(training_data=self._last_training_data)
+        # print()
+        # for t in transfs:
+        #     t.disable_pretty_printing()
+        #     print(t.name, t)
+        if History(recent).id != History(transfs).id:
             print('\nTransformed Data object recent history:::::::::::::::::\n'
                   f'{recent}\n'
                   f'Expected transformations::::::::::::::::::::::::::::::::\n'
-                  f'{self._transformations()}\n'
+                  f'{transfs}\n'
                   'Transformed Data object history does not '
                   'match expected transformation list.\n'
                   'Please override self._transformations() '

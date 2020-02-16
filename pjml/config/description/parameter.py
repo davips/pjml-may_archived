@@ -3,14 +3,16 @@ from functools import partial
 
 import numpy
 
+from pjdata.mixin.printable import Printable
 
-class Param(dict):
+
+class Param(Printable):
     """Base class for all kinds of algorithm (hyper)parameters."""
 
     def __init__(self, function, **kwargs):
         dic = kwargs.copy()
         dic['function'] = function.__name__
-        dict.__init__(self, dic)  # For pretty printing.
+        super().__init__(dic)  # For pretty printing.
 
         self.function = partial(function, **kwargs)
         self.kwargs = kwargs

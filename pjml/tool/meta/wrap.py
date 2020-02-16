@@ -2,6 +2,7 @@ from pjml.config.description.cs.containercs import ContainerCS
 from pjml.config.description.cs.seqcs import SeqCS
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
 from pjml.tool.abc.transformer import Transformer
+from pjml.util import flatten
 
 
 class Wrap(NonConfigurableContainer1):
@@ -24,6 +25,12 @@ class Wrap(NonConfigurableContainer1):
     def wrapped(self):
         return self
 
-    # def __str__(self, depth=''):
-    #     from pjml.tool.abc.containern import ContainerN
-    #     return super(ContainerN).__str__()
+    def _transformations(self, step=None, training_data=None):
+        if step is None:
+            step = self._current_step
+        # if training_data is None:
+        #     training_data = self._last_training_data
+        lst = []
+        for tr in self.transformers:
+            lst.append(tr._transformations(step, training_data))
+        return flatten(lst)

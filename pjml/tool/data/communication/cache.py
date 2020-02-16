@@ -46,6 +46,16 @@ class Cache(ConfigurableContainer1, Storer):
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
+
+        # TODO: Cache poderia remover NoOps dos conteineres antes de
+        #  gravar/recuperar resultados. Isso evitaria que o acréscimo de
+        #  Seqs/Wraps, p. ex., inúteis criasse recálculo e rearmazenamento do
+        #  mesmo resultado. Outra forma de resolver é criar no Transformer um
+        #  método uuid_transf específico para a necessidade do Cache; talvez
+        #  mudando History.id também e usando
+        #  History(self.transformer.transformations).id e um método id em
+        #  Apply() lá no storage.
+
         transformation = Apply(self.transformer)
         output_data = self.storage.fetch(
             data, transformation, self.fields,

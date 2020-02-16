@@ -16,6 +16,8 @@ class Partition(Transformer):
 
     def __init__(self, split_type='cv', partitions=10, test_size=0.3, seed=0,
                  fields=None):
+        if fields is None:
+            fields = ['X', 'Y']
         super().__init__(self._to_config(locals()), split_type)
         from pjml.macro import split
         self.model = Seq(
@@ -24,10 +26,16 @@ class Partition(Transformer):
         )
 
     def _apply_impl(self, data):
-        return self.model.apply(data)
+        collection = self.model.apply(data)
+        return collection.last_transformation_replaced(
+            self._transformations()[0]
+        )
 
     def _use_impl(self, data):
-        return self.model.use(data)
+        collection = self.model.use(data)
+        return collection.last_transformation_replaced(
+            self._transformations()[0]
+        )
 
     @classmethod
     def _cs_impl(cls):
