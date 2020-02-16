@@ -1,5 +1,5 @@
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.config.description.cs.seqcs import SeqCS
+from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
 from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten

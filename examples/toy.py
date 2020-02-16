@@ -45,7 +45,7 @@ pipe = Pipeline(
     Report('$X')
 )
 print(pipe.apply())
-exit(0)
+# exit(0)
 
 #     # Source('messedup-dataset'),
 #     Keep(evaluator(

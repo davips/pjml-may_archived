@@ -1,6 +1,6 @@
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.collection.expand.expand import Expand
-from pjml.tool.seq import Seq
+from pjml.tool.chain import Chain
 
 
 class Partition(Transformer):
@@ -20,7 +20,7 @@ class Partition(Transformer):
             fields = ['X', 'Y']
         super().__init__(self._to_config(locals()), split_type)
         from pjml.macro import split
-        self.model = Seq(
+        self.model = Chain(
             Expand(),
             split(split_type, partitions, test_size, seed, fields)
         )

@@ -5,11 +5,11 @@ from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map
 from pjml.tool.collection.transform.multi import Multi
-from pjml.tool.seq import Seq
+from pjml.tool.chain import Chain
 
 
 def evaluator(*components, function='mean_std', **validation_args):
-    return Seq(
+    return Chain(
         Partition(**validation_args),
         Map(transformers=components),
         Summ(function=function)

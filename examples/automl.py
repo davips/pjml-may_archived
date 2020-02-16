@@ -31,7 +31,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 # Armazenar dataset, sem depender do pacote pjml.
 from cururu.pickleserver import PickleServer
 from pjml.tool.meta.wrap import Wrap
-from pjml.tool.seq import Seq
+from pjml.tool.chain import Chain
 
 print('Storing iris...')
 try:
@@ -64,7 +64,7 @@ pipe = full(rnd(expr), field='S').sample()
 pipe.enable_pretty_printing()
 print(f'Pipe:\n{pipe}')
 print(f'Wrapped:\n{pipe.unwrap}')
-pipe = Seq(File('abalone3.arff'), Binarize(), Split(), pipe.unwrap, Metric(), Report())
+pipe = Chain(File('abalone3.arff'), Binarize(), Split(), pipe.unwrap, Metric(), Report())
 
 print('apply .................')
 dataout = pipe.apply()

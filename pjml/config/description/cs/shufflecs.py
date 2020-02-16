@@ -6,7 +6,7 @@ class ShuffleCS(OperatorCS):
 
     def sample(self):
         import numpy as np
-        from pjml.tool.seq import Seq
+        from pjml.tool.chain import Chain
         css = self.components.copy()
         np.random.shuffle(css)
-        return Seq(transformers=[cs.sample() for cs in css])
+        return Chain(transformers=[cs.sample() for cs in css])

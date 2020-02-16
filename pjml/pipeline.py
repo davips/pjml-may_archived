@@ -1,5 +1,5 @@
-from pjml.tool.seq import Seq
+from pjml.tool.chain import Chain
 
 
-class Pipeline(Seq):
+class Pipeline(Chain):
     """Chain the execution of the given transformers."""

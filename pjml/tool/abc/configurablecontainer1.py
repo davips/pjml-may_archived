@@ -2,7 +2,7 @@ from abc import ABC
 
 from pjml.tool.abc.container import Container
 from pjml.tool.abc.container1 import Container1
-from pjml.tool.seq import Seq
+from pjml.tool.chain import Chain
 
 
 class ConfigurableContainer1(Container1, ABC):
@@ -17,7 +17,7 @@ class ConfigurableContainer1(Container1, ABC):
 
         # ConfigurableContainerXXX(Seq(a,b,c)) should be equal to
         # ConfigurableContainerXXX(a,b,c)
-        if len(transformers) == 1 and isinstance(transformers, Seq):
+        if len(transformers) == 1 and isinstance(transformers[0], Chain):
             transformers = transformers[0].transformers
 
         # Bypass Container init.
@@ -25,7 +25,7 @@ class ConfigurableContainer1(Container1, ABC):
 
         self.transformers = transformers
         if len(transformers) > 1:
-            self.transformer = Seq(transformers=transformers)
+            self.transformer = Chain(transformers=transformers)
         else:
             self.transformer = transformers[0]
 

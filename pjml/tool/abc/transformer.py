@@ -326,7 +326,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
             Wrap(Std(), SVMC()),
             Metric(function='accuracy')
         )
-        pipe.unwrap  # -> Seq(Std(), SVMC())
+        pipe.unwrap  # -> Chain(Std(), SVMC())
         """
         return self.wrapped.transformer
 

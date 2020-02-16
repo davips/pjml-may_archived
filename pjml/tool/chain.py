@@ -1,10 +1,10 @@
-from pjml.config.description.cs.seqcs import SeqCS
+from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.containern import ContainerN
 from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten
 
 
-class Seq(ContainerN):
+class Chain(ContainerN):
     """Chain the execution of the given transformers.
 
     Each arg is a transformer. Optionally, a list of them can be passed as a
@@ -16,7 +16,7 @@ class Seq(ContainerN):
             transformers = args
         if all([isinstance(t, Transformer) for t in transformers]):
             return object.__new__(cls)
-        return SeqCS(*transformers)
+        return ChainCS(*transformers)
 
     def _apply_impl(self, data):
         self.model = self.transformers

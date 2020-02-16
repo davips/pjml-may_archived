@@ -1,7 +1,7 @@
 from abc import ABC
 
 from pjml.tool.abc.container1 import Container1
-from pjml.tool.seq import Seq
+from pjml.tool.chain import Chain
 
 
 class NonConfigurableContainer1(Container1, ABC):
@@ -15,13 +15,13 @@ class NonConfigurableContainer1(Container1, ABC):
                 f'A container ({self.name}) should have at least one '
                 f'transformer!')
 
-        # Container1(Seq(a,b,c)) should be equal Container1(a,b,c)
-        if len(transformers) == 1 and isinstance(transformers, Seq):
+        # Container1(Chain(a,b,c)) should be equal Container1(a,b,c)
+        if len(transformers) == 1 and isinstance(transformers[0], Chain):
             transformers = transformers[0].transformers
 
         super().__init__(transformers)
 
         if len(transformers) > 1:
-            self.transformer = Seq(transformers=transformers)
+            self.transformer = Chain(transformers=transformers)
         else:
             self.transformer = transformers[0]
