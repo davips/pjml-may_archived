@@ -1,5 +1,8 @@
 from cururu.storer import Storer
 from pjdata.data import NoData
+from pjml.config.description.cs.transformercs import TransformerCS
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.transformer_nodata import Transformer_NoData
 
 
@@ -48,7 +51,7 @@ class Source(Transformer_NoData, Storer):
             'path': FixedP('./'),
             'name': FixedP('iris.arff')
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))
 
     # def _transformations(self):
     #     """Source is a very special case of component.

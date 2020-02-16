@@ -1,11 +1,13 @@
-from pjdata.aux.compression import pack_data
-
-from pjdata.aux.encoders import uuid
-
 from cururu.persistence import DuplicateEntryException
 from cururu.storer import Storer
+from pjdata.aux.compression import pack_data
+from pjdata.aux.encoders import uuid
 from pjdata.data import Data
 from pjdata.dataset import Dataset
+from pjml.config.description.cs.transformercs import TransformerCS
+from pjml.config.description.distributions import choice
+from pjml.config.description.node import Node
+from pjml.config.description.parameter import FixedP, CatP
 from pjml.tool.abc.invisible import Invisible
 
 
@@ -58,4 +60,4 @@ class Store(Invisible, Storer):
             'engine': CatP(choice, items=['dump', 'mysql', 'sqlite']),
             'settings': FixedP({})
         }
-        return ComponentCS(Node(params=params))
+        return TransformerCS(Node(params=params))

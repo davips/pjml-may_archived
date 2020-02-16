@@ -23,7 +23,7 @@ def replace(cs, **kwargs):
 
     Example:
         File.cs  # contents:
-        # ComponentCS(Node(
+        # TransformerCS(Node(
         #    params={
         #       'path': FixedP('./'),
         #       'name': FixedP('iris.arff')
@@ -33,7 +33,7 @@ def replace(cs, **kwargs):
         datasets = ['iris.arff', 'car.csv', 'abalone.arff']
         cs = replace(File.cs, name=CatP(choice, items=datasets))
         cs  # contents:
-        # ComponentCS(Node(
+        # TransformerCS(Node(
         #    params={
         #       'path': FixedP('./'),
         #       'name': CatP(choice, items=datasets)
