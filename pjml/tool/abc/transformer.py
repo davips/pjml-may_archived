@@ -42,11 +42,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
     ²: processor/learner/evaluator to apply()
     ³: induced/fitted/describing model to use()
     """
-    _dump = None
-    _hash = None  # Needed because of conflicts between dict and lru_cache,
     model = None  # Mandatory field at apply() or init().
-
-    # cannot be in _init_ since _hash_ is called before _init_ is called.
 
     def __init__(self, config, algorithm, deterministic=False):
         jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
@@ -239,9 +235,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
     @property
     @lru_cache()
     def serialized(self):
-        if self._dump is None:
-            self._dump = serialize(self)
-        return self._dump
+        return serialize(self)
 
     def _run(self, function, data, max_time=None, exit_on_error=True):
         """Common procedure for apply() and use()."""
@@ -329,12 +323,3 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
         pipe.unwrap  # -> Chain(Std(), SVMC())
         """
         return self.wrapped.transformer
-
-    def __hash__(self):  # This method is not memoizable due to infinite loop.
-        """Needed only because of lru_cache complaining about hashability of
-        dict child classes."""
-        if self._dump is None:
-            self._dump = serialize(self)  # Cannot call self.serialized here!
-        if self._hash is None:
-            self._hash = serialized_to_int(self._dump)
-        return self._hash

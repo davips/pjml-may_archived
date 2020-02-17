@@ -9,6 +9,8 @@ from pjml.tool.data.processing.instance.sampler.resampler import Resampler
 
 class OverS(Resampler):
     def __init__(self, **kwargs):
+        # TODO: Default values should be extracted from CS (via (new) property
+        #  'default'), to appear here in 'self.config'.
         super().__init__(kwargs, RandomOverSampler(**kwargs))
 
     @classmethod
