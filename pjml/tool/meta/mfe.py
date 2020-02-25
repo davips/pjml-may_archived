@@ -25,7 +25,7 @@ class MFE(Transformer):
     def _apply_impl(self, data):
         self.model.fit(*data.Xy)
         ft = self.model.extract()
-        return data.updated(self._transformations(),
+        return data.updated(self.transformations(),
                             M=np.array([ft[1]]), Md=ft[0])
 
     def _use_impl(self, data):

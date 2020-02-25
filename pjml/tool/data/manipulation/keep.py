@@ -36,4 +36,4 @@ class Keep(ConfigurableContainer1):
         matrices = {k: data.field(k, self) for k in self.fields}
         new_matrices = f(data).matrices
         new_matrices.update(matrices)
-        return data.updated(self._transformations(), **new_matrices)
+        return data.updated(self.transformations(), **new_matrices)

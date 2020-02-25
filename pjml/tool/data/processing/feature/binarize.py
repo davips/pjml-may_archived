@@ -21,6 +21,6 @@ class Binarize(ConfigLess):
             nom = self.model.transform(data.X[:, self.nominal_idxs]).toarray()
             num = np.delete(data.X, self.nominal_idxs, axis=1).astype(float)
             X = np.column_stack((nom, num))
-            return data.updated(self._transformations(), X=X)
+            return data.updated(self.transformations(), X=X)
         else:
             return data

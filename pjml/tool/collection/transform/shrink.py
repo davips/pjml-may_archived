@@ -7,7 +7,7 @@ class Shrink(ConfigLess):
 
     def _use_impl(self, collection):
         newcoll = collection.updated(
-            transformations=self._transformations(),
+            transformations=self.transformations(),
             datas=[d for d in collection if d is not None],
             failure=collection.failure
         )

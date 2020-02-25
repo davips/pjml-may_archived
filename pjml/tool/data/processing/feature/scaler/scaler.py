@@ -13,4 +13,4 @@ class Scaler(Transformer, ABC):
 
     def _use_impl(self, data):
         X = self.model.transform(data.X)
-        return data.updated(self._transformations(), X=X)
+        return data.updated(self.transformations(), X=X)

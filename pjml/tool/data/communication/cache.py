@@ -55,6 +55,11 @@ class Cache(ConfigurableContainer1, Storer):
         #  mudando History.id também e usando
         #  History(self.transformer.transformations).id e um método id em
         #  Apply() lá no storage.
+        #
+        #  Seria um id representando o pipeline higienizado/efetivo.
+        #  Assim, há o id das transformações e o uuid do pipeline.
+
+
 
         transformation = Apply(self.transformer)
         output_data = self.storage.fetch(
@@ -140,11 +145,11 @@ class Cache(ConfigurableContainer1, Storer):
 
         return output_data
 
-    def _transformations(self, step=None, training_data=None):
+    def transformations(self, step=None, training_data=None):
         """Cache produce no transformations by itself , so it needs to
         override the list of expected transformations."""
         if step is None:
             step = self._current_step
         if training_data is None:
             training_data = self._last_training_data
-        return self.transformer._transformations(step, training_data)
+        return self.transformer.transformations(step, training_data)

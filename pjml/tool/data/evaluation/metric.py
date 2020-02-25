@@ -44,7 +44,7 @@ class Metric(Transformer, FunctionInspector):
                 f'Impossible to calculate metric {self.function_name}: Field '
                 f'{self.prediction} does not exist!')
         return data.updated(
-            self._transformations(),
+            self.transformations(),
             r=self.function(data, self.target, self.prediction)
         )
 

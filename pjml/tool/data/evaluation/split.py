@@ -64,7 +64,7 @@ class Split(Transformer, FunctionInspector):
 
     def _core(self, data, idxs):
         new_dic = {f: data.field(f, self)[idxs] for f in self.fields}
-        return data.updated(self._transformations(), **new_dic)
+        return data.updated(self.transformations(), **new_dic)
 
     @classmethod
     def _cs_impl(cls):

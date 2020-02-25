@@ -28,13 +28,13 @@ class Partition(Transformer):
     def _apply_impl(self, data):
         collection = self.model.apply(data)
         return collection.last_transformation_replaced(
-            self._transformations()[0]
+            self.transformations()[0]
         )
 
     def _use_impl(self, data):
         collection = self.model.use(data)
         return collection.last_transformation_replaced(
-            self._transformations()[0]
+            self.transformations()[0]
         )
 
     @classmethod

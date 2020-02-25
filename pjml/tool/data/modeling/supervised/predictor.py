@@ -16,10 +16,10 @@ class Predictor(Transformer, ABC):
         return None
 
     def _use_impl(self, data):
-        return data.updated(self._transformations(),
+        return data.updated(self.transformations(),
                             z=self.algorithm.predict(data.X))
 
-    def _transformations(self, step=None, training_data=None):
+    def transformations(self, step=None, training_data=None):
         if step is None:
             step = self._current_step
         if training_data is None:

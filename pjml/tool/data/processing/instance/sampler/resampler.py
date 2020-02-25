@@ -14,12 +14,12 @@ class Resampler(Transformer, ABC):
         #  create a parameter to define which fields to process
         X, y = self.algorithm.fit_resample(*data.Xy)
         self.model = self.algorithm
-        return data.updated(self._transformations(), X=X, y=y)
+        return data.updated(self.transformations(), X=X, y=y)
 
     def _use_impl(self, data):
         return data
 
-    def _transformations(self, step=None, training_data=None):
+    def transformations(self, step=None, training_data=None):
         if step is None:
             step = self._current_step
         if training_data is None:

@@ -78,7 +78,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
-    def _transformations(self, step=None, training_data=None):
+    def transformations(self, step=None, training_data=None):
         """Ongoing transformation described as a list of Transformation
         objects.
 
@@ -249,7 +249,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
             output_data = self._limit_by_time(function, data, max_time)
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(self._transformations(), failure=str(e))
+            output_data = data.updated(self.transformations(), failure=str(e))
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -261,7 +261,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
         if isinstance(dataout, NoData):
             return dataout
         recent = dataout.history.transformations[datain.history.size:]
-        transfs = self._transformations(training_data=self._last_training_data)
+        transfs = self.transformations(training_data=self._last_training_data)
         # print()
         # for t in transfs:
         #     t.disable_pretty_printing()

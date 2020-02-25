@@ -25,12 +25,12 @@ class Wrap(NonConfigurableContainer1):
     def wrapped(self):
         return self
 
-    def _transformations(self, step=None, training_data=None):
+    def transformations(self, step=None, training_data=None):
         if step is None:
             step = self._current_step
         # if training_data is None:
         #     training_data = self._last_training_data
         lst = []
         for tr in self.transformers:
-            lst.append(tr._transformations(step, training_data))
+            lst.append(tr.transformations(step, training_data))
         return flatten(lst)
