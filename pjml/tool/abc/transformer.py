@@ -253,7 +253,7 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
         self.time_spent = self._clock() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        return output_data and self._check_history(data, output_data)
+        return output_data  # and self._check_history(data, output_data)
 
     def _check_history(self, datain, dataout):
         """Check consistency between resulting Data object and
