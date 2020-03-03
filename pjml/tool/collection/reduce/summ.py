@@ -19,6 +19,9 @@ class Summ(Reduce):
     Keep(Expand -> ... -> Summ).
 
     The collection history will be exported to the summarized Data object.
+
+    The cells of the given field (matrix) will be averaged across all data
+    objects, resulting in a new matrix with the same dimensions.
     """
 
     def __init__(self, field='r', function='mean'):
@@ -40,7 +43,7 @@ class Summ(Reduce):
         )
         res = self.function(collection)
         if isinstance(res, tuple):
-            summ = numpy.array([res])
+            summ = numpy.array(res)
             return data.updated(self.transformations(), S=summ)
         else:
             return data.updated(self.transformations(), s=res)
@@ -54,12 +57,20 @@ class Summ(Reduce):
         return TransformerCS(Node(params))
 
     def _fun_mean(self, collection):
-        return mean([data.field(self.field, self) for data in collection])
+        return mean([data.field(self.field, self) for data in collection],
+                    axis=0)
 
     def _fun_std(self, collection):
-        return std([data.field(self.field, self) for data in collection])
+        return std([data.field(self.field, self) for data in collection],
+                   axis=0)
 
     def _fun_mean_std(self, collection):
         # TODO?: optimize calculating mean and stdev together
         values = [data.field(self.field, self) for data in collection]
-        return mean(values), std(values)
+        if len(values[0].shape) == 2:
+            if values[0].shape[1] > 1:
+                raise Exception(
+                    f"Summ doesn't accept multirow fields: {self.field}\n"
+                    f"Shape: {values[0].shape}")
+            values = values[0]
+        return mean(values, axis=0), std(values, axis=0)
