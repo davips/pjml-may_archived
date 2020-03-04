@@ -7,4 +7,5 @@ class SelectCS(OperatorCS):
     def sample(self):
         from pjml.config.description.distributions import choice
         cs = choice(self.components)
+        print("CS ", cs)
         return cs.sample()
