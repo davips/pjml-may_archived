@@ -41,7 +41,6 @@ class Summ(Reduce):
             failure=collection.failure
         ).updated(collection.history, **collection.original_data.matrices)
 
-        # print("CCCCCCCCC --> ", collection)
         res = self.function(collection)
         if isinstance(res, tuple):
             summ = numpy.array(res)
