@@ -23,17 +23,18 @@ class Chain(ContainerN):
         for transformer in self.transformers:
             data = transformer.apply(data, self._exit_on_error)
             if data and (data.failure is not None):
-                raise Exception(
-                    f'Applying subtransformer {transformer} failed! ',
-                    data.failure)
+                print(f'Applying subtransformer {transformer} failed! ',
+                      data.failure)
+                exit()
         return data
 
     def _use_impl(self, data):
         for transformer in self.transformers:
             data = transformer.use(data, self._exit_on_error)
             if data and (data.failure is not None):
-                raise Exception(f'Using subtransformer {transformer} failed! ',
-                                data.failure)
+                print(f'Using subtransformer {transformer} failed! ',
+                      data.failure)
+                exit()
         return data
 
     def __str__(self, depth=''):
