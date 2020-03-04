@@ -29,8 +29,6 @@ class Metric(Transformer, FunctionInspector):
         super().__init__(self._to_config(locals()), function,
                          deterministic=True)
         self.target, self.prediction = target, prediction
-        print("AAAAAA ", self.algorithm)
-        print("FFFFFF ", self.functions)
         self.collection_function = self.model = [self.functions[alg_str]
                                                  for alg_str in self.algorithm]
         self.function_name = function
@@ -77,5 +75,4 @@ class Metric(Transformer, FunctionInspector):
 
     @staticmethod
     def _fun_length(data, target, prediction):
-        print("Aux ", [aux.name for aux in data.history])
         return data.history.size
