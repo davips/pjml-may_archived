@@ -24,7 +24,7 @@ class Summ(Reduce):
     objects, resulting in a new matrix with the same dimensions.
     """
 
-    def __init__(self, field='r', function='mean'):
+    def __init__(self, field='R', function='mean'):
         super().__init__(self._to_config(locals()), function, True)
         self.field = field
         self.function = self.functions[function]
@@ -38,9 +38,10 @@ class Summ(Reduce):
             return None
         data = Data(
             dataset=collection.dataset,
-            history=collection.history,
             failure=collection.failure
-        )
+        ).updated(collection.history, **collection.original_data.matrices)
+
+        # print("CCCCCCCCC --> ", collection)
         res = self.function(collection)
         if isinstance(res, tuple):
             summ = numpy.array(res)
@@ -68,9 +69,9 @@ class Summ(Reduce):
         # TODO?: optimize calculating mean and stdev together
         values = [data.field(self.field, self) for data in collection]
         if len(values[0].shape) == 2:
-            if values[0].shape[1] > 1:
+            if values[0].shape[0] > 1:
                 raise Exception(
                     f"Summ doesn't accept multirow fields: {self.field}\n"
                     f"Shape: {values[0].shape}")
-            values = values[0]
+            values = [v[0] for v in values]
         return mean(values, axis=0), std(values, axis=0)
