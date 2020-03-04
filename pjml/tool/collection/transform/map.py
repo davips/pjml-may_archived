@@ -1,6 +1,8 @@
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjdata.infinitecollection import InfiniteCollection
+
 
 
 class Map(NonConfigurableContainer1):
@@ -15,7 +17,7 @@ class Map(NonConfigurableContainer1):
         return ContainerCS(Map.name, Map.path, transformers)
 
     def _apply_impl(self, collection):
-        if collection.infinite:
+        if isinstance(collection, InfiniteCollection):
             raise Exception('Collection should be finite for Map!')
         self.model = []
         datas = []
