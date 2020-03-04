@@ -47,7 +47,6 @@ class Keep(ConfigurableContainer1):
         return self._step(self.transformer.use, data)
 
     def _step(self, f, data):
-        print(111111111111111111111111111, data.name)
         matrices = {k: data.field(k, self) for k in self.fields if k in data.matrices}
         new_matrices = f(data).matrices
         new_matrices.update(matrices)
