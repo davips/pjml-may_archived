@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.metrics import accuracy_score
 
 from pjml.config.description.cs.transformercs import TransformerCS
@@ -24,11 +25,14 @@ class Metric(Transformer, FunctionInspector):
         Name of the matrix to be evaluated.
     """
 
-    def __init__(self, function='accuracy', target='Y', prediction='Z'):
+    def __init__(self, function=['accuracy'], target='Y', prediction='Z'):
         super().__init__(self._to_config(locals()), function,
                          deterministic=True)
         self.target, self.prediction = target, prediction
-        self.function = self.model = self.functions[self.algorithm]
+        print("AAAAAA ", self.algorithm)
+        print("FFFFFF ", self.functions)
+        self.collection_function = self.model = [self.functions[alg_str]
+                                                 for alg_str in self.algorithm]
         self.function_name = function
 
     def _apply_impl(self, data):
@@ -45,7 +49,8 @@ class Metric(Transformer, FunctionInspector):
                 f'{self.prediction} does not exist!')
         return data.updated(
             self.transformations(),
-            r=self.function(data, self.target, self.prediction)
+            R=np.array([[function(data, self.target, self.prediction)
+               for function in self.collection_function]])
         )
 
     @classmethod
@@ -69,3 +74,8 @@ class Metric(Transformer, FunctionInspector):
         return accuracy_score(
             data.matrices[target], data.matrices[prediction]
         )
+
+    @staticmethod
+    def _fun_length(data, target, prediction):
+        print("Aux ", [aux.name for aux in data.history])
+        return data.history.size
