@@ -21,7 +21,6 @@ def full(cs, data=NoData, n=1, field='S'):
     for pipe in cs:
         p = pipe
         result_data = p.apply()
-        print('---------------', result_data.matrices.keys())
         res = p.use(result_data).field(field, 'full search').item(0)
         results.append((p, -res))
 
