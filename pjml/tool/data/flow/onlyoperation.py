@@ -1,4 +1,3 @@
-# def onlyapply():
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
 from pjml.tool.abc.singleton import NoModel
