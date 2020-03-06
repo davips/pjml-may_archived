@@ -17,4 +17,5 @@ class ContainerCS(ComponentCS):
         return {'transformers': [c.sample() for c in self.components]}
 
     def identified(self, name, path):
+        """Useful to fill name/path after the component has the CS built."""
         return self.__class__(name, path, self.components, *self.nodes)
