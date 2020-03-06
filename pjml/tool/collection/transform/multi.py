@@ -1,6 +1,7 @@
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.containern import ContainerN
+from pjdata.finitecollection import FiniteCollection
 
 
 class Multi(ContainerN):
@@ -15,7 +16,8 @@ class Multi(ContainerN):
         return ContainerCS(Multi.name, Multi.path, transformers)
 
     def _apply_impl(self, collection):
-        if not collection.infinite and self.size != collection.size:
+        isfinite = isinstance(collection, FiniteCollection)
+        if isfinite and self.size != collection.size:
             raise Exception('Config space and collection should have the same '
                             f'size {self.size} != collection {collection.size}')
         self.model = []
@@ -28,7 +30,8 @@ class Multi(ContainerN):
         return collection.updated(self.transformations(), datas=datas)
 
     def _use_impl(self, collection):
-        if not collection.infinite and self.size != collection.size:
+        isfinite = isinstance(collection, FiniteCollection)
+        if isfinite and self.size != collection.size:
             raise Exception('Config space and collection should have the same '
                             f'size {self.size} != collection {collection.size}')
         datas = []

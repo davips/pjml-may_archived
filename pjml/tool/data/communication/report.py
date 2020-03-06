@@ -15,7 +15,7 @@ class Report(Invisible):
     {dataset.failure} prints the failure
     """
 
-    def __init__(self, text='Default report r=$r'):
+    def __init__(self, text='Default report r=$R'):
         Transformer.__init__(self, {'text': text}, text, deterministic=True)
         self.model = text
         self.text = text

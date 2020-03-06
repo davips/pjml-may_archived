@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics import accuracy_score
 
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
@@ -9,8 +8,8 @@ from pjml.tool.abc.mixin.functioninspector import FunctionInspector
 from pjml.tool.abc.transformer import Transformer
 
 
-class Metric(Transformer, FunctionInspector):
-    """Metric to evaluate a given Data field.
+class Calc(Transformer, FunctionInspector):
+    """Calc to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
     where xxxxx is the name of the new metric.
@@ -25,10 +24,10 @@ class Metric(Transformer, FunctionInspector):
         Name of the matrix to be evaluated.
     """
 
-    def __init__(self, function=['accuracy'], target='Y', prediction='Z'):
+    def __init__(self, function=['mean'], input_field='S', output_field='S'):
         super().__init__(self._to_config(locals()), function,
                          deterministic=True)
-        self.target, self.prediction = target, prediction
+        self.input_field, self.output_field = input_field, output_field
         self.collection_function = self.model = [self.functions[alg_str]
                                                  for alg_str in self.algorithm]
         self.function_name = function
@@ -37,42 +36,30 @@ class Metric(Transformer, FunctionInspector):
         return self._use_impl(data)
 
     def _use_impl(self, data):
-        if self.target not in data.matrices:
+        if self.input_field not in data.matrices:
             raise Exception(
-                f'Impossible to calculate metric {self.function_name}: Field '
-                f'{self.target} does not exist!')
-        if self.prediction not in data.matrices:
-            raise Exception(
-                f'Impossible to calculate metric {self.function_name}: Field '
-                f'{self.prediction} does not exist!')
-        return data.updated(
-            self.transformations(),
-            R=np.array([[function(data, self.target, self.prediction)
-               for function in self.collection_function]])
-        )
+                f'Impossible to calculate {self.function_name}: Field '
+                f'{self.input_field} does not exist!')
+
+        result_vectors = [function(data.field(self.input_field, self))
+                          for function in self.collection_function]
+        dic = {self.output_field: np.array(result_vectors)}
+        return data.updated(self.transformations(), **dic)
 
     @classmethod
     def _cs_impl(cls):
         # TODO target and prediction
         params = {
             'function': CatP(choice, items=cls.names()),
-            'target': CatP(choice, items=['Y']),
-            'prediction': CatP(choice, items=['Z'])
+            'input_field': CatP(choice, items=['S']),
+            'output_field': CatP(choice, items=['S'])
         }
         return TransformerCS(Node(params=params))
 
     @staticmethod
-    def _fun_error(data, target, prediction):
-        return 1 - accuracy_score(
-            data.matrices[target], data.matrices[prediction]
-        )
+    def _fun_mean(input):
+        return np.mean(input)
 
     @staticmethod
-    def _fun_accuracy(data, target, prediction):
-        return accuracy_score(
-            data.matrices[target], data.matrices[prediction]
-        )
-
-    @staticmethod
-    def _fun_length(data, target, prediction):
-        return data.history.size
+    def _fun_flatten(input):
+        return input.flatten()
