@@ -22,8 +22,10 @@ class Predictor(Transformer, ABC):
         sklearn_model.fit(*data_apply.Xy)
 
         def use_impl(data_use):
-            return data_use.updated(self.transformations('a'),
-                                    z=sklearn_model.predict(data_use.X))
+            return data_use.updated(
+                self.transformations('a'),
+                z=sklearn_model.predict(data_use.X)
+            )
 
         return None, use_impl
 

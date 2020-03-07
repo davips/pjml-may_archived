@@ -65,9 +65,9 @@ class Model(ExceptionHandler, Timers):
             # _use_impls de componentes inocentes).
             self._exit_on_error = exit_on_error
 
-            output_data_use = self._limit_by_time(self.use_function,
-                                                  data_use,
-                                                  self.max_time)
+            output_data_use = self._limit_by_time(
+                self.use_function, data_use, self.max_time
+            )
         except Exception as use_exc:
             self._handle_exception(use_exc, exit_on_error)
             output_data_use = data_use.updated(
