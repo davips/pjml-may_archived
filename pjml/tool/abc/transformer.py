@@ -12,11 +12,11 @@ from pjml.config.description.cs.configlist import ConfigList
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler, \
     BadComponent, MissingModel
 from pjdata.mixin.printable import Printable
-from pjml.tool.abc.mixin.timers import Timers
-from pjml.tool.abc.singleton import NoModel
+
+from pjml.tool.abc.mixin.runnable import Runnable
 
 
-class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
+class Transformer(Printable, Identifyable, Runnable):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -42,22 +42,18 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
     ²: processor/learner/evaluator to apply()
     ³: induced/fitted/describing model to use()
     """
-    model = None  # Mandatory field at apply() or init().
 
-    def __init__(self, config, algorithm, deterministic=False):
+    def __init__(self, config, deterministic=False):
         jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
         Printable.__init__(self, jsonable)
 
+        # TODO: we need to implement the random_state in the components
         if not deterministic and 'seed' in config:
             config['random_state'] = config.pop('seed')
 
         self.config = config
-        self.algorithm = algorithm
         self.deterministic = deterministic
 
-        self._failure_during_apply = None
-        self._current_step = None
-        self._last_training_data = None
         self._exit_on_error = True
 
         self.cs = self.cs1  # Shortcut to ease retrieving a CS from a
@@ -67,10 +63,6 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
     @abstractmethod
     def _apply_impl(self, data):
         """Each component should implement its core 'apply' functionality."""
-
-    @abstractmethod
-    def _use_impl(self, data):
-        """Each component should implement its core 'use' functionality."""
 
     @classmethod
     @abstractmethod
@@ -122,82 +114,15 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        from pjml.tool.abc.transformer_nodata import Transformer_NoData
-        if data is NoData and not isinstance(self, Transformer_NoData):
-            raise Exception(f'NoData is not accepted by {self.name}!')
-        if data in [None, NoData]:
-            # None = pipeline terminou antes desse transformer
-            if self.model is None:
-                # data=None and model=None:
-                #   'apply' não consegue gerar modelo e o 'init' não o fez
-                self.model = NoModel
-                # model=NoModel:
-                # não haverá modelo para o 'use', mas o pipeline deve continuar
         if data is None:
             return None
 
-        if self.algorithm is None or self.config is None:
-            raise BadComponent(f"{self} didn't set up "
-                               f"an algorithm or a config at __init__. This"
-                               f" should be done by calling the parent init")
-        self._last_training_data = data
-        self._current_step = 'a'
-        res = self._run(self._apply_impl, data, exit_on_error=exit_on_error)
-        self._current_step = None
-        return res
-
-    def use(self, data=NoData, exit_on_error=True):
-        """Testing step (usually).
-
-        Predict/transform/do nothing/evaluate/... Data.
-
-        Parameters
-        ----------
-        data
-        exit_on_error
-
-        Returns
-        -------
-        transformed data, normally
-        None, when data is None
-            (probably meaning the pipeline finished before this transformer)
-        same data, but annotated with a failure
-
-        Exception
-        ---------
-        BadComponent
-            Data object resulting history should be consistent with
-            _transformations() implementation.
-        """
-        from pjml.tool.abc.transformer_nodata import Transformer_NoData
-        if data is NoData and not isinstance(self, Transformer_NoData):
+        from pjml.tool.abc.nodatahandler import NoDataHandler
+        if data is NoData and not isinstance(self, NoDataHandler):
             raise Exception(f'NoData is not accepted by {self.name}!')
-        # Sem data ou sem modelo (= pipeline interrompido no meio do 'apply'),
-        # então "interrompe" também no 'use' (ou não, pois RF interrompe e
-        # Cache deixa como nomodel qnd lê da base).
-        if data is None:  # or self.model is NoModel:
-            return None
-        # if data is NoData:
-        #     data = None
 
-        if self._failure_during_apply is not None:
-            return data.updated(Use(self),
-                                failure=f'Already failed on apply: '
-                                        f'{self._failure_during_apply}')
+        return self._run(self._apply_impl, data, exit_on_error=exit_on_error)
 
-        if self.model is None:
-            raise MissingModel(f"{self}\n{self.name} didn't set up a model yet."
-                               f" Method apply() should be called before use()!"
-                               f"Another reason is a bad apply/init "
-                               f"implementation.")
-
-        self._current_step = 'u'
-        res = self._run(self._use_impl, data, exit_on_error=exit_on_error)
-        self._current_step = None
-        return res
-
-    # @classmethod  <-- Causes AttributeError:
-    #           'functools._lru_cache_wrapper' object has no attribute 'sample'
     @classproperty
     @lru_cache()
     def cs(cls):
@@ -237,47 +162,31 @@ class Transformer(Printable, Identifyable, Timers, ExceptionHandler):
     def serialized(self):
         return serialize(self)
 
-    def _run(self, function, data, max_time=None, exit_on_error=True):
-        """Common procedure for apply() and use()."""
-        if data.failure:
-            return data
-
-        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        start = self._clock()
-        try:
-            self._exit_on_error = exit_on_error
-            output_data = self._limit_by_time(function, data, max_time)
-        except Exception as e:
-            self._handle_exception(e, exit_on_error)
-            output_data = data.updated(self.transformations(), failure=str(e))
-        self.time_spent = self._clock() - start
-        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-        return output_data  # and self._check_history(data, output_data)
-
-    def _check_history(self, datain, dataout):
-        """Check consistency between resulting Data object and
-        _transformations() implementation provided by the current component."""
-        if isinstance(dataout, NoData):
-            return dataout
-        recent = dataout.history.transformations[datain.history.size:]
-        transfs = self.transformations(training_data=self._last_training_data)
-        # print()
-        # for t in transfs:
-        #     t.disable_pretty_printing()
-        #     print(t.name, t)
-        if History(recent).id != History(transfs).id:
-            print('\nTransformed Data object recent history:::::::::::::::::\n'
-                  f'{recent}\n'
-                  f'Expected transformations::::::::::::::::::::::::::::::::\n'
-                  f'{transfs}\n'
-                  'Transformed Data object history does not '
-                  'match expected transformation list.\n'
-                  'Please override self._transformations() '
-                  f'method for {self.name} or extend a proper parent class '
-                  f'like \'Invisible\'.')
-            raise BadComponent(f'Inconsistent Data object history!')
-        return dataout
+    #TODO: This work is to Edesio and Davi in the Future
+    #
+    # def _check_history(self, datain, dataout):
+    #     """Check consistency between resulting Data object and
+    #     _transformations() implementation provided by the current component."""
+    #     if isinstance(dataout, NoData):
+    #         return dataout
+    #     recent = dataout.history.transformations[datain.history.size:]
+    #     transfs = self.transformations(training_data=self._last_training_data)
+    #     # print()
+    #     # for t in transfs:
+    #     #     t.disable_pretty_printing()
+    #     #     print(t.name, t)
+    #     if History(recent).id != History(transfs).id:
+    #         print('\nTransformed Data object recent history:::::::::::::::::\n'
+    #               f'{recent}\n'
+    #               f'Expected transformations::::::::::::::::::::::::::::::::\n'
+    #               f'{transfs}\n'
+    #               'Transformed Data object history does not '
+    #               'match expected transformation list.\n'
+    #               'Please override self._transformations() '
+    #               f'method for {self.name} or extend a proper parent class '
+    #               f'like \'Invisible\'.')
+    #         raise BadComponent(f'Inconsistent Data object history!')
+    #     return dataout
 
     @staticmethod
     def _to_config(locals_):
