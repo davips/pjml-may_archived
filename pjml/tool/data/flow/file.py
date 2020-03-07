@@ -4,13 +4,14 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
-from pjml.tool.abc.transformer_nodata import Transformer_NoData
+from pjml.tool.abc.model import Model
+from pjml.tool.abc.nodatahandler import NoDataHandler
 
 
 # Precisa herdar de Invisible, pois o mesmo Data pode vir de diferentes
 # caminhos de arquivo (File) ou servidores (Source) e essas informações são
 # irrelevantes para reprodutibilidade. Herdando de Invisible, o histórico é [].
-class File(Transformer_NoData, Invisible):
+class File(NoDataHandler, Invisible):
     """Source of Data object from CSV, ARFF, file.
 
     TODO: always classification task?
@@ -40,21 +41,26 @@ class File(Transformer_NoData, Invisible):
             data = read_arff(path + name, description)
         else:
             raise Exception('Unrecognized file extension:', name)
-        super().__init__(config, data, deterministic=True)
-        self.model = data
+        super().__init__(config, deterministic=True)
         self.data = data
 
     def _apply_impl(self, data):
         if data is not NoData:
             raise Exception('File component needs to be applied with NoData. '
                             'Use Sink before it if needed.')
-        return self.data
 
-    def _use_impl(self, data):
-        if data is not NoData:
-            raise Exception('File component needs to be used with NoData. '
-                            'Use Sink before it if needed.')
-        return self.data
+        class FileModel(Model):
+            def _data_impl(inner_self):
+                return self.data
+
+            def _use_impl(self, data_use):
+                if data_use is not NoData:
+                    raise Exception(
+                        'File component needs to be used with NoData. '
+                        'Use Sink before it if needed.')
+                return self.data
+
+        return FileModel()
 
     @classmethod
     def _cs_impl(cls):
