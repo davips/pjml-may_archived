@@ -14,7 +14,6 @@ from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.onlyoperation import OnlyApply, OnlyUse
 from pjml.tool.data.manipulation.copy import Copy
-from pjml.tool.data.manipulation.keep import Keep
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
@@ -28,30 +27,27 @@ from pjml.tool.meta.wrap import Wrap
 
 expr = Pipeline(
     OnlyApply(File("abalone3.arff")),
-    Keep(
-
-        Partition(),
-        Map(
-            Wrap(
-                Binarize(),
-                select(Std, UnderS, OverS, MinMax),
-                ApplyUsing(select(DT, NB, SVMC)),
-                OnlyApply(Metric(function=['length'])),
-                OnlyUse(Metric(function=['accuracy', 'error']))
-            ),
+    Partition(),
+    Map(
+        Wrap(
+            Binarize(),
+            select(Std, UnderS, OverS, MinMax),
+            ApplyUsing(select(DT, NB, SVMC)),
+            OnlyApply(Metric(function=['length'])),
+            OnlyUse(Metric(function=['accuracy', 'error'])),
+            # AfterUse(Metric(function=['diversity']))
         ),
-        Summ(function='mean_std'),
+    ),
+    Summ(function='mean_std'),
 
-        OnlyApply(Copy(from_field="S", to_field="B")),
-        OnlyUse(MConcat(input_field1="B", input_field2="S",
-                        output_field="S", direction='vertical')),
-        # Report(' S --> \n$S'),
-        Calc(function=['flatten']),
-        # Report('flatten S --> \n$S'),
-        Calc(function=['mean']),
-        Report('mean S --> $S'),
-        fields=["X", "Y"]
-    )
+    OnlyApply(Copy(from_field="S", to_field="B")),
+    OnlyUse(MConcat(input_field1="B", input_field2="S",
+                    output_field="S", direction='vertical')),
+    # Report(' S --> \n$S'),
+    Calc(function=['flatten']),
+    # Report('flatten S --> \n$S'),
+    Calc(function=['mean']),
+    Report('mean S --> $S'),
 )
 
 # diversidade,
@@ -59,6 +55,18 @@ expr = Pipeline(
 
 print('sample .................')
 pipe = full(rnd(expr, n=5), field='S', n=1).sample()
+
+#
+# pipes = rnd(expr, n=5)
+#
+# magia = Multi(pipes) -> Diversity() -> Agrega()
+# magia.apply()
+# coll = magia.use()
+#
+# pipe = full(pipes, field='S', n=1).sample()
+
+
+
 
 print('apply .................')
 data = File("iris.arff").apply()
