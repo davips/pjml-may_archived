@@ -1,3 +1,5 @@
+from functools import partial
+
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.naive_bayes import GaussianNB
 
@@ -13,12 +15,12 @@ class NB(Predictor):
 
     def __init__(self, distribution="gaussian"):
         if distribution == "gaussian":
-            algorithm = GaussianNB()
+            algorithm_factory = partial(GaussianNB)
         elif distribution == "bernoulli":
-            algorithm = BernoulliNB()
+            algorithm_factory = partial(BernoulliNB)
         else:
             raise Exception('Wrong distribution:', distribution)
-        super().__init__({'distribution': distribution}, algorithm)
+        super().__init__({'distribution': distribution}, algorithm_factory, {})
         self.distribution = distribution
 
     @classmethod
