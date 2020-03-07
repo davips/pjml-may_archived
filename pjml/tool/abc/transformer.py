@@ -123,10 +123,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers):
         try:
             # Aqui, passa-se _exit_on_error para self de forma que
             # implementadores de conteineres possam acessar o valor em
-            # _apply_impl e repassar aos contidos. Talvez seja possível e
-            # melhor passar via parametro de _apply_impl
-            # (mas aumenta boilerplate para implementadores de _apply_impls de
-            # componentes inocentes).
+            # _apply_impl e repassar aos contidos.
             self._exit_on_error = exit_on_error
 
             result = self._limit_by_time(
