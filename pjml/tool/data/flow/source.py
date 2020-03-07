@@ -4,10 +4,10 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
-from pjml.tool.abc.transformer_nodata import Transformer_NoData
+from pjml.tool.abc.nodatahandler import NoDataHandler
 
 
-class Source(Transformer_NoData, Storer, Invisible):
+class Source(NoDataHandler, Storer, Invisible):
     """Source of Data object from a storage like MySQL, Pickle files, ...
 
         TODO: create a special case for Source/File (HistoryKiller class)
