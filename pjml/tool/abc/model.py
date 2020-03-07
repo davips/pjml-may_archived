@@ -1,25 +1,23 @@
-from abc import ABC, abstractmethod
 from functools import lru_cache
 
-from pjdata.data import NoData
+from pjdata.data import NoData, Data
+from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
+from pjml.tool.abc.mixin.timers import Timers
 
-from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.abc.mixin.runnable import Runnable
 
+class Model(ExceptionHandler, Timers):
+    _exit_on_error = True
+    max_time = None  # TODO: who/when to define maxtime?
 
-class Model(Runnable):
-    @abstractmethod
-    def _use_impl(self, data):
-        """Each component should implement its core 'use' functionality."""
-
-    @abstractmethod
-    def _data_impl(self):
-        """Each component should return the resulting 'data', if any."""
+    def __init__(self, data_from_apply, use_function, transformations_function):
+        self.data_from_apply = data_from_apply
+        self.use_function = use_function
+        self.transformations_function = transformations_function
 
     @property
     @lru_cache()
     def data(self):
-        return self._data_impl()
+        return self.data_from_apply
 
     def use(self, data=NoData, exit_on_error=True, own_data=False):
         """Testing step (usually).
@@ -28,14 +26,16 @@ class Model(Runnable):
 
         Parameters
         ----------
-        data_use
+        own_data
+        data
         exit_on_error
 
         Returns
         -------
         transformed data, normally
         None, when data is None
-            (probably meaning the pipeline finished before this transformer)
+            (probably meaning the pipeline finished before this
+            transformer)
         same data, but annotated with a failure
 
         Exception
@@ -44,31 +44,37 @@ class Model(Runnable):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        data_use = self.data if own_data else data
-        if data_use is None:  # or self.model is NoModel:
+
+        # TODO: reduce replicated code between apply and use?
+        data_use: Data = self.data if own_data else data
+        if data_use is None:
             return None
+        if data_use.failure:
+            return data_use
 
-        from pjml.tool.abc.nodatahandler import NoDataHandler
-        if data_use is NoData and not isinstance(self, NoDataHandler):
-            raise Exception(f'NoData is not accepted by {self.name}!')
+        self._check_nodata(data_use)
 
-        return self._run(self._use_impl, data_use, exit_on_error=exit_on_error)
+        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        start = self._clock()
+        try:
+            # Passa _exit_on_error para self de forma que
+            # implementadores de conteineres possam acessar o valor
+            # em _apply_impl e repassar aos contidos. Talvez seja
+            # possível e melhor passar via parametro de _apply_impl
+            # (mas aumenta boilerplate para implementadores de
+            # _use_impls de componentes inocentes).
+            self._exit_on_error = exit_on_error
 
-    def transformations(self, step=None, training_data=None):
-        """Ongoing transformation described as a list of Transformation
-        objects.
+            output_data_use = self._limit_by_time(self.use_function,
+                                                  data_use,
+                                                  self.max_time)
+        except Exception as use_exc:
+            self._handle_exception(use_exc, exit_on_error)
+            output_data_use = data_use.updated(
+                self.transformations_function('u'), failure=str(use_exc)
+            )
 
-        Child classes should override this method to perform non-atomic or
-        non-trivial transformations.
-        A missing implementation will be detected during apply/use."""
-        # if step is None:
-        #     step = self._current_step
-        # if training_data is None:
-        #     training_data = self._last_training_data
-        # if step == 'a':
-        #     return [Apply(self)]
-        # elif step == 'u':
-        #     return [Use(self, training_data)]
-        # else:
-        #     raise BadComponent('Wrong current step:', step)
-        return None
+        time_spent_using = self._clock() - start
+        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        return output_data_use

@@ -21,24 +21,18 @@ class Predictor(Transformer, ABC):
         sklearn_model = self.algorithm_factory(**self.sklearn_config)
         sklearn_model.fit(*data_apply.Xy)
 
-        class PredictorModel(Model):
-            def _data_impl(self):
-                return None
+        def use_impl(data_use):
+            return data_use.updated(self.transformations('a'),
+                                    z=sklearn_model.predict(data_use.X))
 
-            def _use_impl(self, data_use):
-                return data_use.updated(self.transformations(),
-                                        z=sklearn_model.predict(data_use.X))
+        return None, use_impl
 
-        return PredictorModel()
-
-    def transformations(self, step=None, training_data=None):
+    def transformations(self, step=None):
         if step is None:
             step = self._current_step
-        if training_data is None:
-            training_data = self._last_training_data
         if step == 'a':
             return []
         elif step == 'u':
-            return [Use(self, training_data)]
+            return [Use(self, 0)]
         else:
             raise BadComponent('Wrong current step:', step)

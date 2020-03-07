@@ -3,20 +3,18 @@ from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
 from pjdata.aux.identifyable import Identifyable
-from pjdata.aux.serialization import serialize, serialized_to_int, materialize
-from pjdata.data import NoData
-from pjdata.history import History
+from pjdata.aux.serialization import serialize, materialize
+from pjdata.data import NoData, Data
+from pjdata.mixin.printable import Printable
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.description.cs.configlist import ConfigList
-from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler, \
-    BadComponent, MissingModel
-from pjdata.mixin.printable import Printable
-
-from pjml.tool.abc.mixin.runnable import Runnable
+from pjml.tool.abc.mixin.exceptionhandler import BadComponent, ExceptionHandler
+from pjml.tool.abc.mixin.timers import Timers
+from pjml.tool.abc.model import Model
 
 
-class Transformer(Printable, Identifyable, Runnable):
+class Transformer(Printable, Identifyable, ExceptionHandler, Timers):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -60,6 +58,8 @@ class Transformer(Printable, Identifyable, Runnable):
         # Transformer object without having to check that it is not a
         # component (Transformer class).
 
+        self.max_time = None  # TODO: who/when to define maxtime?
+
     @abstractmethod
     def _apply_impl(self, data):
         """Each component should implement its core 'apply' functionality."""
@@ -70,25 +70,21 @@ class Transformer(Printable, Identifyable, Runnable):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
-    def transformations(self, step=None, training_data=None):
+    def transformations(self, step):
         """Ongoing transformation described as a list of Transformation
         objects.
 
         Child classes should override this method to perform non-atomic or
         non-trivial transformations.
         A missing implementation will be detected during apply/use."""
-        if step is None:
-            step = self._current_step
-        if training_data is None:
-            training_data = self._last_training_data
         if step == 'a':
             return [Apply(self)]
         elif step == 'u':
-            return [Use(self, training_data)]
+            return [Use(self, 0)]
         else:
             raise BadComponent('Wrong current step:', step)
 
-    def apply(self, data=NoData, exit_on_error=True):
+    def apply(self, data: Data = NoData, exit_on_error=True):
         """Training step (usually).
 
         Fit/remove-noise-from/evaluate/... Data.
@@ -114,14 +110,56 @@ class Transformer(Printable, Identifyable, Runnable):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        if data is None:
+        data_apply = data
+        if data_apply is None:
             return None
+        if data_apply.failure:
+            return data_apply
 
-        from pjml.tool.abc.nodatahandler import NoDataHandler
-        if data is NoData and not isinstance(self, NoDataHandler):
-            raise Exception(f'NoData is not accepted by {self.name}!')
+        self._check_nodata(data_apply)
 
-        return self._run(self._apply_impl, data, exit_on_error=exit_on_error)
+        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        start = self._clock()
+        try:
+            # Aqui, passa-se _exit_on_error para self de forma que
+            # implementadores de conteineres possam acessar o valor em
+            # _apply_impl e repassar aos contidos. Talvez seja possível e
+            # melhor passar via parametro de _apply_impl
+            # (mas aumenta boilerplate para implementadores de _apply_impls de
+            # componentes inocentes).
+            self._exit_on_error = exit_on_error
+
+            result = self._limit_by_time(
+                self._apply_impl, data_apply, self.max_time
+            )
+            if isinstance(result, tuple):
+                output_data_apply, use_impl = result
+            else:
+                raise Exception(
+                    'Transformer cannot handle custom Model objects yet!')
+                # TODO: dar a opção do implementador de componente retornar um
+                #  Model customizado, caso seu componente queira fornecer um
+                #  Model enriquecido com mais informações além de use() e
+                #  output_data.
+
+        except Exception as e:
+            self._handle_exception(e, exit_on_error)
+            output_data_apply = data_apply.updated(
+                self.transformations('a'), failure=str(e)
+            )
+
+            def use_impl_failed(data_use):
+                raise Exception(
+                    "A failed model doesn't have a Data object!"
+                )
+
+            use_impl = use_impl_failed
+
+        time_spent_applying = self._clock() - start
+        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        return Model(output_data_apply, use_impl, self.transformations)
+        # and self._check_history(data, output_data)
 
     @classproperty
     @lru_cache()
@@ -162,11 +200,12 @@ class Transformer(Printable, Identifyable, Runnable):
     def serialized(self):
         return serialize(self)
 
-    #TODO: This work is to Edesio and Davi in the Future
+    # TODO: This work is to Edesio and Davi in the Future
     #
     # def _check_history(self, datain, dataout):
     #     """Check consistency between resulting Data object and
-    #     _transformations() implementation provided by the current component."""
+    #     _transformations() implementation provided by the current
+    #     component."""
     #     if isinstance(dataout, NoData):
     #         return dataout
     #     recent = dataout.history.transformations[datain.history.size:]
@@ -176,9 +215,11 @@ class Transformer(Printable, Identifyable, Runnable):
     #     #     t.disable_pretty_printing()
     #     #     print(t.name, t)
     #     if History(recent).id != History(transfs).id:
-    #         print('\nTransformed Data object recent history:::::::::::::::::\n'
+    #         print('\nTransformed Data object recent
+    #         history:::::::::::::::::\n'
     #               f'{recent}\n'
-    #               f'Expected transformations::::::::::::::::::::::::::::::::\n'
+    #               f'Expected
+    #               transformations::::::::::::::::::::::::::::::::\n'
     #               f'{transfs}\n'
     #               'Transformed Data object history does not '
     #               'match expected transformation list.\n'

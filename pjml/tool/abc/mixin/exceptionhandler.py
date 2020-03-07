@@ -1,6 +1,9 @@
 import traceback
 import numpy
 
+from pjdata.data import NoData
+
+
 class ExceptionHandler:
     """Handle transformer exceptions and enable/disable numpy warnings.
 
@@ -39,7 +42,7 @@ class ExceptionHandler:
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
 
             # HINTS
-            if str(e).__contains__('cannot perform reduce with flexible type')\
+            if str(e).__contains__('cannot perform reduce with flexible type') \
                     or str(e).__contains__('could not convert string to float'):
                 from pjml.tool.data.processing.feature.binarize import Binarize
                 print(f'HINT: your pipeline may be missing a '
@@ -55,9 +58,10 @@ class ExceptionHandler:
             print(' just a known pipeline failure.'
                   'Will be put onto Data object.')
 
-
-# class ComponentException(Exception):
-#     pass
+    def _check_nodata(self, data):
+        from pjml.tool.abc.nodatahandler import NoDataHandler
+        if data is NoData and not isinstance(self, NoDataHandler):
+            raise Exception(f'NoData is not accepted by {self.name}!')
 
 
 class MissingModel(Exception):

@@ -1,10 +1,8 @@
-from pjdata.data import NoData
 from pjdata.data_creation import read_arff
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
-from pjml.tool.abc.model import Model
 from pjml.tool.abc.nodatahandler import NoDataHandler
 
 
@@ -44,23 +42,14 @@ class File(NoDataHandler, Invisible):
         super().__init__(config, deterministic=True)
         self.data = data
 
-    def _apply_impl(self, data):
-        if data is not NoData:
-            raise Exception('File component needs to be applied with NoData. '
-                            'Use Sink before it if needed.')
+    def _apply_impl(self, data_apply):
+        self._enforce_nodata(data_apply)
 
-        class FileModel(Model):
-            def _data_impl(inner_self):
-                return self.data
+        def use_impl(data_use):
+            self._enforce_nodata(data_use)
+            return self.data
 
-            def _use_impl(self, data_use):
-                if data_use is not NoData:
-                    raise Exception(
-                        'File component needs to be used with NoData. '
-                        'Use Sink before it if needed.')
-                return self.data
-
-        return FileModel()
+        return self.data, use_impl
 
     @classmethod
     def _cs_impl(cls):
@@ -71,6 +60,6 @@ class File(NoDataHandler, Invisible):
         }
         return TransformerCS(Node(params=params))
 
-    def transformations(self):
+    def transformations(self, op):
         raise Exception('File implementation does not provide reproducible '
                         'transformations yet!')
