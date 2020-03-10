@@ -11,7 +11,7 @@ class ExceptionHandler:
         in linear algebra calculations. MLP is also verbose due to
         nonconvergence issues among other problems.
     """
-    name = None
+    name = 'Undefined name in child class!'
 
     @staticmethod
     def _handle_warnings():
@@ -38,7 +38,7 @@ class ExceptionHandler:
     def _handle_exception(self, e, exit_on_error):
         """Pipeline failure is different from python error."""
         print(f'At {self},\nTrying to handle:\n[{str(e)}]\n'
-              f'Transformer: {self.name}...\n')
+              f'Object: {self.name}...\n')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
 
             # HINTS
@@ -59,7 +59,7 @@ class ExceptionHandler:
                   'Will be put onto Data object.')
 
     def _check_nodata(self, data):
-        from pjml.tool.abc.nodatahandler import NoDataHandler
+        from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
         if data is NoData and not isinstance(self, NoDataHandler):
             raise Exception(f'NoData is not accepted by {self.name}!')
 

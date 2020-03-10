@@ -3,7 +3,6 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
 
-
 # def keep(*args, engine="dump", settings=None, components=None):
 #     if components is None:
 #         components = args
@@ -36,18 +35,19 @@ class Keep(ConfigurableContainer1):
         config = self._to_config(locals())
         del config['args']
         super().__init__(config)
-
         self.fields = fields
-        self.model = fields
 
-    def _apply_impl(self, data):
-        return self._step(self.transformer.apply, data)
+    def _apply_impl(self, data_apply):
+        def use_impl(data_use):
+            used = self.transformer.use(data_use)
+            return self._step(data_use, used)
 
-    def _use_impl(self, data):
-        return self._step(self.transformer.use, data)
+        applied = self.transformer.apply(data_apply)
+        return self._step(data_apply, applied), use_impl
 
-    def _step(self, f, data):
-        matrices = {k: data.field(k, self) for k in self.fields if k in data.matrices}
-        new_matrices = f(data).matrices
+    def _step(self, data, output_data):
+        matrices = {k: data.field(k, self) for k in self.fields if
+                    k in data.matrices}
+        new_matrices = output_data.matrices
         new_matrices.update(matrices)
         return data.updated(self.transformations(), **new_matrices)

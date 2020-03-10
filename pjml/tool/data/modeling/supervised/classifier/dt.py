@@ -1,3 +1,5 @@
+from functools import partial
+
 from numpy.random import uniform
 from sklearn.tree import DecisionTreeClassifier
 
@@ -12,7 +14,7 @@ class DT(Predictor):
     """Decision Tree."""
 
     def __init__(self, **kwargs):
-        super().__init__(kwargs, DecisionTreeClassifier(**kwargs))
+        super().__init__(kwargs, partial(DecisionTreeClassifier))
 
     @classmethod
     def _cs_impl(cls):

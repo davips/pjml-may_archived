@@ -19,23 +19,27 @@ class Chain(ContainerN):
         return ChainCS(*transformers)
 
     def _apply_impl(self, data):
-        self.model = self.transformers
+        models = []
         for transformer in self.transformers:
-            data = transformer.apply(data, self._exit_on_error)
-            if data and (data.failure is not None):
+            print(transformer.name)
+            model = transformer.apply(data, self._exit_on_error)
+            data = model.data
+            models.append(model)
+            if data and data.failure is not None:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
-                exit()
-        return data
+                return data, self._no_use_impl
 
-    def _use_impl(self, data):
-        for transformer in self.transformers:
-            data = transformer.use(data, self._exit_on_error)
-            if data and (data.failure is not None):
-                print(f'Using subtransformer {transformer} failed! ',
-                      data.failure)
-                exit()
-        return data
+        def use_impl(data_):
+            for model_ in models:
+                print(transformer.name)
+                data_ = model_.use(data_, self._exit_on_error)
+                if data_ and data_.failure is not None:
+                    print(f'Using submodel {model_} failed! ', data_.failure)
+                    return data_
+            return data_
+
+        return data, use_impl
 
     def __str__(self, depth=''):
         if not self._pretty_printing:

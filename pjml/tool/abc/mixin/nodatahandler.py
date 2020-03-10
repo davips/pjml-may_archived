@@ -1,11 +1,11 @@
 from abc import ABC
 
 from pjdata.data import NoData
-from pjml.tool.abc.transformer import Transformer
 
 
-class NoDataHandler(Transformer, ABC):
+class NoDataHandler(ABC):
     """All components that accept NoData should derive this class."""
+    name = 'Undefined name in child class!'
 
     def _enforce_nodata(self, data):
         if data is not NoData:

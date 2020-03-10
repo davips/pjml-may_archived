@@ -3,12 +3,14 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
-from pjml.tool.abc.nodatahandler import NoDataHandler
+from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 
 
 # Precisa herdar de Invisible, pois o mesmo Data pode vir de diferentes
 # caminhos de arquivo (File) ou servidores (Source) e essas informações são
 # irrelevantes para reprodutibilidade. Herdando de Invisible, o histórico é [].
+
+
 class File(NoDataHandler, Invisible):
     """Source of Data object from CSV, ARFF, file.
 
@@ -60,6 +62,6 @@ class File(NoDataHandler, Invisible):
         }
         return TransformerCS(Node(params=params))
 
-    def transformations(self, op):
+    def transformations(self, step):
         raise Exception('File implementation does not provide reproducible '
                         'transformations yet!')

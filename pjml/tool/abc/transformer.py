@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from functools import lru_cache
+from functools import lru_cache, partial
 
 from pjdata.aux.decorator import classproperty
 from pjdata.aux.identifyable import Identifyable
@@ -9,12 +9,13 @@ from pjdata.mixin.printable import Printable
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use
 from pjml.config.description.cs.configlist import ConfigList
-from pjml.tool.abc.mixin.exceptionhandler import BadComponent, ExceptionHandler
-from pjml.tool.abc.mixin.timers import Timers
+from pjml.tool.abc.mixin.enforceapply import EnforceApply
+from pjml.tool.abc.mixin.exceptionhandler import BadComponent
+from pjml.tool.abc.mixin.runnable import Runnable
 from pjml.tool.abc.model import Model
 
 
-class Transformer(Printable, Identifyable, ExceptionHandler, Timers):
+class Transformer(Printable, Identifyable, Runnable):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -89,74 +90,39 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers):
 
         Fit/remove-noise-from/evaluate/... Data.
 
+        Implementers: If your component requires apply() before use(),
+        it should extend mixin EnforceApply and _apply_impl() should
+        return (None, use_impl()) when provided data is None.
+
         Parameters
         ----------
         data
-            'PhantomData' means 'pipeline ended before this transformation
-            'NoData' means 'pipeline still alive, hoping to generate Data in
-            one of the next transformers.
+            'None' means 'pipeline ended before this transformation'.
+            'NoData' means 'pipeline alive, hoping to generate Data in
+            the next transformer'.
         exit_on_error
+            Exit imediatly instead of just marking a failure inside Data object.
 
         Returns
         -------
-        transformed data, normally
-        PhantomData, when data is a PhantomData object
-            (probably meaning the pipeline finished before this transformer)
-        same data, but annotated with a failure
+        Transformed data, normally.
+        None, when data is a None
+            (probably meaning the pipeline finished before this transformer).
+        Same data, but annotated with a failure.
 
         Exception
         ---------
         BadComponent
-            Data object resulting history should be consistent with
+            Data resulting history should be consistent with
             _transformations() implementation.
         """
-        data_apply = data
-        if data_apply is None:
-            return None
-        if data_apply.failure:
-            return data_apply
-
-        self._check_nodata(data_apply)
-
-        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        start = self._clock()
-        try:
-            # Aqui, passa-se _exit_on_error para self de forma que
-            # implementadores de conteineres possam acessar o valor em
-            # _apply_impl e repassar aos contidos.
-            self._exit_on_error = exit_on_error
-
-            result = self._limit_by_time(
-                self._apply_impl, data_apply, self.max_time
-            )
-            if isinstance(result, tuple):
-                output_data_apply, use_impl = result
-            else:
-                raise Exception(
-                    'Transformer cannot handle custom Model objects yet!')
-                # TODO: dar a opção do implementador de componente retornar um
-                #  Model customizado, caso seu componente queira fornecer um
-                #  Model enriquecido com mais informações além de use() e
-                #  output_data.
-
-        except Exception as e:
-            self._handle_exception(e, exit_on_error)
-            output_data_apply = data_apply.updated(
-                self.transformations('a'), failure=str(e)
+        if isinstance(self, EnforceApply) and data is None:
+            return Model(
+                None, partial(self._no_use_impl, cause='early ended'), self
             )
 
-            def use_impl_failed(data_use):
-                raise Exception(
-                    "A failed model doesn't have a Data object!"
-                )
-
-            use_impl = use_impl_failed
-
-        time_spent_applying = self._clock() - start
-        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-        return Model(output_data_apply, use_impl, self.transformations)
-        # and self._check_history(data, output_data)
+        # TODO: Where should we set max_time?
+        return self._run(self._apply_impl, data, exit_on_error)
 
     @classproperty
     @lru_cache()

@@ -2,11 +2,12 @@ from abc import ABC
 from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
-from pjml.tool.abc.nodatahandler import NoDataHandler
+from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
+from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten
 
 
-class Container(NoDataHandler, ABC):
+class Container(Transformer, NoDataHandler, ABC):
     """A container modifies 'transformer(s)'."""
 
     def __init__(self, transformers):
@@ -14,7 +15,7 @@ class Container(NoDataHandler, ABC):
             raise Exception(
                 f'A container ({self.name}) should have at least one '
                 f'transformer!')
-        super().__init__({'transformers': transformers}, transformers)
+        super().__init__({'transformers': transformers})
         self.transformers = transformers
 
     @property

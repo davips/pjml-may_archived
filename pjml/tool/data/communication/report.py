@@ -16,17 +16,18 @@ class Report(Invisible):
     """
 
     def __init__(self, text='Default report r=$R'):
-        Transformer.__init__(self, {'text': text}, text, deterministic=True)
-        self.model = text
+        Transformer.__init__(self, {'text': text}, deterministic=True)
         self.text = text
 
     def _apply_impl(self, data):
-        print('[apply] ', self._interpolate(self.text, data))
-        return data
+        if data is not None:
+            print('[apply] ', self._interpolate(self.text, data))
 
-    def _use_impl(self, data):
-        print('[use] ', self._interpolate(self.text, data))
-        return data
+        def use_impl(data_use):
+            print('[use] ', self._interpolate(self.text, data_use))
+            return data_use
+
+        return data, use_impl
 
     @classmethod
     def _interpolate(cls, text, data):
