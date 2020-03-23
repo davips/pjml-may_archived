@@ -1,5 +1,6 @@
 import numpy as np
 from pjml.config.description.cs.emptycs import EmptyCS
+from pjml.tool.abc.model import Model
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.invisible import Invisible
 from pjml.util import flatten
@@ -27,7 +28,7 @@ class Report(Invisible):
             print('[use] ', self._interpolate(self.text, data_use))
             return data_use
 
-        return data, use_impl
+        return Model(data, use_impl, self)
 
     @classmethod
     def _interpolate(cls, text, data):

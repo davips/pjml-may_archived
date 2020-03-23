@@ -1,4 +1,4 @@
 class EnforceApply:
-    """Enforce apply() before use().
+    """Enforce apply() was used before use().
 
-    When with data != None, model.use() raises an Exception."""
+    When data != None, model.use() raises an Exception."""

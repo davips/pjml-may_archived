@@ -9,6 +9,7 @@ from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 # Precisa herdar de Invisible, pois o mesmo Data pode vir de diferentes
 # caminhos de arquivo (File) ou servidores (Source) e essas informações são
 # irrelevantes para reprodutibilidade. Herdando de Invisible, o histórico é [].
+from pjml.tool.abc.model import Model
 
 
 class File(NoDataHandler, Invisible):
@@ -51,7 +52,7 @@ class File(NoDataHandler, Invisible):
             self._enforce_nodata(data_use)
             return self.data
 
-        return self.data, use_impl
+        return Model(self.data, use_impl, self)
 
     @classmethod
     def _cs_impl(cls):

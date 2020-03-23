@@ -1,5 +1,6 @@
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.containern import ContainerN
+from pjml.tool.abc.model import Model
 from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten
 
@@ -28,7 +29,7 @@ class Chain(ContainerN):
             if data and data.failure is not None:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
-                return data, self._no_use_impl
+                return Model(data, self._no_use_impl, self)
 
         def use_impl(data_):
             for model_ in models:
@@ -39,7 +40,7 @@ class Chain(ContainerN):
                     return data_
             return data_
 
-        return data, use_impl
+        return Model(data, use_impl, self)
 
     def __str__(self, depth=''):
         if not self._pretty_printing:

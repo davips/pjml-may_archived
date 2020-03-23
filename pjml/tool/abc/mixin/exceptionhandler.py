@@ -49,11 +49,12 @@ class ExceptionHandler:
                       f'{Binarize.name} component')
 
             # end of handling
-            if exit_on_error:
-                traceback.print_exc()
-                exit(0)
-            else:
-                raise e
+            print('TODO: is exit_on_error implemented? exit_on_error=', exit_on_error)
+            # if exit_on_error:
+            #     traceback.print_exc()
+            #     exit(0)
+            # else:
+            raise e
         else:
             print(' just a known pipeline failure.'
                   'Will be put onto Data object.')

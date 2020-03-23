@@ -40,32 +40,24 @@ class Runnable(ExceptionHandler, Timers, ABC):
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
             self._exit_on_error = exit_on_error
 
-            result = self._limit_by_time(
-                function, data, max_time
-            )
+            value = self._limit_by_time(function, data, max_time)
 
-            # Check source of result: use, apply or apply-with-custom-model.
-            if isinstance(result, Data):
-                output_data, use_impl = result, None
-            elif isinstance(result, tuple):
-                output_data, use_impl = result
-            elif isinstance(result, Model):
-                raise Exception(
-                    'Transformer cannot handle custom Model objects yet!'
-                )
-                # TODO: handle custom Model classes.
+            # Check result type.
+            if isinstance(value, Data) or isinstance(value, Model):
+                result = value
             else:
                 raise Exception(
-                    f'Unexpected return type: {type(result)}, value: '
-                    f'{result}!'
-                    f'\nStep: {step}'
+                    f'Transformer only handle Model objects! Not {type(value)}'
                 )
         except Exception as e:
             self._handle_exception(e, exit_on_error)
             output_data = data.updated(
                 self.transformations(step), failure=str(e)
             )
-            use_impl = self._no_use_impl
+            if step == 'a':
+                result = Model(output_data, self._no_use_impl, self)
+            else:
+                result = output_data
 
         # TODO: put time_spent inside data (as a "volatile" matrix)?
         time_spent = self._clock() - start
@@ -73,10 +65,8 @@ class Runnable(ExceptionHandler, Timers, ABC):
 
         # TODO: check_history to guide implementers whenever they need to
         #  implement transformations()
-        if use_impl is not None:
-            return Model(output_data, use_impl, self)
 
-        return output_data
+        return result
 
     def _no_use_impl(self, data, cause='failed'):
         raise Exception(

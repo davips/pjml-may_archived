@@ -30,7 +30,7 @@ class Predictor(Transformer, EnforceApply, ABC):
                 z=sklearn_model.predict(data_use.X)
             )
 
-        return None, use_impl
+        return Model(None, use_impl, self)
 
     def transformations(self, step=None):
         if step is None:
