@@ -9,7 +9,7 @@ from pjml.tool.abc.transformer import Transformer
 class ConfigLess(Transformer, ABC):
     """Parent class of all transformers without config."""
     def __init__(self):
-        super().__init__({}, NoAlgorithm, deterministic=True)
+        super().__init__({}, deterministic=True)
 
     @classmethod
     def _cs_impl(cls):

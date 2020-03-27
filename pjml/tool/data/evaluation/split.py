@@ -1,3 +1,5 @@
+from functools import partial
+
 import numpy
 from numpy.random import uniform
 from sklearn.model_selection import StratifiedShuffleSplit as HO, \
@@ -8,6 +10,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import IntP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.model import Model
 
 
 class Split(Transformer, FunctionInspector):
@@ -43,7 +46,7 @@ class Split(Transformer, FunctionInspector):
         else:
             raise Exception('Wrong split_type: ', split_type)
 
-        super().__init__(self._to_config(locals()), self.algorithm)
+        super().__init__(self._to_config(locals()))
 
         self.partitions = partitions
         self.partition = partition
@@ -52,23 +55,23 @@ class Split(Transformer, FunctionInspector):
         self.fields = fields
 
     def _apply_impl(self, data):
-        # TODO: Profile and, if needed, somehow optimize this without breaking
-        #  pajé architecture.
         zeros = numpy.zeros(data.field(self.fields[0], self).shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
-        self.model = partitions[self.partition][1]
-        return self._core(data, partitions[self.partition][0])
 
-    def _use_impl(self, data):
-        return self._core(data, self.model)
+        def use_impl(data_use, indices, step='u'):
+            new_dic = {f: data_use.field(f, self)[indices] for f in self.fields}
+            return data_use.updated(self.transformations(step), **new_dic)
 
-    def _core(self, data, idxs):
-        new_dic = {f: data.field(f, self)[idxs] for f in self.fields}
-        return data.updated(self.transformations(), **new_dic)
+        output_data = use_impl(data, partitions[self.partition][0], step='a')
+        return Model(
+            output_data,
+            partial(use_impl, indices=partitions[self.partition][1]),
+            self
+        )
 
     @classmethod
     def _cs_impl(cls):
-        # TODO complete CS for split
+        # TODO complete CS for split; useless?
         params = {
             'partitions': IntP(uniform, low=2, high=10)
         }

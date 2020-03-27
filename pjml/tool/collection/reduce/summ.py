@@ -27,7 +27,7 @@ class Summ(Reduce):
     def __init__(self, field='R', function='mean'):
         super().__init__(self._to_config(locals()), function, True)
         self.field = field
-        self.function = self.functions[function]
+        self.function = self.function[function]
 
     def _use_impl(self, collection):
         if collection.has_nones:
@@ -51,7 +51,7 @@ class Summ(Reduce):
     @classmethod
     def _cs_impl(cls):
         params = {
-            'function': CatP(choice, items=cls.functions.keys()),
+            'function': CatP(choice, items=cls.function.keys()),
             'field': CatP(choice, items=['z', 'r', 's'])
         }
         return TransformerCS(Node(params))

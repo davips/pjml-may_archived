@@ -1,3 +1,5 @@
+from functools import partial
+
 from numpy.random.mtrand import uniform
 from sklearn.svm import SVC
 
@@ -10,7 +12,8 @@ from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 class SVMC(Predictor):
     def __init__(self, **kwargs):
-        super().__init__(kwargs, SVC(**kwargs))
+        algorithm_factory = partial(SVC)
+        super().__init__(kwargs, algorithm_factory, kwargs)
 
     @classmethod
     def _cs_impl(cls):

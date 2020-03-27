@@ -109,16 +109,16 @@ pipe = Pipeline(
     OverS(sampling_strategy='not minority'),
 
     ApplyUsing(NB('bernoulli')),
-    Metric(function='accuracy'),
+    Metric(functions='accuracy'),
     # Report('Accuracy: $r {history}'),
     Report('Accuracy: $r'),
 
     ApplyUsing(DT(max_depth=2)),
-    Metric(function='accuracy'),
+    Metric(functions='accuracy'),
     Report('Accuracy: $r'),
 
     ApplyUsing(SVMC(kernel='linear')),
-    Metric(function='accuracy'),
+    Metric(functions='accuracy'),
     Report('Accuracy: $r'),
 )
 dataout = pipe.apply()

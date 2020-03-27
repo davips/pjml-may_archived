@@ -1,4 +1,6 @@
 import traceback
+from abc import abstractmethod
+
 import numpy
 
 from pjdata.data import NoData
@@ -11,7 +13,10 @@ class ExceptionHandler:
         in linear algebra calculations. MLP is also verbose due to
         nonconvergence issues among other problems.
     """
-    name = 'Undefined name in child class!'
+    @classmethod
+    @abstractmethod
+    def name(cls):
+        pass
 
     @staticmethod
     def _handle_warnings():

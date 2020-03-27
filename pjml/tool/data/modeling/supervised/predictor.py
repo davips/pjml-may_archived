@@ -3,7 +3,7 @@ from abc import ABC
 from pjdata.step.use import Use
 from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.abc.model import Model
+from pjml.tool.model import Model
 from pjml.tool.abc.transformer import Transformer
 
 

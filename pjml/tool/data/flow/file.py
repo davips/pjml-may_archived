@@ -9,10 +9,10 @@ from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 # Precisa herdar de Invisible, pois o mesmo Data pode vir de diferentes
 # caminhos de arquivo (File) ou servidores (Source) e essas informações são
 # irrelevantes para reprodutibilidade. Herdando de Invisible, o histórico é [].
-from pjml.tool.abc.model import Model
+from pjml.tool.model import Model
 
 
-class File(NoDataHandler, Invisible):
+class File(Invisible, NoDataHandler):
     """Source of Data object from CSV, ARFF, file.
 
     TODO: always classification task?

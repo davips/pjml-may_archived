@@ -52,7 +52,7 @@ expr = Pipeline(
         shuffle(Std, select(UnderS, OverS), MinMax),
         ApplyUsing(select(DT, NB, SVMC)),
     ),
-    Metric(function='accuracy')
+    Metric(functions=['accuracy'])
     )
     )
 )

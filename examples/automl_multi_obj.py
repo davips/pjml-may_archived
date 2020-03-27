@@ -33,8 +33,8 @@ expr = Pipeline(
             Binarize(),
             select(Std, UnderS, OverS, MinMax),
             ApplyUsing(select(DT, NB, SVMC)),
-            OnlyApply(Metric(function=['length'])),
-            OnlyUse(Metric(function=['accuracy', 'error'])),
+            OnlyApply(Metric(functions=['length'])),
+            OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))
         ),
     ),

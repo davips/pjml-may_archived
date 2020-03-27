@@ -12,7 +12,7 @@ class Runnable(ExceptionHandler, Timers, ABC):
 
     def _run(self, function, data, exit_on_error=True, max_time=None):
         """Common procedure for apply() and use()."""
-        from pjml.tool.abc.model import Model
+        from pjml.tool.model import Model
         from pjml.tool.abc.transformer import Transformer
 
         # Some data checking.

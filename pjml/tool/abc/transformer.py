@@ -12,7 +12,7 @@ from pjml.config.description.cs.configlist import ConfigList
 from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
 from pjml.tool.abc.mixin.runnable import Runnable
-from pjml.tool.abc.model import Model
+from pjml.tool.model import Model
 
 
 class Transformer(Printable, Identifyable, Runnable):

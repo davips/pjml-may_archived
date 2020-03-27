@@ -10,6 +10,7 @@ from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
 #     node = Node(params={'engine': FixedP(engine), 'settings': FixedP(
 #     settings)})
 #     return SuperCS(Cache.name, Cache.path, components, node)
+from pjml.tool.model import Model
 from pjml.tool.abc.transformer import Transformer
 
 
@@ -38,16 +39,19 @@ class Keep(ConfigurableContainer1):
         self.fields = fields
 
     def _apply_impl(self, data_apply):
+        model = self.transformer.apply(data_apply)
+        applied = self._step(data_apply, model.data, 'a')
+
         def use_impl(data_use):
-            used = self.transformer.use(data_use)
-            return self._step(data_use, used)
+            output_data = model.use(data_use)
+            used = self._step(data_use, output_data, 'u')
+            return used
 
-        applied = self.transformer.apply(data_apply)
-        return self._step(data_apply, applied), use_impl
+        return Model(applied, use_impl, self)
 
-    def _step(self, data, output_data):
+    def _step(self, data, output_data, step):
         matrices = {k: data.field(k, self) for k in self.fields if
                     k in data.matrices}
-        new_matrices = output_data.matrices
+        new_matrices = {} if output_data is None else output_data.matrices
         new_matrices.update(matrices)
-        return data.updated(self.transformations(), **new_matrices)
+        return data.updated(self.transformations(step), **new_matrices)

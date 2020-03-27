@@ -8,7 +8,10 @@ class Model(Runnable, NoDataHandler):
         self._data_from_apply = data_from_apply
         self._use_function = use_function
         self._transformations_function = transformer.transformations
-        self.name = transformer.name + ' Model'
+        self._name = transformer.name + ' Model'
+
+    def name(self):
+        return self._name
 
     @property
     def data(self):
@@ -47,3 +50,14 @@ class Model(Runnable, NoDataHandler):
 
     def transformations(self, step):
         return self._transformations_function(step)
+
+
+class ContainerModel(Model):
+    def __init__(self, models, data_from_apply, use_function, transformer):
+        super().__init__(data_from_apply, use_function, transformer)
+
+        # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
+        if len(models) == 1 and isinstance(models[0], ContainerModel):
+            models = models[0].models
+
+        self.models = models

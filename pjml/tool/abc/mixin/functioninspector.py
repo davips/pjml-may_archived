@@ -4,7 +4,7 @@ from functools import lru_cache
 class FunctionInspector:
     @property
     @lru_cache()
-    def functions(self):
+    def function(self):
         """Map each function name to its corresponding class method."""
         return {name: getattr(self, '_fun_' + name)
                 for name in self.names()}

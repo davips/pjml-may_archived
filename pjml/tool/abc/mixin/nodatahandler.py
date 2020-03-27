@@ -1,11 +1,16 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from pjdata.data import NoData
 
 
 class NoDataHandler(ABC):
-    """All components that accept NoData should derive this class."""
-    name = 'Undefined name in child class!'
+    """All components that accept NoData should derive this class after
+    deriving Transformer or descendants."""
+
+    @classmethod
+    @abstractmethod
+    def name(cls):
+        pass
 
     def _enforce_nodata(self, data):
         if data is not NoData:

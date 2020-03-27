@@ -6,6 +6,7 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.model import Model
 from pjml.tool.abc.transformer import Transformer
 
 
@@ -17,7 +18,7 @@ class Metric(Transformer, FunctionInspector):
 
     Parameters
     ----------
-    function
+    functions
         Name of the function to use to evaluate data objects.
     target
         Name of the matrix with expected values.
@@ -25,31 +26,32 @@ class Metric(Transformer, FunctionInspector):
         Name of the matrix to be evaluated.
     """
 
-    def __init__(self, function=['accuracy'], target='Y', prediction='Z'):
-        super().__init__(self._to_config(locals()), function,
-                         deterministic=True)
+    def __init__(self, functions=None, target='Y', prediction='Z'):
+        if functions is None:
+            functions = ['accuracy']
+        super().__init__(self._to_config(locals()), deterministic=True)
+        self.functions = functions
         self.target, self.prediction = target, prediction
-        self.collection_function = self.model = [self.functions[alg_str]
-                                                 for alg_str in self.algorithm]
-        self.function_name = function
+        self.selected = [self.function[name] for name in functions]
 
     def _apply_impl(self, data):
-        return self._use_impl(data)
+        def use_impl(data_use, step='u'):
+            if self.target not in data_use.matrices:
+                raise Exception(
+                    f'Impossible to calculate metric {self.functions}: Field '
+                    f'{self.target} does not exist!')
+            if self.prediction not in data_use.matrices:
+                raise Exception(
+                    f'Impossible to calculate metric {self.functions}: Field '
+                    f'{self.prediction} does not exist!')
+            return data_use.updated(
+                self.transformations(step),
+                R=np.array([[function(data_use, self.target, self.prediction)
+                             for function in self.selected]])
+            )
 
-    def _use_impl(self, data):
-        if self.target not in data.matrices:
-            raise Exception(
-                f'Impossible to calculate metric {self.function_name}: Field '
-                f'{self.target} does not exist!')
-        if self.prediction not in data.matrices:
-            raise Exception(
-                f'Impossible to calculate metric {self.function_name}: Field '
-                f'{self.prediction} does not exist!')
-        return data.updated(
-            self.transformations(),
-            R=np.array([[function(data, self.target, self.prediction)
-               for function in self.collection_function]])
-        )
+        output_data = use_impl(data, step='a')
+        return Model(output_data, use_impl, self)
 
     @classmethod
     def _cs_impl(cls):

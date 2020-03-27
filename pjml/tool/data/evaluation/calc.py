@@ -28,7 +28,7 @@ class Calc(Transformer, FunctionInspector):
         super().__init__(self._to_config(locals()), function,
                          deterministic=True)
         self.input_field, self.output_field = input_field, output_field
-        self.collection_function = self.model = [self.functions[alg_str]
+        self.collection_function = self.model = [self.function[alg_str]
                                                  for alg_str in self.algorithm]
         self.function_name = function
 
