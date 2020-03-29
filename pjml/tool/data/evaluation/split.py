@@ -58,16 +58,16 @@ class Split(Transformer, FunctionInspector):
         zeros = numpy.zeros(data.field(self.fields[0], self).shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
 
-        def use_impl(data_use, indices, step='u'):
+        def common(data_use, indices, step='u'):
             new_dic = {f: data_use.field(f, self)[indices] for f in self.fields}
             return data_use.updated(self.transformations(step), **new_dic)
 
-        output_data = use_impl(data, partitions[self.partition][0], step='a')
-        return Model(
-            output_data,
-            partial(use_impl, indices=partitions[self.partition][1]),
-            self
+        output_data = common(data, partitions[self.partition][0], step='a')
+        use_impl = partial(
+            common,
+            indices=partitions[self.partition][1]
         )
+        return Model(output_data, use_impl, self)
 
     @classmethod
     def _cs_impl(cls):

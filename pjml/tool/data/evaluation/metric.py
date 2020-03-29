@@ -32,7 +32,7 @@ class Metric(Transformer, FunctionInspector):
         super().__init__(self._to_config(locals()), deterministic=True)
         self.functions = functions
         self.target, self.prediction = target, prediction
-        self.selected = [self.function[name] for name in functions]
+        self.selected = [self.function_from_name[name] for name in functions]
 
     def _apply_impl(self, data):
         def use_impl(data_use, step='u'):
@@ -46,8 +46,8 @@ class Metric(Transformer, FunctionInspector):
                     f'{self.prediction} does not exist!')
             return data_use.updated(
                 self.transformations(step),
-                R=np.array([[function(data_use, self.target, self.prediction)
-                             for function in self.selected]])
+                R=np.array([[f(data_use, self.target, self.prediction)
+                             for f in self.selected]])
             )
 
         output_data = use_impl(data, step='a')

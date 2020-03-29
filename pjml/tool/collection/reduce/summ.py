@@ -25,11 +25,11 @@ class Summ(Reduce):
     """
 
     def __init__(self, field='R', function='mean'):
-        super().__init__(self._to_config(locals()), function, True)
+        super().__init__(self._to_config(locals()), True)
         self.field = field
-        self.function = self.function[function]
 
-    def _use_impl(self, collection):
+    @staticmethod
+    def _use_impl(collection, function, transformations):
         if collection.has_nones:
             collection = Shrink().apply(collection)
             print("Warning: collections containing Nones are shrunk before "
@@ -41,17 +41,17 @@ class Summ(Reduce):
             failure=collection.failure
         ).updated(collection.history, **collection.original_data.matrices)
 
-        res = self.function(collection)
+        res = function(collection)
         if isinstance(res, tuple):
             summ = numpy.array(res)
-            return data.updated(self.transformations(), S=summ)
+            return data.updated(transformations, S=summ)
         else:
-            return data.updated(self.transformations(), s=res)
+            return data.updated(transformations, s=res)
 
     @classmethod
     def _cs_impl(cls):
         params = {
-            'function': CatP(choice, items=cls.function.keys()),
+            'function': CatP(choice, items=cls.function_from_name.keys()),
             'field': CatP(choice, items=['z', 'r', 's'])
         }
         return TransformerCS(Node(params))

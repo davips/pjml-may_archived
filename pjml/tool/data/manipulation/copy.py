@@ -30,11 +30,8 @@ class Copy(Transformer, FunctionInspector):
         raise Exception('Not implemented!')
 
     def __init__(self, from_field, to_field):
-        super().__init__(self._to_config(locals()), NoAlgorithm,
-                         deterministic=True)
+        super().__init__(self._to_config(locals()), deterministic=True)
         self.from_field, self.to_field = from_field, to_field
-
-        self.model = NoModel
 
     def _apply_impl(self, data):
         return self._use_impl(data)

@@ -2,11 +2,13 @@ from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.containern import ContainerN
 from pjdata.finitecollection import FiniteCollection
+from pjml.tool.model import Model, ContainerModel
 
 
 class Multi(ContainerN):
     """Process each Data object from a collection with its respective
     transformer."""
+
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
@@ -15,27 +17,38 @@ class Multi(ContainerN):
             return object.__new__(cls)
         return ContainerCS(Multi.name, Multi.path, transformers)
 
-    def _apply_impl(self, collection):
-        isfinite = isinstance(collection, FiniteCollection)
-        if isfinite and self.size != collection.size:
-            raise Exception('Config space and collection should have the same '
-                            f'size {self.size} != collection {collection.size}')
-        self.model = []
+    def _apply_impl(self, collection_apply):
+        isfinite = isinstance(collection_apply, FiniteCollection)
+        if isfinite and self.size != collection_apply.size:
+            raise Exception(
+                f'Config space and collection should have the same size '
+                f'{self.size} != collection {collection_apply.size}'
+            )
+        models = []
         datas = []
-        # TODO: deve clonar antes de usar?
         for transformer in self.transformers:
-            data = transformer.apply(next(collection), self._exit_on_error)
-            datas.append(data)
-            self.model.append(transformer)
-        return collection.updated(self.transformations(), datas=datas)
+            model = transformer.apply(
+                next(collection_apply), self._exit_on_error
+            )
+            datas.append(model.data)
+            models.append(model)
 
-    def _use_impl(self, collection):
-        isfinite = isinstance(collection, FiniteCollection)
-        if isfinite and self.size != collection.size:
-            raise Exception('Config space and collection should have the same '
-                            f'size {self.size} != collection {collection.size}')
-        datas = []
-        for transformer in self.model:
-            data = transformer.use(next(collection), self._exit_on_error)
-            datas.append(data)
-        return collection.updated(self.transformations(), datas=datas)
+        applied = collection_apply.updated(
+            self.transformations('a'), datas=datas
+        )
+
+        def use_impl(collection_use):
+            isfinite = isinstance(collection_use, FiniteCollection)
+            if isfinite and self.size != collection_use.size:
+                raise Exception(
+                    'Config space and collection should have the same '
+                    f'size {self.size} != collection {collection_use.size}'
+                )
+            datas = []
+            for model in models:
+                data = model.use(next(collection_use), self._exit_on_error)
+                datas.append(data)
+            return collection_use.updated(self.transformations('u'),
+                                          datas=datas)
+
+        return ContainerModel(models, applied, use_impl, self)

@@ -18,7 +18,7 @@ class Partition(Transformer):
                  fields=None):
         if fields is None:
             fields = ['X', 'Y']
-        super().__init__(self._to_config(locals()), split_type)
+        super().__init__(self._to_config(locals()))
         from pjml.macro import split
         self.model = Chain(
             Expand(),

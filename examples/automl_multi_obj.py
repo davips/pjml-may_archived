@@ -44,9 +44,9 @@ expr = Pipeline(
     OnlyUse(MConcat(input_field1="B", input_field2="S",
                     output_field="S", direction='vertical')),
     # Report(' S --> \n$S'),
-    Calc(function=['flatten']),
+    Calc(functions=['flatten']),
     # Report('flatten S --> \n$S'),
-    Calc(function=['mean']),
+    Calc(functions=['mean']),
     Report('mean S --> $S'),
 )
 

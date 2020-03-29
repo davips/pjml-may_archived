@@ -117,8 +117,12 @@ class Transformer(Printable, Identifyable, Runnable):
             _transformations() implementation.
         """
         if isinstance(self, EnforceApply) and data is None:
+            use_impl = partial(
+                self._no_use_impl,
+                cause='early ended'
+            )
             return Model(
-                None, partial(self._no_use_impl, cause='early ended'), self
+                None, use_impl, self
             )
 
         # TODO: Where should we set max_time?

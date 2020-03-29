@@ -7,14 +7,15 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP, FixedP, IntP, RealP
-from pjml.tool.data.modeling.supervised.predictor import Predictor
+from pjml.tool.data.modeling.supervised.sklpredictor import SKLPredictor
 
 
-class DT(Predictor):
+class DT(SKLPredictor):
     """Decision Tree."""
 
     def __init__(self, **kwargs):
-        super().__init__(kwargs, partial(DecisionTreeClassifier))
+        algorithm_factory = partial(DecisionTreeClassifier, **kwargs)
+        super().__init__(kwargs, algorithm_factory)
 
     @classmethod
     def _cs_impl(cls):

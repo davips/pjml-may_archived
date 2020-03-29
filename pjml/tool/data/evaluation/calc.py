@@ -6,6 +6,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.model import Model
 
 
 class Calc(Transformer, FunctionInspector):
@@ -16,7 +17,7 @@ class Calc(Transformer, FunctionInspector):
 
     Parameters
     ----------
-    function
+    functions
         Name of the function to use to evaluate data objects.
     target
         Name of the matrix with expected values.
@@ -24,27 +25,28 @@ class Calc(Transformer, FunctionInspector):
         Name of the matrix to be evaluated.
     """
 
-    def __init__(self, function=['mean'], input_field='S', output_field='S'):
-        super().__init__(self._to_config(locals()), function,
-                         deterministic=True)
+    def __init__(self, functions=None, input_field='S', output_field='S'):
+        if functions is None:
+            functions = ['mean']
+        super().__init__(self._to_config(locals()), deterministic=True)
         self.input_field, self.output_field = input_field, output_field
-        self.collection_function = self.model = [self.function[alg_str]
-                                                 for alg_str in self.algorithm]
-        self.function_name = function
+        self.selected = [self.function_from_name[name] for name in functions]
+        self.functions = functions
 
-    def _apply_impl(self, data):
-        return self._use_impl(data)
+    def _apply_impl(self, data_apply):
+        def use_impl(data_use, step='u'):
+            if self.input_field not in data_use.matrices:
+                raise Exception(
+                    f'Impossible to calculate {self.functions}: Field '
+                    f'{self.input_field} does not exist!')
 
-    def _use_impl(self, data):
-        if self.input_field not in data.matrices:
-            raise Exception(
-                f'Impossible to calculate {self.function_name}: Field '
-                f'{self.input_field} does not exist!')
+            result_vectors = [function(data_use.field(self.input_field, self))
+                              for function in self.selected]
+            dic = {self.output_field: np.array(result_vectors)}
+            return data_use.updated(self.transformations(step), **dic)
 
-        result_vectors = [function(data.field(self.input_field, self))
-                          for function in self.collection_function]
-        dic = {self.output_field: np.array(result_vectors)}
-        return data.updated(self.transformations(), **dic)
+        output_data = use_impl(data_apply, step='a')
+        return Model(output_data, use_impl, self)
 
     @classmethod
     def _cs_impl(cls):

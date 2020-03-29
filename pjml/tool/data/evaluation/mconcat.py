@@ -5,8 +5,8 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.singleton import NoAlgorithm, NoModel
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.model import Model
 
 
 class MConcat(Transformer, FunctionInspector):
@@ -26,8 +26,7 @@ class MConcat(Transformer, FunctionInspector):
     """
 
     def __init__(self, input_field1, input_field2, output_field, direction):
-        super().__init__(self._to_config(locals()), NoAlgorithm,
-                         deterministic=True)
+        super().__init__(self._to_config(locals()), deterministic=True)
         self.input_field1, self.input_field2 = input_field1, input_field2
         self.output_field = output_field
 
@@ -41,18 +40,17 @@ class MConcat(Transformer, FunctionInspector):
                 f"direction = {direction}."
             )
 
-        self.model = NoModel
+    def _apply_impl(self, data_apply):
+        def use_impl(data_use, step='u'):
+            m1 = data_use.field(self.input_field1, self)
+            m2 = data_use.field(self.input_field2, self)
+            dic = {
+                self.output_field: np.concatenate((m1, m2), axis=self.direction)
+            }
+            return data_use.updated(self.transformations(step), **dic)
 
-    def _apply_impl(self, data):
-        return self._use_impl(data)
-
-    def _use_impl(self, data):
-        m1 = data.field(self.input_field1, self)
-        m2 = data.field(self.input_field2, self)
-        dic = {
-            self.output_field: np.concatenate((m1, m2), axis=self.direction)
-        }
-        return data.updated(self.transformations(), **dic)
+        applied = use_impl(data_apply, step='a')
+        return Model(applied, use_impl, self)
 
     @classmethod
     def _cs_impl(cls):

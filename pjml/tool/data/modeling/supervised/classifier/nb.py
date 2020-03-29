@@ -7,10 +7,10 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
-from pjml.tool.data.modeling.supervised.predictor import Predictor
+from pjml.tool.data.modeling.supervised.sklpredictor import SKLPredictor
 
 
-class NB(Predictor):
+class NB(SKLPredictor):
     """Naive Bayes implementations: gaussian, bernoulli."""
 
     def __init__(self, distribution="gaussian"):
@@ -20,7 +20,7 @@ class NB(Predictor):
             algorithm_factory = partial(BernoulliNB)
         else:
             raise Exception('Wrong distribution:', distribution)
-        super().__init__({'distribution': distribution}, algorithm_factory, {})
+        super().__init__({'distribution': distribution}, algorithm_factory)
         self.distribution = distribution
 
     @classmethod

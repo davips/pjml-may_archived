@@ -7,13 +7,13 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP, IntP, RealP, CatP, OrdP
-from pjml.tool.data.modeling.supervised.predictor import Predictor
+from pjml.tool.data.modeling.supervised.sklpredictor import SKLPredictor
 
 
-class SVMC(Predictor):
+class SVMC(SKLPredictor):
     def __init__(self, **kwargs):
-        algorithm_factory = partial(SVC)
-        super().__init__(kwargs, algorithm_factory, kwargs)
+        algorithm_factory = partial(SVC, **kwargs)
+        super().__init__(kwargs, algorithm_factory)
 
     @classmethod
     def _cs_impl(cls):
