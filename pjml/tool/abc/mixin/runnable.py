@@ -1,9 +1,9 @@
 from abc import ABC
 
 from pjdata.data import Data
+from pjdata.collection import Collection
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.timers import Timers
-
 
 class Runnable(ExceptionHandler, Timers, ABC):
     # @abstractmethod
@@ -23,9 +23,15 @@ class Runnable(ExceptionHandler, Timers, ABC):
         # Detecting step.
         if isinstance(self, Transformer):
             step = 'a'
+            if data is None:
+                return Model(None, self, function)
+            if isinstance(data, Collection) and data.all_nones:
+                return Model(data, self, function)
         elif isinstance(self, Model):
             step = 'u'
             if data is None:
+                return None
+            if isinstance(data, Collection) and data.all_nones:
                 return data
         else:
             raise Exception('Wrong implementation of runnable!', type(self))
