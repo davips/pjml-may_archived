@@ -1,10 +1,9 @@
 from abc import ABC
 
-from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.transformer import Transformer
 
 
-class SKLAlgorithm(Transformer, EnforceApply, ABC):
+class SKLAlgorithm(Transformer, ABC):
     """    Base class for scikitlearn algorithms.    """
 
     def __init__(self, config, algorithm_factory, deterministic=False):
