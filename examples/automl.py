@@ -49,7 +49,8 @@ expr = Pipeline(
     Cache(
     evaluator(
     Wrap(
-        shuffle(Std, select(UnderS, OverS), MinMax),
+        shuffle(Std, MinMax),
+        # shuffle(Std, select(UnderS, OverS), MinMax),
         ApplyUsing(select(DT, NB, SVMC)),
     ),
     Metric(functions=['accuracy'])

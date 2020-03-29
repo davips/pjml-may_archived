@@ -28,7 +28,7 @@ class Report(Invisible):
             print('[use] ', self._interpolate(self.text, data_use))
             return data_use
 
-        return Model(data, use_impl, self)
+        return Model(data, self, use_impl)
 
     @classmethod
     def _interpolate(cls, text, data):

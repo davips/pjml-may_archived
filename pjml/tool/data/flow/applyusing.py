@@ -21,7 +21,7 @@ class ApplyUsing(NonConfigurableContainer1):
     def _apply_impl(self, data):
         model = self.transformer.apply(data, self._exit_on_error)
         output_data = model.use(data, self._exit_on_error)
-        return Model(output_data, model.use, self)
+        return Model(output_data, self, model.use)
 
     def transformations(self, step=None, training_data=None):
         if training_data is None:

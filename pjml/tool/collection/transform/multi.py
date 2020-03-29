@@ -51,4 +51,4 @@ class Multi(ContainerN):
             return collection_use.updated(self.transformations('u'),
                                           datas=datas)
 
-        return ContainerModel(models, applied, use_impl, self)
+        return ContainerModel(models, applied, self, use_impl)

@@ -21,7 +21,7 @@ class SKLPredictor(SKLAlgorithm, ABC):
                 z=sklearn_model.predict(data_use.X)
             )
 
-        return Model(None, use_impl, self)
+        return Model(None, self, use_impl)
 
     def transformations(self, step=None):
         if step is None:

@@ -28,4 +28,4 @@ class Binarize(ConfigLess):
                 return data_use
 
         output_data = use_impl(data_apply, step='a')
-        return Model(output_data, use_impl, self)
+        return Model(output_data, self, use_impl)

@@ -50,7 +50,7 @@ class MConcat(Transformer, FunctionInspector):
             return data_use.updated(self.transformations(step), **dic)
 
         applied = use_impl(data_apply, step='a')
-        return Model(applied, use_impl, self)
+        return Model(applied, self, use_impl)
 
     @classmethod
     def _cs_impl(cls):

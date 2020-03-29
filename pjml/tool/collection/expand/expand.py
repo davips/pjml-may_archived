@@ -12,4 +12,4 @@ class Expand(ConfigLess, Invisible):
             )
 
         applied = use_impl(data_apply)
-        return Model(applied, use_impl, self)
+        return Model(applied, self, use_impl)

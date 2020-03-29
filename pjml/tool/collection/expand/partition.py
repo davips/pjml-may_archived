@@ -1,6 +1,7 @@
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.chain import Chain
+from pjml.tool.model import Model
 
 
 class Partition(Transformer):
@@ -20,22 +21,25 @@ class Partition(Transformer):
             fields = ['X', 'Y']
         super().__init__(self._to_config(locals()))
         from pjml.macro import split
-        self.model = Chain(
+        self.transformer = Chain(
             Expand(),
             split(split_type, partitions, test_size, seed, fields)
         )
 
-    def _apply_impl(self, data):
-        collection = self.model.apply(data)
-        return collection.last_transformation_replaced(
-            self.transformations()[0]
+    def _apply_impl(self, data_apply):
+        model = self.transformer.apply(data_apply)
+
+        def use_impl(data_use):
+            used = model.use(data_use)
+            return used.last_transformation_replaced(
+                self.transformations('u')[0]
+            )
+
+        applied = model.data.last_transformation_replaced(
+            self.transformations('a')[0]
         )
 
-    def _use_impl(self, data):
-        collection = self.model.use(data)
-        return collection.last_transformation_replaced(
-            self.transformations()[0]
-        )
+        return Model(applied, self, use_impl)
 
     @classmethod
     def _cs_impl(cls):

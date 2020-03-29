@@ -47,7 +47,7 @@ class Keep(ConfigurableContainer1):
             used = self._step(data_use, output_data, 'u')
             return used
 
-        return Model(applied, use_impl, self)
+        return Model(applied, self, use_impl)
 
     def _step(self, data, output_data, step):
         matrices = {k: data.field(k, self) for k in self.fields if

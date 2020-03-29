@@ -4,7 +4,7 @@ from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 
 
 class Model(Runnable, NoDataHandler):
-    def __init__(self, data_from_apply, use_function, transformer):
+    def __init__(self, data_from_apply, transformer, use_function=lambda x: x):
         self._data_from_apply = data_from_apply
         self._use_function = use_function
         self._transformations_function = transformer.transformations
@@ -53,8 +53,8 @@ class Model(Runnable, NoDataHandler):
 
 
 class ContainerModel(Model):
-    def __init__(self, models, data_from_apply, use_function, transformer):
-        super().__init__(data_from_apply, use_function, transformer)
+    def __init__(self, models, data_from_apply, transformer, use_function):
+        super().__init__(data_from_apply, transformer, use_function)
 
         # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
         if len(models) == 1 and isinstance(models[0], ContainerModel):

@@ -67,7 +67,7 @@ class Split(Transformer, FunctionInspector):
             common,
             indices=partitions[self.partition][1]
         )
-        return Model(output_data, use_impl, self)
+        return Model(output_data, self, use_impl)
 
     @classmethod
     def _cs_impl(cls):

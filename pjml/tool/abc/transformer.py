@@ -121,9 +121,7 @@ class Transformer(Printable, Identifyable, Runnable):
                 self._no_use_impl,
                 cause='early ended'
             )
-            return Model(
-                None, use_impl, self
-            )
+            return Model(None, self, use_impl)
 
         # TODO: Where should we set max_time?
         return self._run(self._apply_impl, data, exit_on_error)

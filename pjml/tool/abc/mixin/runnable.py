@@ -55,7 +55,7 @@ class Runnable(ExceptionHandler, Timers, ABC):
                 self.transformations(step), failure=str(e)
             )
             if step == 'a':
-                result = Model(output_data, self._no_use_impl, self)
+                result = Model(output_data, self, self._no_use_impl)
             else:
                 result = output_data
 

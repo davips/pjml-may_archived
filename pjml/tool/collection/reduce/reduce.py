@@ -24,4 +24,4 @@ class Reduce(Transformer, FunctionInspector, ABC):
             self._use_impl,
             function=self.function, transformations=self.transformations('u')
         )
-        return Model(applied, use_impl, self)
+        return Model(applied, self, use_impl)

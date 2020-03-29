@@ -4,10 +4,10 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
-from pjml.tool.data.processing.instance.sampler.resampler import Resampler
+from pjml.tool.data.processing.instance.sampler.sklresampler import SKLResampler
 
 
-class OverS(Resampler):
+class OverS(SKLResampler):
     def __init__(self, **kwargs):
         # TODO: Default values should be extracted from CS (via (new) property
         #  'default'), to appear here in 'self.config'.

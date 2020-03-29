@@ -52,7 +52,7 @@ class File(Invisible, NoDataHandler):
             self._enforce_nodata(data_use)
             return self.data
 
-        return Model(self.data, use_impl, self)
+        return Model(self.data, self, use_impl)
 
     @classmethod
     def _cs_impl(cls):

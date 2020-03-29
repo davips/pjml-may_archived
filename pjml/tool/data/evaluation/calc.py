@@ -46,7 +46,7 @@ class Calc(Transformer, FunctionInspector):
             return data_use.updated(self.transformations(step), **dic)
 
         output_data = use_impl(data_apply, step='a')
-        return Model(output_data, use_impl, self)
+        return Model(output_data, self, use_impl)
 
     @classmethod
     def _cs_impl(cls):

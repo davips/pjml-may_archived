@@ -12,8 +12,11 @@ from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 
 # pipe = Pipeline(File("iris.arff"), ApplyUsing(NB()), Metric(), Report())
+from pjml.tool.data.processing.instance.sampler.under.random import UnderS
+
 pipe = Pipeline(File("abalone3.arff"), Binarize(),
                 Split(),
+                UnderS(sampling_strategy='not minority'),
                 ApplyUsing(NB()), Metric(), Report(),
                 ApplyUsing(SVMC()), Metric(), Report())
 

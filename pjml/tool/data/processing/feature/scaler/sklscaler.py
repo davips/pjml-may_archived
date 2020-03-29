@@ -17,4 +17,4 @@ class SKLScaler(SKLAlgorithm, ABC):
             return data_use.updated(self.transformations(step), X=X)
 
         applied = use_impl(data_apply, step='a')
-        return Model(applied, use_impl, self)
+        return Model(applied, self, use_impl)
