@@ -31,11 +31,10 @@ class Summ(Reduce):
     @staticmethod
     def _use_impl(collection, function, transformations):
         if collection.has_nones:
-            collection = Shrink().apply(collection)
-            print("Warning: collections containing Nones are shrunk before "
-                  "summarization.")
-        if collection is None:
-            return None
+            # collection = Shrink().apply(collection)
+            raise Exception(
+                "Warning: You shuld use 'Shirink()' to handling collections with None. ")
+
         data = Data(
             dataset=collection.dataset,
             failure=collection.failure
