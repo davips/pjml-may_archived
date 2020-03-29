@@ -23,6 +23,9 @@ class Chain(ContainerN):
         models = []
         for transformer in self.transformers:
             model = transformer.apply(data, self._exit_on_error)
+            if model is None:
+                break
+
             data = model.data
             models.append(model)
             if data and data.failure is not None:
