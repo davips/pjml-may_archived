@@ -5,6 +5,7 @@ from pjdata.collection import Collection
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.timers import Timers
 
+
 class Runnable(ExceptionHandler, Timers, ABC):
     # @abstractmethod
     # def transformations(self, step):
@@ -49,12 +50,11 @@ class Runnable(ExceptionHandler, Timers, ABC):
             value = self._limit_by_time(function, data, max_time)
 
             # Check result type.
-            if isinstance(value, Data) or isinstance(value, Model):
+            isdata = isinstance(value, (Data, Collection))
+            if isdata or isinstance(value, Model):
                 result = value
             else:
-                raise Exception(
-                    f'Transformer only handle Model objects! Not {type(value)}'
-                )
+                raise Exception(f'{self.name} does not handle {type(value)}!')
         except Exception as e:
             self._handle_exception(e, exit_on_error)
             output_data = data.updated(

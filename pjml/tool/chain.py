@@ -23,12 +23,9 @@ class Chain(ContainerN):
         models = []
         for transformer in self.transformers:
             model = transformer.apply(data, self._exit_on_error)
-            if model is None:
-                break
-
             data = model.data
             models.append(model)
-            if data and data.failure is not None:
+            if data and data.failure:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
                 return Model(data, self, self._no_use_impl)

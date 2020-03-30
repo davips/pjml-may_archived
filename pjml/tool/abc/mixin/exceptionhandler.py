@@ -3,6 +3,7 @@ from abc import abstractmethod
 
 import numpy
 
+from pjdata.aux.decorator import classproperty
 from pjdata.data import NoData
 
 
@@ -13,7 +14,7 @@ class ExceptionHandler:
         in linear algebra calculations. MLP is also verbose due to
         nonconvergence issues among other problems.
     """
-    @classmethod
+    @classproperty
     @abstractmethod
     def name(cls):
         pass
