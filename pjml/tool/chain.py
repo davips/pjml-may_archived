@@ -28,7 +28,7 @@ class Chain(ContainerN):
             if data and data.failure:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
-                return Model(data, self, self._no_use_impl)
+                return ContainerModel(models, data, self, self._no_use_impl)
 
         def use_impl(data_use):
             for model in models:

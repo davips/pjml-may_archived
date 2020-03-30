@@ -1,3 +1,4 @@
+from pjdata.data_creation import read_arff
 from pjml.pipeline import Pipeline
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
@@ -13,6 +14,13 @@ from pjml.tool.data.processing.feature.binarize import Binarize
 
 # pipe = Pipeline(File("iris.arff"), ApplyUsing(NB()), Metric(), Report())
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
+
+d = read_arff('iris.arff')
+p = Pipeline(Metric(prediction='Y'), RF(), Report())
+m = p.apply(d)
+m.use(d)
+
+exit()
 
 pipe = Pipeline(
     File("abalone3.arff"), Binarize(),

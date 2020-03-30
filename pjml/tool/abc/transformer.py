@@ -11,11 +11,11 @@ from pjdata.step.use import Use
 from pjml.config.description.cs.configlist import ConfigList
 from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.abc.mixin.runnable import Runnable
+from pjml.tool.abc.mixin.runnable import RunnableApply
 from pjml.tool.model import Model
 
 
-class Transformer(Printable, Identifyable, Runnable):
+class Transformer(Printable, Identifyable, RunnableApply):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:

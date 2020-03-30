@@ -1,9 +1,9 @@
 from pjdata.data import NoData, Data
-from pjml.tool.abc.mixin.runnable import Runnable
+from pjml.tool.abc.mixin.runnable import RunnableUse
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 
 
-class Model(Runnable, NoDataHandler):
+class Model(RunnableUse, NoDataHandler):
     def __init__(self, data_from_apply, transformer, use_function=lambda x: x):
         self._data_from_apply = data_from_apply
         self._use_function = use_function
@@ -43,7 +43,7 @@ class Model(Runnable, NoDataHandler):
             _transformations() implementation.
         """
 
-        data_use: Data = self.data if own_data else data
+        data_use = self.data if own_data else data
 
         # TODO: Where should we set max_time?
         return self._run(self._use_function, data_use, exit_on_error)
