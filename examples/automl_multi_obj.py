@@ -69,7 +69,7 @@ pipe = full(rnd(expr, n=5), field='S', n=1).sample()
 
 
 print('apply .................')
-data = File("iris.arff").apply()
+data = File("abalone3.arff").apply()
 c = Chain(pipe.wrapped, Report())
 dataout = c.apply(data)
 

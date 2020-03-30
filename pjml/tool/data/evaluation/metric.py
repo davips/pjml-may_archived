@@ -51,7 +51,7 @@ class Metric(Transformer, FunctionInspector):
             )
 
         output_data = use_impl(data, step='a')
-        return Model(output_data,self, use_impl)
+        return Model(output_data, self, use_impl)
 
     @classmethod
     def _cs_impl(cls):

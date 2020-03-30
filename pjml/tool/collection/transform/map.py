@@ -23,11 +23,11 @@ class Map(NonConfigurableContainer1):
         models = []
         datas = []
         for data in collection:
-            transformer = self.transformer.clone()
-            model = transformer.apply(data, self._exit_on_error)
+            model = self.transformer.apply(data, self._exit_on_error)
             datas.append(model.data)
-            models.append(transformer) # dar append no output_data?
-    
+            models.append(model)
+        applied = collection.updated(self.transformations(step='a'), datas=datas)
+
         def use_impl(collection):
             size = len(models)
             if size != collection.size:
@@ -39,7 +39,5 @@ class Map(NonConfigurableContainer1):
                 datas.append(data)
             return collection.updated(self.transformations(step='u'), datas=datas)
         # TODO: which containers should pass self._exit_on_error to transformer?
-
-        applied = collection.updated(self.transformations(step='a'), datas=datas)
 
         return ContainerModel(models, applied, self, use_impl)

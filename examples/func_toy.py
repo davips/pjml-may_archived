@@ -17,11 +17,11 @@ from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 pipe = Pipeline(
     File("abalone3.arff"), Binarize(),
     Partition(),
-    # Map(
-    #     UnderS(sampling_strategy='not minority'),
-    #     RF(),
-    #     Metric()
-    # ),
+    Map(
+        UnderS(sampling_strategy='not minority'),
+        RF(),
+        Metric()
+    ),
     # Summ(function='mean_std'),
     # Report('mean S --> $S')
 )
