@@ -24,12 +24,12 @@ exit()
 
 pipe = Pipeline(
     File("abalone3.arff"), Binarize(),
-    Partition(),
-    Map(
-        UnderS(sampling_strategy='not minority'),
-        RF(),
-        Metric()
-    ),
+    # Partition(),
+    # Map(
+    #     UnderS(sampling_strategy='not minority'),
+    #     RF(),
+    #     Metric()
+    # ),
     # Summ(function='mean_std'),
     # Report('mean S --> $S')
 )

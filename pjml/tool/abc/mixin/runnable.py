@@ -1,7 +1,6 @@
 from abc import ABC
 
 from pjdata.data import Data
-from pjdata.collection import Collection
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.timers import Timers
 
@@ -16,18 +15,7 @@ class RunnableApply(ExceptionHandler, Timers, ABC):
         from pjml.tool.model import Model
         from pjml.tool.abc.transformer import Transformer
 
-        # Some data checking.
-        if data and data.failure:
-            return data
         self._check_nodata(data)
-
-        if data is None:
-            return Model(None, self, function)
-        if isinstance(data, Collection) and data.all_nones:
-            return Model(data, self, function)
-
-        if not isinstance(self, Transformer):
-            raise Exception('Wrong implementation of runnable!', type(self))
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -61,12 +49,6 @@ class RunnableApply(ExceptionHandler, Timers, ABC):
         #  need to implement transformations()
 
         return model
-
-    def _no_use_impl(self, data, cause='failed'):
-        raise Exception(
-            f"A {self.name} model from {cause} pipelines during apply is not "
-            f"usable!"
-        )
 
 
 class RunnableUse(ExceptionHandler, Timers, ABC):
