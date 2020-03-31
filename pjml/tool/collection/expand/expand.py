@@ -1,15 +1,16 @@
 from pjdata.infinitecollection import InfiniteCollection
-from pjml.tool.abc.configless import ConfigLess
+
+from pjml.tool.abc.configless import ConfigLess2
 from pjml.tool.abc.invisible import Invisible
 from pjml.tool.model import Model
 
 
-class Expand(ConfigLess, Invisible):
+class Expand(ConfigLess2, Invisible):
     def _apply_impl(self, data_apply):
-        def use_impl(data_use):
-            return InfiniteCollection(
-                data_use, data_use.history, data_use.failure, data_use.dataset
-            )
+        applied = self._use_impl(data_apply)
+        return Model(self, applied)
 
-        applied = use_impl(data_apply)
-        return Model(applied, self, use_impl)
+    def _use_impl(self, data_use, **kwargs):
+        return InfiniteCollection(
+            data_use, data_use.history, data_use.failure, data_use.dataset
+        )

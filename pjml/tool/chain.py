@@ -1,7 +1,7 @@
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.containern import ContainerN
+from pjml.tool.abc.transformer import Transformer1
 from pjml.tool.model import Model, ContainerModel
-from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten
 
 
@@ -15,7 +15,7 @@ class Chain(ContainerN):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
-        if all([isinstance(t, Transformer) for t in transformers]):
+        if all([isinstance(t, Transformer1) for t in transformers]):
             return object.__new__(cls)
         return ChainCS(*transformers)
 
@@ -28,17 +28,18 @@ class Chain(ContainerN):
             if data and data.failure:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
-                return ContainerModel(models, data, self, self._no_use_impl)
+                return ContainerModel(self, data, models,
+                                      use_impl=self._use_for_failed_pipeline)
 
-        def use_impl(data_use):
-            for model in models:
-                data_use = model.use(data_use, self._exit_on_error)
-                if data_use and data_use.failure:
-                    print(f'Using submodel {model} failed! ', data_use.failure)
-                    break
-            return data_use
+        return ContainerModel(self, data, models)
 
-        return ContainerModel(models, data, self, use_impl)
+    def _use_impl(self, data_use, models=None):
+        for model in models:
+            data_use = model.use(data_use, self._exit_on_error)
+            if data_use and data_use.failure:
+                print(f'Using submodel {model} failed! ', data_use.failure)
+                break
+        return data_use
 
     def __str__(self, depth=''):
         if not self._pretty_printing:

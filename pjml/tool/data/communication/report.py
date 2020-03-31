@@ -1,7 +1,7 @@
 import numpy as np
 from pjml.config.description.cs.emptycs import EmptyCS
 from pjml.tool.model import Model
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import Transformer2
 from pjml.tool.abc.invisible import Invisible
 from pjml.util import flatten
 
@@ -17,18 +17,18 @@ class Report(Invisible):
     """
 
     def __init__(self, text='Default report r=$R'):
-        Transformer.__init__(self, {'text': text}, deterministic=True)
+        super().__init__({'text': text}, deterministic=True)
         self.text = text
 
     def _apply_impl(self, data):
         if data is not None:
             print('[apply] ', self._interpolate(self.text, data))
 
-        def use_impl(data_use):
-            print('[use] ', self._interpolate(self.text, data_use))
-            return data_use
+        return Model(self, data)
 
-        return Model(data, self, use_impl)
+    def _use_impl(self, data_use, **kwargs):
+        print('[use] ', self._interpolate(self.text, data_use))
+        return data_use
 
     @classmethod
     def _interpolate(cls, text, data):

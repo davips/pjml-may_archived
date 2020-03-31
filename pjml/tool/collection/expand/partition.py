@@ -1,10 +1,10 @@
-from pjml.tool.abc.transformer import Transformer
-from pjml.tool.collection.expand.expand import Expand
+from pjml.tool.abc.transformer import Transformer1
 from pjml.tool.chain import Chain
+from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.model import Model
 
 
-class Partition(Transformer):
+class Partition(Transformer1):
     """Class to perform, e.g. Expand+kfoldCV.
 
     This task is already done by function split(),
@@ -27,19 +27,18 @@ class Partition(Transformer):
         )
 
     def _apply_impl(self, data_apply):
-        model = self.transformer.apply(data_apply)
-
-        def use_impl(data_use):
-            used = model.use(data_use)
-            return used.last_transformation_replaced(
-                self.transformations('u')[0]
-            )
-
-        applied = model.data.last_transformation_replaced(
+        splitter_model = self.transformer.apply(data_apply)
+        applied = splitter_model.data.last_transformation_replaced(
             self.transformations('a')[0]
         )
 
-        return Model(applied, self, use_impl)
+        return Model(self, applied, splitter_model)
+
+    def _use_impl(self, data_use, splitter_model=None):
+        used = splitter_model.use(data_use)
+        return used.last_transformation_replaced(
+            self.transformations('u')[0]
+        )
 
     @classmethod
     def _cs_impl(cls):

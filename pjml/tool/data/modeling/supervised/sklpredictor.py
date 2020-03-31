@@ -16,14 +16,13 @@ class SKLPredictor(SKLAlgorithm, EnforceApply, ABC):
     def _apply_impl(self, data_apply):
         sklearn_model = self.algorithm_factory()
         sklearn_model.fit(*data_apply.Xy)
+        return Model(self, None, sklearn_model)
 
-        def use_impl(data_use):
-            return data_use.updated(
-                self.transformations('a'),
-                z=sklearn_model.predict(data_use.X)
-            )
-
-        return Model(None, self, use_impl)
+    def _use_impl(self, data_use, sklearn_model=None):
+        return data_use.updated(
+            self.transformations('a'),
+            z=sklearn_model.predict(data_use.X)
+        )
 
     def transformations(self, step):
         if step == 'a':

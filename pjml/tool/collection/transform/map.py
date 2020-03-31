@@ -1,8 +1,8 @@
-from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.abc.transformer import Transformer
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
 from pjdata.infinitecollection import InfiniteCollection
 
+from pjml.config.description.cs.containercs import ContainerCS
+from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.transformer import Transformer1
 from pjml.tool.model import ContainerModel
 
 
@@ -13,7 +13,7 @@ class Map(NonConfigurableContainer1):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
-        if all([isinstance(t, Transformer) for t in transformers]):
+        if all([isinstance(t, Transformer1) for t in transformers]):
             return object.__new__(cls)
         return ContainerCS(Map.name, Map.path, transformers)
 
@@ -27,17 +27,16 @@ class Map(NonConfigurableContainer1):
             datas.append(model.data)
             models.append(model)
         applied = collection.updated(self.transformations(step='a'), datas=datas)
-
-        def use_impl(collection):
-            size = len(models)
-            if size != collection.size:
-                raise Exception('Collections passed to apply and use should have '
-                                f'the same size a- {size} != u- {collection.size}')
-            datas = []
-            for model in models:
-                data = model.use(next(collection), self._exit_on_error)
-                datas.append(data)
-            return collection.updated(self.transformations(step='u'), datas=datas)
         # TODO: which containers should pass self._exit_on_error to transformer?
+        return ContainerModel(self, applied, models)
 
-        return ContainerModel(models, applied, self, use_impl)
+    def _use_impl(self, collection, models=None):
+        size = len(models)
+        if size != collection.size:
+            raise Exception('Collections passed to apply and use should have '
+                            f'the same size a- {size} != u- {collection.size}')
+        datas = []
+        for model in models:
+            data = model.use(next(collection), self._exit_on_error)
+            datas.append(data)
+        return collection.updated(self.transformations(step='u'), datas=datas)

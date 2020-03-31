@@ -1,14 +1,20 @@
+from abc import ABC
+
+from pjdata.collection import Collection
 from pjdata.data import NoData, Data
-from pjml.tool.abc.mixin.runnable import RunnableUse
+
+from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
+from pjml.tool.abc.mixin.timers import Timers
 
 
-class Model(RunnableUse, NoDataHandler):
-    def __init__(self, data_from_apply, transformer, use_function=lambda x: x):
+class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
+    def __init__(self, transformer, data_from_apply, *args, use_impl=None):
+        self.transformer = transformer
+        self._use_impl = use_impl if use_impl else self.transformer._use_impl
         self._data_from_apply = data_from_apply
-        self._use_function = use_function
-        self._transformations_function = transformer.transformations
         self._name = transformer.name + ' Model'
+        self.args = args
 
     def name(self):
         return self._name
@@ -42,19 +48,60 @@ class Model(RunnableUse, NoDataHandler):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
+        data = self.data if own_data else data
 
-        data_use = self.data if own_data else data
+        # Some data checking.
+        if data and data.failure:
+            return data
+        self._check_nodata(data)
 
-        # TODO: Where should we set max_time?
-        return self._run(self._use_function, data_use, exit_on_error)
+        # Detecting step.
+        if data is None:
+            return None
+        if isinstance(data, Collection) and data.all_nones:
+            return data
+
+        # Disable warnings, measure time and make the party happen.
+        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        start = self._clock()
+        try:
+            # Aqui, passa-se _exit_on_error para self de forma que
+            # implementadores de conteineres possam acessar o valor
+            # dentro de
+            # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
+
+            output_data = self._limit_by_time(self._use_impl,
+                                              data, self.transformer.max_time,
+                                              *self.args)
+
+            # Check result type.
+            if not isinstance(output_data, (Data, Collection)):
+                raise Exception(
+                    f'{self.name()} does not handle {type(output_data)}!'
+                )
+        except Exception as e:
+            self._handle_exception(e, exit_on_error)
+            output_data = data.updated(
+                self.transformations('u'), failure=str(e)
+            )
+
+        # TODO: put time_spent inside data (as a "volatile" matrix)?
+        time_spent = self._clock() - start
+        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        # TODO: check_history to guide implementers whenever they need to
+        #  implement transformations()
+
+        return output_data
 
     def transformations(self, step):
-        return self._transformations_function(step)
+        return self.transformer.transformations(step)
 
 
 class ContainerModel(Model):
-    def __init__(self, models, data_from_apply, transformer, use_function):
-        super().__init__(data_from_apply, transformer, use_function)
+    def __init__(self, transformer, data_from_apply, models, *args, use_impl=None):
+        args = (models,) + args
+        super().__init__(transformer, data_from_apply, *args, use_impl=use_impl)
 
         # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
         if len(models) == 1 and isinstance(models[0], ContainerModel):

@@ -1,14 +1,13 @@
 import numpy
 from numpy import mean
 from numpy import std
-
 from pjdata.data import Data
+
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.collection.reduce.reduce import Reduce
-from pjml.tool.collection.transform.shrink import Shrink
 
 
 class Summ(Reduce):
@@ -28,8 +27,7 @@ class Summ(Reduce):
         super().__init__(self._to_config(locals()), True)
         self.field = field
 
-    @staticmethod
-    def _use_impl(collection, function, transformations):
+    def _use_impl(self, collection, step='u'):
         if collection.has_nones:
             # collection = Shrink().apply(collection)
             raise Exception(
@@ -40,12 +38,12 @@ class Summ(Reduce):
             failure=collection.failure
         ).updated(collection.history, **collection.original_data.matrices)
 
-        res = function(collection)
+        res = self.function(collection)
         if isinstance(res, tuple):
             summ = numpy.array(res)
-            return data.updated(transformations, S=summ)
+            return data.updated(self.transformations(step), S=summ)
         else:
-            return data.updated(transformations, s=res)
+            return data.updated(self.transformations(step), s=res)
 
     @classmethod
     def _cs_impl(cls):

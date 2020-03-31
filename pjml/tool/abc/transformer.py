@@ -16,7 +16,7 @@ from pjml.tool.abc.mixin.timers import Timers
 from pjml.tool.model import Model
 
 
-class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
+class Transformer1(Printable, Identifyable, ExceptionHandler, Timers, ABC):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -119,10 +119,10 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         """
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones:
-            return Model(data, self, self._use_for_early_ended_pipeline)
+            return Model(self, data, use_impl=self._use_for_early_ended_pipeline)
 
         if data.failure:
-            return Model(data, self, self._use_for_failed_pipeline)
+            return Model(self, data, use_impl=self._use_for_failed_pipeline)
 
         self._check_nodata(data)
 
@@ -146,7 +146,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
             output_data = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(output_data, self, self._no_use_impl)
+            model = Model(self, output_data, use_impl=self._use_for_failed_pipeline)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
@@ -283,17 +283,21 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
             f"usable!"
         )
 
-
-class Transformer2(Transformer):
-    @staticmethod
     @abstractmethod
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         """Each component should implement its core 'apply' functionality."""
+
+
+class Transformer2(Transformer1):
+
+    def _use_impl(self, data, *args):
+        """Each component should implement its core 'apply' functionality."""
+        return data
 
     def apply(self, data: Data = NoData, exit_on_error=True):
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones or data.failure:
-            return Model(data, self, self._use_impl)
+            return Model(self, data)
 
         self._check_nodata(data)
 
@@ -317,7 +321,7 @@ class Transformer2(Transformer):
             output_data = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(output_data, self, self._use_impl)
+            model = Model(self, output_data)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
