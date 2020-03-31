@@ -1,0 +1,19 @@
+############# Prioridades #############
+1) Fazer o pai dos Transformers [DONE]
+
+2) Criar modulo proprio para o Sklean []
+
+3) Arrumar ConfigLess1 e ConfigLess2 [Done]
+
+4) Ressuscitar o Random AutoML
+
+
+############# Ideias futuras #############
+
+1) Casca imperativa em cima do funcional.
+    IDEIA firulenta na gavetinha:
+    Casca imperativa em cima do funcional.
+    transf.apply/transf.use -> imperativo
+    fit/model.use -> function
+
+    data = File("abalone3.arff").use()

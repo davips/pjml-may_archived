@@ -6,11 +6,11 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
-from pjml.tool.abc.transformer import Transformer2
 
 
-class Metric(Transformer2, FunctionInspector):
+class Metric(LightTransformer, FunctionInspector):
     """Metric to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'

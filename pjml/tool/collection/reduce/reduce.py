@@ -1,11 +1,11 @@
 from abc import ABC
 
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import Transformer2
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
-class Reduce(Transformer2, FunctionInspector, ABC):
+class Reduce(LightTransformer, FunctionInspector, ABC):
     def __init__(self, config, deterministic=False):
         super().__init__(config, deterministic)
         self.function = self.function_from_name[config['function']]

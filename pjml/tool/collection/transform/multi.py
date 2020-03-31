@@ -2,7 +2,7 @@ from pjdata.finitecollection import FiniteCollection
 
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.containern import ContainerN
-from pjml.tool.abc.transformer import Transformer1
+from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model import ContainerModel
 
 
@@ -14,7 +14,7 @@ class Multi(ContainerN):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
-        if all([isinstance(t, Transformer1) for t in transformers]):
+        if all([isinstance(t, Transformer) for t in transformers]):
             return object.__new__(cls)
         return ContainerCS(Multi.name, Multi.path, transformers)
 

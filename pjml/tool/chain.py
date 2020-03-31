@@ -1,6 +1,6 @@
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.containern import ContainerN
-from pjml.tool.abc.transformer import Transformer1
+from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model import Model, ContainerModel
 from pjml.util import flatten
 
@@ -15,7 +15,7 @@ class Chain(ContainerN):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
-        if all([isinstance(t, Transformer1) for t in transformers]):
+        if all([isinstance(t, Transformer) for t in transformers]):
             return object.__new__(cls)
         return ChainCS(*transformers)
 

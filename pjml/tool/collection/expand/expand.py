@@ -1,11 +1,11 @@
 from pjdata.infinitecollection import InfiniteCollection
 
-from pjml.tool.abc.configless import ConfigLess2
+from pjml.tool.abc.configless import LightConfigLess
 from pjml.tool.abc.invisible import Invisible
 from pjml.tool.model import Model
 
 
-class Expand(ConfigLess2, Invisible):
+class Expand(LightConfigLess, Invisible):
     def _apply_impl(self, data_apply):
         applied = self._use_impl(data_apply)
         return Model(self, applied)

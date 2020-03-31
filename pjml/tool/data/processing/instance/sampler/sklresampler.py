@@ -3,12 +3,13 @@ from abc import ABC
 from pjdata.step.apply import Apply
 
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.abc.transformer import Transformer2
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
-class SKLResampler(Transformer2, ABC):
+class SKLResampler(LightTransformer, ABC):
     """Base class for resampling methods. Not to be confused with Sample."""
+
     def __init__(self, config, algorithm_factory, deterministic=False):
         super().__init__(config, deterministic)
         self.algorithm_factory = algorithm_factory

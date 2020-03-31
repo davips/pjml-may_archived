@@ -16,7 +16,7 @@ from pjml.tool.abc.mixin.timers import Timers
 from pjml.tool.model import Model
 
 
-class Transformer1(Printable, Identifyable, ExceptionHandler, Timers, ABC):
+class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
     """Parent of all processors, learners, evaluators, data controlers, ...
 
     Contributors:
@@ -63,6 +63,43 @@ class Transformer1(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         self.max_time = max_time  # TODO: who/when to define maxtime?
 
     @abstractmethod
+    def _use_impl(self, data, *args):
+        """Each component should implement its core 'apply' functionality."""
+
+    @abstractmethod
+    def apply(self, data):
+        """Training step (usually).
+
+         Fit/remove-noise-from/evaluate/... Data.
+
+         Implementers: If your component requires apply() before use(),
+         it should extend mixin EnforceApply and _apply_impl() should
+         return (None, use_impl()) when provided data is None.
+
+         Parameters
+         ----------
+         data
+             'None' means 'pipeline ended before this transformation'.
+             'NoData' means 'pipeline alive, hoping to generate Data in
+             the next transformer'.
+         exit_on_error
+             Exit imediatly instead of just marking a failure inside Data object.
+
+         Returns
+         -------
+         Transformed data, normally.
+         None, when data is a None
+             (probably meaning the pipeline finished before this transformer).
+         Same data, but annotated with a failure.
+
+         Exception
+         ---------
+         BadComponent
+             Data resulting history should be consistent with
+             _transformations() implementation.
+         """
+
+    @abstractmethod
     def _apply_impl(self, data):
         """Each component should implement its core 'apply' functionality."""
 
@@ -85,78 +122,6 @@ class Transformer1(Printable, Identifyable, ExceptionHandler, Timers, ABC):
             return [Use(self, 0)]
         else:
             raise BadComponent('Wrong current step:', step)
-
-    def apply(self, data: Data = NoData, exit_on_error=True):
-        """Training step (usually).
-
-        Fit/remove-noise-from/evaluate/... Data.
-
-        Implementers: If your component requires apply() before use(),
-        it should extend mixin EnforceApply and _apply_impl() should
-        return (None, use_impl()) when provided data is None.
-
-        Parameters
-        ----------
-        data
-            'None' means 'pipeline ended before this transformation'.
-            'NoData' means 'pipeline alive, hoping to generate Data in
-            the next transformer'.
-        exit_on_error
-            Exit imediatly instead of just marking a failure inside Data object.
-
-        Returns
-        -------
-        Transformed data, normally.
-        None, when data is a None
-            (probably meaning the pipeline finished before this transformer).
-        Same data, but annotated with a failure.
-
-        Exception
-        ---------
-        BadComponent
-            Data resulting history should be consistent with
-            _transformations() implementation.
-        """
-        collection_all_nones = isinstance(data, Collection) and data.all_nones
-        if data is None or collection_all_nones:
-            return Model(self, data, use_impl=self._use_for_early_ended_pipeline)
-
-        if data.failure:
-            return Model(self, data, use_impl=self._use_for_failed_pipeline)
-
-        self._check_nodata(data)
-
-        # Disable warnings, measure time and make the party happen.
-        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        start = self._clock()
-        try:
-            # Aqui, passa-se _exit_on_error para self de forma que
-            # implementadores de conteineres possam acessar o valor
-            # dentro de
-            # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
-            self._exit_on_error = exit_on_error
-
-            model = self._limit_by_time(self._apply_impl, data, self.max_time)
-
-            # Check result type.
-            if not isinstance(model, Model):
-                raise Exception(f'{self.name} does not handle {type(model)}!')
-        except Exception as e:
-            self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
-                self.transformations('a'), failure=str(e)
-            )
-            model = Model(self, output_data, use_impl=self._use_for_failed_pipeline)
-            # TODO: é possível que um container não complete o try acima?
-            #  Caso sim, devemos gerar um ContainerModel aqui?
-
-        # TODO: put time_spent inside data (as a "volatile" matrix)?
-        time_spent = self._clock() - start
-        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-        # TODO: usar check_history aqui, to guide implementers whenever they
-        #  need to implement transformations()
-        return model
 
     @classproperty
     @lru_cache()
@@ -271,6 +236,50 @@ class Transformer1(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         """
         return self.wrapped.transformer
 
+
+class HeavyTransformer(Transformer, ABC):
+    def apply(self, data: Data = NoData, exit_on_error=True):
+        collection_all_nones = isinstance(data, Collection) and data.all_nones
+        if data is None or collection_all_nones:
+            return Model(self, data, use_impl=self._use_for_early_ended_pipeline)
+
+        if data.failure:
+            return Model(self, data, use_impl=self._use_for_failed_pipeline)
+
+        self._check_nodata(data)
+
+        # Disable warnings, measure time and make the party happen.
+        self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+        start = self._clock()
+        try:
+            # Aqui, passa-se _exit_on_error para self de forma que
+            # implementadores de conteineres possam acessar o valor
+            # dentro de
+            # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
+            self._exit_on_error = exit_on_error
+
+            model = self._limit_by_time(self._apply_impl, data, self.max_time)
+
+            # Check result type.
+            if not isinstance(model, Model):
+                raise Exception(f'{self.name} does not handle {type(model)}!')
+        except Exception as e:
+            self._handle_exception(e, exit_on_error)
+            output_data = data.updated(
+                self.transformations('a'), failure=str(e)
+            )
+            model = Model(self, output_data, use_impl=self._use_for_failed_pipeline)
+            # TODO: é possível que um container não complete o try acima?
+            #  Caso sim, devemos gerar um ContainerModel aqui?
+
+        # TODO: put time_spent inside data (as a "volatile" matrix)?
+        time_spent = self._clock() - start
+        self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        # TODO: usar check_history aqui, to guide implementers whenever they
+        #  need to implement transformations()
+        return model
+
     def _use_for_early_ended_pipeline(self, data, cause='failed'):
         raise Exception(
             f"A {self.name} model from early ended pipelines during apply is not "
@@ -283,12 +292,8 @@ class Transformer1(Printable, Identifyable, ExceptionHandler, Timers, ABC):
             f"usable!"
         )
 
-    @abstractmethod
-    def _use_impl(self, data, *args):
-        """Each component should implement its core 'apply' functionality."""
 
-
-class Transformer2(Transformer1):
+class LightTransformer(Transformer, ABC):
 
     def _use_impl(self, data, *args):
         """Each component should implement its core 'apply' functionality."""

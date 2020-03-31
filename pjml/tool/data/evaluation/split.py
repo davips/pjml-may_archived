@@ -7,11 +7,11 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import IntP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import Transformer1
+from pjml.tool.abc.transformer import HeavyTransformer
 from pjml.tool.model import Model
 
 
-class Split(Transformer1, FunctionInspector):
+class Split(HeavyTransformer, FunctionInspector):
     """Split a given Data field into training/apply set and testing/use set.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
