@@ -5,7 +5,13 @@
 
 3) Arrumar ConfigLess1 e ConfigLess2 [Done]
 
-4) Ressuscitar o Random AutoML
+4) Ressuscitar o Random AutoML []
+
+5) Historico []
+
+6) Cache []
+
+7)
 
 
 ############# Ideias futuras #############

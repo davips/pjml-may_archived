@@ -6,11 +6,12 @@ from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.modeling.supervised.classifier.rf import RF
+from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 
 pipe = Pipeline(
-    File("iris.arff"),
-    # Binarize(),
+    File("abalone3.arff"),
+    Binarize(),
     Partition(),
     Map(
         UnderS(sampling_strategy='not minority'),
