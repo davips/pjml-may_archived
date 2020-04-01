@@ -18,7 +18,7 @@ class OnlyApply(NonConfigurableContainer1):
 
     def _apply_impl(self, data):
         model = self.transformer.apply(data)
-        return model.updated(use_impl=self._use_impl)
+        return model.updated(self, use_impl=self._use_impl)
 
     def _use_impl(self, data, *args):
         return data

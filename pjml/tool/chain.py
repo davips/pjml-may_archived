@@ -33,13 +33,13 @@ class Chain(ContainerN):
 
         return ContainerModel(self, data, models)
 
-    def _use_impl(self, data_use, models=None):
+    def _use_impl(self, data, models=None):
         for model in models:
-            data_use = model.use(data_use, self._exit_on_error)
-            if data_use and data_use.failure:
-                print(f'Using submodel {model} failed! ', data_use.failure)
+            data = model.use(data, self._exit_on_error)
+            if data and data.failure:
+                print(f'Using submodel {model} failed! ', data.failure)
                 break
-        return data_use
+        return data
 
     def __str__(self, depth=''):
         if not self._pretty_printing:

@@ -11,7 +11,10 @@
 
 6) Cache []
 
-7)
+7) Por que a msg de erro
+    'AttributeError: type object 'NoData' has no attribute 'Xt''
+    aparece em vez de
+    'NoData is not accepted by Binarize'?
 
 
 ############# Ideias futuras #############

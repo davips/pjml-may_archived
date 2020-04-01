@@ -16,6 +16,7 @@ from pjml.tool.data.flow.onlyoperation import OnlyApply, OnlyUse
 from pjml.tool.data.manipulation.copy import Copy
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
+from pjml.tool.data.modeling.supervised.classifier.rf import RF
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
@@ -31,8 +32,8 @@ expr = Pipeline(
     Map(
         Wrap(
             Binarize(),
-            select(Std, UnderS, OverS, MinMax),
-            ApplyUsing(select(DT, NB, SVMC)),
+            # select(Std, UnderS, OverS, MinMax),
+            ApplyUsing(RF), #select(DT, NB, SVMC)),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))
@@ -69,9 +70,10 @@ pipe = full(rnd(expr, n=5), field='S', n=1).sample()
 
 
 print('apply .................')
-data = File("abalone3.arff").apply()
+data = File("abalone3.arff").apply().data
+
 c = Chain(pipe.wrapped, Report())
-dataout = c.apply(data)
+model = c.apply(data)
 
 print('use .................')
-dataout = c.use(data)
+dataout = model.use(data)

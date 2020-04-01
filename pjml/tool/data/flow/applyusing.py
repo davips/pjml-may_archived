@@ -21,7 +21,7 @@ class ApplyUsing(NonConfigurableContainer1):
     def _apply_impl(self, data):
         model = self.transformer.apply(data, self._exit_on_error)
         output_data = model.use(data, self._exit_on_error)
-        return model.updated(data_from_apply=output_data)
+        return model.updated(self, data_from_apply=output_data)
 
     def _use_impl(self, data, *args):
         pass

@@ -15,12 +15,14 @@ from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
+print('Construindo...')
 pipe = Pipeline(
     OnlyApply(File("abalone3.arff")),
+    Binarize(),
+    ApplyUsing(RF()),
     Partition(),
     Map(
         Wrap(
-            Binarize(),
             UnderS(),
             ApplyUsing(RF()),
             OnlyApply(Metric(functions=['length'])),
@@ -51,5 +53,8 @@ pipe = Pipeline(
 #     Report('mean S --> $S')
 # )
 
+print('Applying...')
 model = pipe.apply()
-d2 = model.use()
+
+print('Using...')
+d2 = model.use(File("abalone3.arff").apply().data)

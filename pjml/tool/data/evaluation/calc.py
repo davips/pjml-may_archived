@@ -33,20 +33,20 @@ class Calc(LightTransformer, FunctionInspector):
         self.selected = [self.function_from_name[name] for name in functions]
         self.functions = functions
 
-    def _apply_impl(self, data_apply):
-        output_data = self.use_impl(data_apply, step='a')
+    def _apply_impl(self, data):
+        output_data = self._use_impl(data, step='a')
         return Model(self, output_data)
 
-    def _use_impl(self, data_use, step='u'):
-        if self.input_field not in data_use.matrices:
+    def _use_impl(self, data, step='u'):
+        if self.input_field not in data.matrices:
             raise Exception(
                 f'Impossible to calculate {self.functions}: Field '
                 f'{self.input_field} does not exist!')
 
-        result_vectors = [function(data_use.field(self.input_field, self))
+        result_vectors = [function(data.field(self.input_field, self))
                           for function in self.selected]
         dic = {self.output_field: np.array(result_vectors)}
-        return data_use.updated(self.transformations(step), **dic)
+        return data.updated(self.transformations(step), **dic)
 
 
     @classmethod

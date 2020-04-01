@@ -43,8 +43,10 @@ class ExceptionHandler:
 
     def _handle_exception(self, e, exit_on_error):
         """Pipeline failure is different from python error."""
-        print(f'At {self},\nTrying to handle:\n[{str(e)}]\n'
-              f'Object: {self.name}...\n')
+        if isinstance(self.name, str):
+            print(f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: {self.name}...\n')
+        else:
+            print(f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: {self.name()}...\n')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
 
             # HINTS

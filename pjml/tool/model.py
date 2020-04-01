@@ -12,20 +12,22 @@ class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
         self.transformer = transformer
         self._use_impl = use_impl if use_impl else self.transformer._use_impl
         self._data_from_apply = data_from_apply
-        self._name = transformer.name + ' Model'
+        self._name = f'Model[{transformer.name}]'
         self.args = args
 
-    def updated(self, transformer=None, data_from_apply=None,
-                *args, use_impl=None):
+    def updated(self, responsible, transformer=None, data_from_apply=None,
+                args=None, use_impl=None):
         if transformer is None:
             transformer = self.transformer
         if data_from_apply is None:
             data_from_apply = self._data_from_apply
         if use_impl is None:
             use_impl = self._use_impl
-        if not args:
+        if args is None:
             args = self.args
-        return Model(transformer, data_from_apply, *args, use_impl)
+        model = Model(transformer, data_from_apply, *args, use_impl=use_impl)
+        model._name = f'Model[{responsible.name}[{model._name}]]'
+        return model
 
     def name(self):
         return self._name
@@ -86,9 +88,10 @@ class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
                                               *self.args)
 
             # Check result type.
-            if not isinstance(output_data, (Data, Collection)):
+            if not isinstance(output_data, (Data, Collection, type)):
                 raise Exception(
-                    f'{self.name()} does not handle {type(output_data)}!'
+                    f'{self.name()} does not handle {type(output_data)}!\n'
+                    f'{output_data}'
                 )
         except Exception as e:
             self._handle_exception(e, exit_on_error)
@@ -110,7 +113,8 @@ class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
 
 
 class ContainerModel(Model):
-    def __init__(self, transformer, data_from_apply, models, *args, use_impl=None):
+    def __init__(self, transformer, data_from_apply, models, *args,
+                 use_impl=None):
         args = (models,) + args
         super().__init__(transformer, data_from_apply, *args, use_impl=use_impl)
 
@@ -120,18 +124,20 @@ class ContainerModel(Model):
 
         self.models = models
 
-    def updated(self, transformer=None, data_from_apply=None,
-                models=None, *args, use_impl=None):
+    def updated(self, responsible, transformer=None, data_from_apply=None,
+                models=None, args=None, use_impl=None):
         if transformer is None:
             transformer = self.transformer
         if data_from_apply is None:
             data_from_apply = self._data_from_apply
         if use_impl is None:
             use_impl = self._use_impl
-        if not args:
+        if args is None:
             args = self.args
         if models is None:
             models = self.models
-        return ContainerModel(
-            transformer, data_from_apply, models, *args, use_impl
+        model = ContainerModel(
+            transformer, data_from_apply, models, *args, use_impl=use_impl
         )
+        model._name = f'Model[{responsible.name}[{model._name}]]'
+        return model

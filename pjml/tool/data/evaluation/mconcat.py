@@ -46,15 +46,15 @@ class MConcat(LightTransformer, FunctionInspector):
             self._use_impl(data_apply, step='a')
         )
 
-    def _use_impl(self, data_use, step='u'):
-        m1 = data_use.field(self.input_field1, self)
-        m2 = data_use.field(self.input_field2, self)
+    def _use_impl(self, data, step='u'):
+        m1 = data.field(self.input_field1, self)
+        m2 = data.field(self.input_field2, self)
         dic = {
             self.output_field: np.concatenate(
                 (m1, m2), axis=self.direction
             )
         }
-        return data_use.updated(
+        return data.updated(
             self.transformations(step), **dic
         )
 
