@@ -5,11 +5,11 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
-class Calc(Transformer, FunctionInspector):
+class Calc(LightTransformer, FunctionInspector):
     """Calc to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
@@ -34,19 +34,20 @@ class Calc(Transformer, FunctionInspector):
         self.functions = functions
 
     def _apply_impl(self, data_apply):
-        def use_impl(data_use, step='u'):
-            if self.input_field not in data_use.matrices:
-                raise Exception(
-                    f'Impossible to calculate {self.functions}: Field '
-                    f'{self.input_field} does not exist!')
+        output_data = self.use_impl(data_apply, step='a')
+        return Model(self, output_data)
 
-            result_vectors = [function(data_use.field(self.input_field, self))
-                              for function in self.selected]
-            dic = {self.output_field: np.array(result_vectors)}
-            return data_use.updated(self.transformations(step), **dic)
+    def _use_impl(self, data_use, step='u'):
+        if self.input_field not in data_use.matrices:
+            raise Exception(
+                f'Impossible to calculate {self.functions}: Field '
+                f'{self.input_field} does not exist!')
 
-        output_data = use_impl(data_apply, step='a')
-        return Model(output_data, self, use_impl)
+        result_vectors = [function(data_use.field(self.input_field, self))
+                          for function in self.selected]
+        dic = {self.output_field: np.array(result_vectors)}
+        return data_use.updated(self.transformations(step), **dic)
+
 
     @classmethod
     def _cs_impl(cls):
