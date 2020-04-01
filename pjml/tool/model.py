@@ -2,7 +2,6 @@ from abc import ABC
 
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
-
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.mixin.timers import Timers
@@ -15,6 +14,18 @@ class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
         self._data_from_apply = data_from_apply
         self._name = transformer.name + ' Model'
         self.args = args
+
+    def updated(self, transformer=None, data_from_apply=None,
+                *args, use_impl=None):
+        if transformer is None:
+            transformer = self.transformer
+        if data_from_apply is None:
+            data_from_apply = self._data_from_apply
+        if use_impl is None:
+            use_impl = self._use_impl
+        if not args:
+            args = self.args
+        return Model(transformer, data_from_apply, *args, use_impl)
 
     def name(self):
         return self._name
@@ -108,3 +119,19 @@ class ContainerModel(Model):
             models = models[0].models
 
         self.models = models
+
+    def updated(self, transformer=None, data_from_apply=None,
+                models=None, *args, use_impl=None):
+        if transformer is None:
+            transformer = self.transformer
+        if data_from_apply is None:
+            data_from_apply = self._data_from_apply
+        if use_impl is None:
+            use_impl = self._use_impl
+        if not args:
+            args = self.args
+        if models is None:
+            models = self.models
+        return ContainerModel(
+            transformer, data_from_apply, models, *args, use_impl
+        )

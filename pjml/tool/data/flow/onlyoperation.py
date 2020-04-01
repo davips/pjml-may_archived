@@ -1,7 +1,8 @@
+from pjdata.data import NoData, Data
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
-from pjml.tool.abc.singleton import NoModel
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import Transformer, LightTransformer
+from pjml.tool.model import Model
 
 
 class OnlyApply(NonConfigurableContainer1):
@@ -16,11 +17,17 @@ class OnlyApply(NonConfigurableContainer1):
         return ContainerCS(OnlyApply.name, OnlyApply.path, transformers)
 
     def _apply_impl(self, data):
-        self.model = NoModel
-        return self.transformer.apply(data)
+        model = self.transformer.apply(data)
+        return model.updated(use_impl=self._use_impl)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         return data
+
+    def apply(self, data: Data = NoData, exit_on_error=True):
+        # We are using the 'use()' method from LightTransformer
+        # since OnlyApply transforms HeavyTransformer
+        # in LightTransformer.
+        return LightTransformer.apply(self, data, exit_on_error)
 
 
 class OnlyUse(NonConfigurableContainer1):
@@ -35,8 +42,13 @@ class OnlyUse(NonConfigurableContainer1):
         return ContainerCS(OnlyUse.name, OnlyUse.path, transformers)
 
     def _apply_impl(self, data):
-        self.model = NoModel
-        return data
+        return Model(self, data)
 
-    def _use_impl(self, data):
-        return self.transformer.use(data)
+    def _use_impl(self, data, *args):
+        return self.transformer._use_impl(data, *args)
+
+    def apply(self, data: Data = NoData, exit_on_error=True):
+        # We are using the 'use()' method from LightTransformer
+        # since OnlyApply transforms HeavyTransformer
+        # in LightTransformer.
+        return LightTransformer.apply(self, data, exit_on_error)

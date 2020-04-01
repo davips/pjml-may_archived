@@ -15,11 +15,10 @@ class Wrap(NonConfigurableContainer1):
         return ContainerCS(Wrap.name, Wrap.path, transformers)
 
     def _apply_impl(self, data):
-        self.model = self.transformer
         return self.transformer.apply(data)
 
-    def _use_impl(self, data):
-        return self.transformer.use(data)
+    def _use_impl(self, data, *args):
+        pass
 
     @property
     def wrapped(self):

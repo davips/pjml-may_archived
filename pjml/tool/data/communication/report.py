@@ -26,7 +26,7 @@ class Report(Invisible):
 
         return Model(self, data)
 
-    def _use_impl(self, data_use, **kwargs):
+    def _use_impl(self, data_use, *args):
         print('[use] ', self._interpolate(self.text, data_use))
         return data_use
 
