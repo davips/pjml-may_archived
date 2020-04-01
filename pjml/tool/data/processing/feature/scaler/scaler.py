@@ -3,11 +3,11 @@
 from abc import ABC
 
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.data.sklalgorithm import SKLAlgorithm
+from pjml.tool.data.algorithm import Algorithm
 from pjml.tool.model import Model
 
 
-class SKLScaler(SKLAlgorithm, ABC):
+class Scaler(Algorithm, ABC):
     def _apply_impl(self, data_apply):
         sklearn_model = self.algorithm_factory()
         sklearn_model.fit(*data_apply.Xy)

@@ -7,10 +7,10 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP, RealP, IntP
-from pjml.tool.data.modeling.supervised.sklpredictor import SKLPredictor
+from pjml.tool.data.modeling.supervised.sklpredictor import Predictor
 
 
-class RF(SKLPredictor):
+class RF(Predictor):
     """Random Forest."""
 
     def __init__(self, **kwargs):

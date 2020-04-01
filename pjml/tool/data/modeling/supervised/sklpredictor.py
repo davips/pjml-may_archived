@@ -4,11 +4,11 @@ from pjdata.step.use import Use
 
 from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.data.sklalgorithm import SKLAlgorithm
+from pjml.tool.data.algorithm import Algorithm
 from pjml.tool.model import Model
 
 
-class SKLPredictor(SKLAlgorithm, EnforceApply, ABC):
+class Predictor(Algorithm, EnforceApply, ABC):
     """
     Base class for classifiers, regressors, ... that implement fit/predict.
     """
