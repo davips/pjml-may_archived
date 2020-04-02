@@ -20,7 +20,8 @@
 
 9) Resolver problema do tempo (matar pipeline que passar o tempo permitido)
 
-10) Definir parametros default
+10) Definir parametros default/prioridade
+
 
 ############# Ideias futuras #############
 
