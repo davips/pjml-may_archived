@@ -6,10 +6,10 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
-from pjml.tool.data.processing.instance.sampler.sklresampler import SKLResampler
+from pjml.tool.data.processing.instance.sampler.resampler import Resampler
 
 
-class UnderS(SKLResampler):
+class UnderS(Resampler):
     def __init__(self, **kwargs):
         algorithm_factory = partial(RandomUnderSampler, **kwargs)
         super().__init__(kwargs, algorithm_factory)

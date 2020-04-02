@@ -1,17 +1,20 @@
+from functools import partial
+
 from imblearn.over_sampling import RandomOverSampler
 
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
-from pjml.tool.data.processing.instance.sampler.sklresampler import SKLResampler
+from pjml.tool.data.processing.instance.sampler.resampler import Resampler
 
 
-class OverS(SKLResampler):
+class OverS(Resampler):
     def __init__(self, **kwargs):
         # TODO: Default values should be extracted from CS (via (new) property
         #  'default'), to appear here in 'self.config'.
-        super().__init__(kwargs, RandomOverSampler(**kwargs))
+        algorithm_factory = partial(RandomOverSampler, **kwargs)
+        super().__init__(kwargs, algorithm_factory)
 
     @classmethod
     def _cs_impl(cls, data=None):

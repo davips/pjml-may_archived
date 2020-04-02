@@ -7,7 +7,7 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP, RealP, IntP
-from pjml.tool.data.modeling.supervised.sklpredictor import Predictor
+from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 
 class RF(Predictor):

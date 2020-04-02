@@ -18,10 +18,10 @@ class Predictor(Algorithm, EnforceApply, ABC):
         sklearn_model.fit(*data_apply.Xy)
         return Model(self, None, sklearn_model)
 
-    def _use_impl(self, data_use, sklearn_model=None):
-        return data_use.updated(
+    def _use_impl(self, data, sklearn_model=None):
+        return data.updated(
             self.transformations('a'),
-            z=sklearn_model.predict(data_use.X)
+            z=sklearn_model.predict(data.X)
         )
 
     def transformations(self, step):

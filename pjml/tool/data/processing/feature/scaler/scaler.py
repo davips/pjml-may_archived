@@ -8,13 +8,13 @@ from pjml.tool.model import Model
 
 
 class Scaler(Algorithm, ABC):
-    def _apply_impl(self, data_apply):
+    def _apply_impl(self, data):
         sklearn_model = self.algorithm_factory()
-        sklearn_model.fit(*data_apply.Xy)
+        sklearn_model.fit(*data.Xy)
 
-        def use_impl(data_use, step='u'):
-            X = sklearn_model.transform(data_use.X)
-            return data_use.updated(self.transformations(step), X=X)
+        applied = self._use_impl(data, sklearn_model, step='a')
+        return Model(self, applied, sklearn_model)
 
-        applied = use_impl(data_apply, step='a')
-        return Model(applied, self, use_impl)
+    def _use_impl(self, data, sklearn_model=None, step='u'):
+        X = sklearn_model.transform(data.X)
+        return data.updated(self.transformations(step), X=X)

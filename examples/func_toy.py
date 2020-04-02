@@ -12,18 +12,20 @@ from pjml.tool.data.flow.onlyoperation import OnlyApply, OnlyUse
 from pjml.tool.data.manipulation.copy import Copy
 from pjml.tool.data.modeling.supervised.classifier.rf import RF
 from pjml.tool.data.processing.feature.binarize import Binarize
+from pjml.tool.data.processing.feature.scaler.minmax import MinMax
+from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
 print('Construindo...')
 pipe = Pipeline(
-    OnlyApply(File("abalone3.arff")),
-    Binarize(),
+    OnlyApply(File("iris.arff")),
+    # Binarize(),
     ApplyUsing(RF()),
     Partition(),
     Map(
         Wrap(
-            UnderS(),
+            MinMax(),
             ApplyUsing(RF()),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),

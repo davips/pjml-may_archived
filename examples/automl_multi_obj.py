@@ -32,8 +32,8 @@ expr = Pipeline(
     Map(
         Wrap(
             Binarize(),
-            # select(Std, UnderS, OverS, MinMax),
-            ApplyUsing(RF), #select(DT, NB, SVMC)),
+            select(Std, UnderS, OverS, MinMax),
+            ApplyUsing(select(RF, DT, NB, SVMC)),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))

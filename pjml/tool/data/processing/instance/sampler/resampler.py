@@ -7,9 +7,8 @@ from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
-class SKLResampler(LightTransformer, ABC):
+class Resampler(LightTransformer, ABC):
     """Base class for resampling methods. Not to be confused with Sample."""
-
     def __init__(self, config, algorithm_factory, deterministic=False):
         super().__init__(config, deterministic)
         self.algorithm_factory = algorithm_factory
