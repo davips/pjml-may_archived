@@ -1,4 +1,4 @@
-from pjml.config.operator.many import shuffle, select
+from pjml.config.operator.many import select
 from pjml.config.operator.reduction.full import full
 from pjml.config.operator.reduction.rnd import rnd
 from pjml.pipeline import Pipeline
@@ -21,7 +21,7 @@ from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
-from pjml.tool.data.processing.feature.selector.selectkbest import SelectKBest, SelectKB
+from pjml.tool.data.processing.feature.selector.selectkbest import SelectKB
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     UnderS
@@ -42,7 +42,6 @@ expr = Pipeline(
     ),
     Summ(function='mean_std'),
     Report('mean and std ... S: $S'),
-
 
     OnlyApply(Copy(from_field="S", to_field="B")),
     OnlyApply(Report('copy S to B ... B: $B')),
@@ -72,8 +71,6 @@ pipe = full(rnd(expr, n=20), field='S', n=1).sample()
 # coll = magia.use()
 #
 # pipe = full(pipes, field='S', n=1).sample()
-
-
 
 
 print('apply .................')
