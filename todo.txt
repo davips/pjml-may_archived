@@ -16,6 +16,11 @@
     aparece em vez de
     'NoData is not accepted by Binarize'?
 
+8) Resolver problemas com seed
+
+9) Resolver problema do tempo (matar pipeline que passar o tempo permitido)
+
+10) Definir parametros default
 
 ############# Ideias futuras #############
 

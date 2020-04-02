@@ -21,6 +21,7 @@ from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
+from pjml.tool.data.processing.feature.selector.selectkbest import SelectKBest, SelectKB
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     UnderS
@@ -32,7 +33,7 @@ expr = Pipeline(
     Map(
         Wrap(
             Binarize(),
-            select(Std, UnderS, OverS, MinMax),
+            select(Std, UnderS, OverS, MinMax, SelectKB),
             ApplyUsing(select(RF, DT, NB, SVMC)),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
@@ -40,22 +41,28 @@ expr = Pipeline(
         ),
     ),
     Summ(function='mean_std'),
+    Report('mean and std ... S: $S'),
+
 
     OnlyApply(Copy(from_field="S", to_field="B")),
+    OnlyApply(Report('copy S to B ... B: $B')),
     OnlyUse(MConcat(input_field1="B", input_field2="S",
                     output_field="S", direction='vertical')),
-    # Report(' S --> \n$S'),
-    Calc(functions=['flatten']),
-    # Report('flatten S --> \n$S'),
-    Calc(functions=['mean']),
-    Report('mean S --> $S'),
+    OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
+    OnlyUse(Calc(functions=['flatten'])),
+    OnlyUse(Report('flatten S ... S: $S')),
+    OnlyUse(Calc(functions=['mean'])),
+    OnlyUse(Report('mean S ... S: $S')),
+
+    Report('End ...\n'),
+
 )
 
 # diversidade,
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')
 
 print('sample .................')
-pipe = full(rnd(expr, n=5), field='S', n=1).sample()
+pipe = full(rnd(expr, n=20), field='S', n=1).sample()
 
 #
 # pipes = rnd(expr, n=5)
