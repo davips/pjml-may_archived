@@ -1,7 +1,6 @@
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import Model
 
 
 class ApplyUsing(NonConfigurableContainer1):
