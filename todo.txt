@@ -47,9 +47,11 @@
 
 4) Casca imperativa em cima do funcional.
     Funcional:
-        model = transf.fit()
-        result = model.use()
+        model = transf.apply(...)
+        result = model.use(...)
     Mutável:
-        data = transf.apply()
-        result = transf.use()
-    Funcionamento: transf mantém referência para o último Model gerado; Light transfs não precisam.
+        transf.apply(...)
+        result = transf.use(...)
+    Funcionamento: transf mantém referência para o último Model gerado; LightTransformers ignoram pois não precisam de modelo.
+
+5) Pessoalmente prefiro apply(), mas seria fit() mais palatável ao público geral? Fazer congresso Pajé para ver reação à API?
