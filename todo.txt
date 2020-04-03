@@ -34,6 +34,9 @@
 
 13) Fazer mapa de hints para ir junto com falha de pipeline (failure={'message':'sdfsdf', 'hint':'dsffgg'})
 
+14) Ressuscitar a PyMFE
+
+15) AutoML baseado em programação genética.
 
 ############# Ideias futuras #############
 
@@ -55,3 +58,17 @@
     Funcionamento: transf mantém referência para o último Model gerado; LightTransformers ignoram pois não precisam de modelo.
 
 5) Pessoalmente prefiro apply(), mas seria fit() mais palatável ao público geral? Fazer congresso Pajé para ver reação à API?
+
+
+Apêndice:
+
+1)
+    UUID Proof:
+    APPLY  D    --> T1     --> D1, M1      --> T2        --> D2, M2
+           (d)  --> (t1)   --> (d+t1)      --> (t1)      --> (d+t1+t2)
+    USE    D'   --> M1     --> D'1         --> M2        --> D'2
+           (d') --> (d+t1) --> (d'+d+t1)   --> (d+t1+t2) --> (d'+d+t1+d+t1+t2)
+           (d') --> (m1)   --> (d'+m1)     --> (m1+t2) --> (d'+m1+m1+t2)
+           (d') --> (m1)   --> (d'+m1)     --> (m2)    --> (d'+m1+m2)
+
+    LightTransformer: USE análogo a APPLY
