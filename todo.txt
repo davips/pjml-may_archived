@@ -23,7 +23,7 @@
 10) Definir parametros default no CS e injetá-los no config durante init quando necessário
 
 11) Probabilidade dos nós do CS
-    SelectCS(A, B, C, probs=[0.2, 0.35, 0.45])
+    SelectCS(A, B, C, probs=[0.2, 0.35, 0.45])   # probs ou P ou ...?
     Node(children=[A, B, C], probs=[0.2, 0.35, 0.45])
     ConfigList(A, B, C, probs=[0.2, 0.35, 0.45])
 
@@ -40,7 +40,7 @@
 1) Definir importancia/sensibilidade de parâmetros
 
 2) Temos CS de parametros que afetam acurácia. Poderemos ter outro CS, com parâmetros que afetam apenas(?) tempo ou memória?
-    n_estimators do RF: quanto menor mais rápido; qto maior mais preciso; poderia haver um sugestão de direção em cada Param
+    n_estimators do RF: quanto menor mais rápido; qto maior mais preciso; poderia haver uma sugestão de direção em cada Param
 
 3) Possibilitar use() de componentes Light (sem gerar modelo / sem apply):
     data = File("abalone3.arff").use()
