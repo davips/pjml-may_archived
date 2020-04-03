@@ -47,7 +47,7 @@ class File(Invisible, NoDataHandler):
 
     def _apply_impl(self, data_apply):
         self._enforce_nodata(data_apply)
-        return Model(self, self.data)
+        return Model(self, data_apply, self.data)
 
     def _use_impl(self, data_use, *args):
         self._enforce_nodata(data_use)

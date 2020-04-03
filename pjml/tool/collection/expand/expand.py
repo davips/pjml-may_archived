@@ -8,7 +8,7 @@ from pjml.tool.model import Model
 class Expand(LightConfigLess, Invisible):
     def _apply_impl(self, data_apply):
         applied = self._use_impl(data_apply)
-        return Model(self, applied)
+        return Model(self, data_apply, applied)
 
     def _use_impl(self, data_use, *args):
         return InfiniteCollection(

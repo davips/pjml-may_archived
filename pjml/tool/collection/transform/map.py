@@ -28,7 +28,7 @@ class Map(NonConfigurableContainer1):
             models.append(model)
         applied = collection.updated(self.transformations(step='a'), datas=datas)
         # TODO: which containers should pass self._exit_on_error to transformer?
-        return ContainerModel(self, applied, models)
+        return ContainerModel(self, collection, applied, models)
 
     def _use_impl(self, collection, models=None):
         size = len(models)

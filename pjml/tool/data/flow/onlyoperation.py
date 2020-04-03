@@ -42,7 +42,7 @@ class OnlyUse(NonConfigurableContainer1):
         return ContainerCS(OnlyUse.name, OnlyUse.path, transformers)
 
     def _apply_impl(self, data):
-        return Model(self, data)
+        return Model(self, data, data)
 
     def _use_impl(self, data, *args):
         return self.transformer._use_impl(data, *args)

@@ -20,6 +20,7 @@ class Chain(ContainerN):
         return ChainCS(*transformers)
 
     def _apply_impl(self, data):
+        before_data = data
         models = []
         for transformer in self.transformers:
             model = transformer.apply(data, self._exit_on_error)
@@ -28,10 +29,10 @@ class Chain(ContainerN):
             if data and data.failure:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
-                return ContainerModel(self, data, models,
+                return ContainerModel(self, before_data, data, models,
                                       use_impl=self._use_for_failed_pipeline)
 
-        return ContainerModel(self, data, models)
+        return ContainerModel(self, before_data, data, models)
 
     def _use_impl(self, data, models=None):
         for model in models:

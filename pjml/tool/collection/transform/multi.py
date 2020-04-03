@@ -37,7 +37,7 @@ class Multi(ContainerN):
         applied = collection_apply.updated(
             self.transformations('a'), datas=datas
         )
-        return ContainerModel(self, applied, models)
+        return ContainerModel(self, collection_apply, applied, models)
 
     def _use_impl(self, collection_use, models=None):
         isfinite = isinstance(collection_use, FiniteCollection)

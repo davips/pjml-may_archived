@@ -19,7 +19,7 @@ class Resampler(LightTransformer, ABC):
         sklearn_model = self.algorithm_factory()
         X, y = sklearn_model.fit_resample(*data.Xy)
         applied = data.updated(self.transformations('a'), X=X, y=y)
-        return Model(self, applied)
+        return Model(self, data, applied)
 
     def transformations(self, step):
         if step == 'a':

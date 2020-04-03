@@ -200,7 +200,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         return config
 
     def _uuid_impl(self):
-        return self.serialized
+        return 't', self.serialized
 
     @classproperty
     @lru_cache()
@@ -241,10 +241,10 @@ class HeavyTransformer(Transformer, ABC):
     def apply(self, data: Data = NoData, exit_on_error=True):
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones:
-            return Model(self, data, use_impl=self._use_for_early_ended_pipeline)
+            return Model(self, data, data, use_impl=self._use_for_early_ended_pipeline)
 
         if data.failure:
-            return Model(self, data, use_impl=self._use_for_failed_pipeline)
+            return Model(self, data, data, use_impl=self._use_for_failed_pipeline)
 
         self._check_nodata(data)
 
@@ -268,7 +268,7 @@ class HeavyTransformer(Transformer, ABC):
             output_data = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(self, output_data, use_impl=self._use_for_failed_pipeline)
+            model = Model(self, data, output_data, use_impl=self._use_for_failed_pipeline)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
@@ -302,7 +302,7 @@ class LightTransformer(Transformer, ABC):
     def apply(self, data: Data = NoData, exit_on_error=True):
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones or data.failure:
-            return Model(self, data)
+            return Model(self, data, data)
 
         self._check_nodata(data)
 

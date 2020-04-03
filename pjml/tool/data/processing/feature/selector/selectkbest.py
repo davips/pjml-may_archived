@@ -48,7 +48,7 @@ class SelectBest(Algorithm):
         sklearn_model = self.algorithm_factory(data.X.shape[1])
         X_new = sklearn_model.fit_transform(*data.Xy)
         applied = data.updated(self.transformations('a'), X=X_new)
-        return Model(self, applied, sklearn_model)
+        return Model(self, data, applied, sklearn_model)
 
     def _use_impl(self, data, sklearn_model=None):
         X_new = sklearn_model.transform(data.X)

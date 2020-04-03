@@ -145,11 +145,7 @@ class Cache(ConfigurableContainer1, Storer):
 
         return output_data
 
-    def transformations(self, step=None, training_data=None):
+    def transformations(self, step):
         """Cache produce no transformations by itself , so it needs to
         override the list of expected transformations."""
-        if step is None:
-            step = self._current_step
-        if training_data is None:
-            training_data = self._last_training_data
-        return self.transformer.transformations(step, training_data)
+        return self.transformer.transformations(step)

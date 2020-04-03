@@ -13,7 +13,7 @@ class Scaler(Algorithm, ABC):
         sklearn_model.fit(*data.Xy)
 
         applied = self._use_impl(data, sklearn_model, step='a')
-        return Model(self, applied, sklearn_model)
+        return Model(self, data, applied, sklearn_model)
 
     def _use_impl(self, data, sklearn_model=None, step='u'):
         X = sklearn_model.transform(data.X)

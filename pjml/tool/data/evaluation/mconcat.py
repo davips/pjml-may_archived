@@ -41,10 +41,8 @@ class MConcat(LightTransformer, FunctionInspector):
             )
 
     def _apply_impl(self, data_apply):
-        return Model(
-            self,
-            self._use_impl(data_apply, step='a')
-        )
+        applied = self._use_impl(data_apply, step='a')
+        return Model(self, data_apply, applied)
 
     def _use_impl(self, data, step='u'):
         m1 = data.field(self.input_field1, self)

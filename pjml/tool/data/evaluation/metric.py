@@ -36,7 +36,7 @@ class Metric(LightTransformer, FunctionInspector):
 
     def _apply_impl(self, data):
         output_data = self._use_impl(data, step='a')
-        return Model(self, output_data)
+        return Model(self, data, output_data)
 
     def _use_impl(self, data_use, step='u'):
         if self.target not in data_use.matrices:

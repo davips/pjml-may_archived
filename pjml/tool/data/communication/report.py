@@ -24,7 +24,7 @@ class Report(Invisible):
         if data is not None:
             print('[apply] ', self._interpolate(self.text, data))
 
-        return Model(self, data)
+        return Model(self, data, data)
 
     def _use_impl(self, data, *args):
         print('[use] ', self._interpolate(self.text, data))

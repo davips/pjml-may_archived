@@ -28,7 +28,7 @@ class Copy(LightTransformer, FunctionInspector):
         self.from_field, self.to_field = from_field, to_field
 
     def _apply_impl(self, data):
-        return Model(self, self._use_impl(data, step='a'))
+        return Model(self, data, self._use_impl(data, step='a'))
 
     def _use_impl(self, data, step='u'):
         for field in [self.from_field]:

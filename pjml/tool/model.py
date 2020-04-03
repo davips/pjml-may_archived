@@ -1,5 +1,6 @@
 from abc import ABC
 
+from pjdata.aux.identifyable import Identifyable
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
@@ -7,26 +8,40 @@ from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.mixin.timers import Timers
 
 
-class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
-    def __init__(self, transformer, data_from_apply, *args, use_impl=None):
+class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
+    def __init__(self, transformer, data_before_apply,
+                 data_after_apply, *args, use_impl=None):
         self.transformer = transformer
         self._use_impl = use_impl if use_impl else self.transformer._use_impl
-        self._data_from_apply = data_from_apply
+
+        if data_before_apply:
+            self._uuid_data_before_apply = data_before_apply.uuid
+        else:
+            self._uuid_data_before_apply = Identifyable.none
+
+        self._data_after_apply = data_after_apply
         self._name = f'Model[{transformer.name}]'
         self.args = args
 
-    def updated(self, responsible, transformer=None, data_from_apply=None,
+    def _uuid_impl(self):
+        return 'm', self._uuid_data_before_apply + self.transformer.uuid
+
+    def updated(self, responsible, transformer=None,
+                data_before_apply=None, data_after_apply=None,
                 args=None, use_impl=None):
         if transformer is None:
             transformer = self.transformer
-        if data_from_apply is None:
-            data_from_apply = self._data_from_apply
+        if data_after_apply is None:
+            data_after_apply = self._data_after_apply
         if use_impl is None:
             use_impl = self._use_impl
         if args is None:
             args = self.args
-        model = Model(transformer, data_from_apply, *args, use_impl=use_impl)
+        model = Model(transformer, data_before_apply,
+                      data_after_apply, *args, use_impl=use_impl)
         model._name = f'Model[{responsible.name}[{model._name}]]'
+        if data_before_apply is None:
+            model._uuid_data_before_apply = self._uuid_data_before_apply
         return model
 
     def name(self):
@@ -34,7 +49,7 @@ class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
 
     @property
     def data(self):
-        return self._data_from_apply
+        return self._data_after_apply
 
     def use(self, data: Data = NoData, exit_on_error=True, own_data=False):
         """Testing step (usually).
@@ -113,10 +128,12 @@ class Model(NoDataHandler, ExceptionHandler, Timers, ABC):
 
 
 class ContainerModel(Model):
-    def __init__(self, transformer, data_from_apply, models, *args,
+    def __init__(self, transformer, data_before_apply,
+                 data_after_apply, models, *args,
                  use_impl=None):
         args = (models,) + args
-        super().__init__(transformer, data_from_apply, *args, use_impl=use_impl)
+        super().__init__(transformer, data_before_apply,
+                         data_after_apply, *args, use_impl=use_impl)
 
         # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
         if len(models) == 1 and isinstance(models[0], ContainerModel):
@@ -124,12 +141,13 @@ class ContainerModel(Model):
 
         self.models = models
 
-    def updated(self, responsible, transformer=None, data_from_apply=None,
+    def updated(self, responsible, transformer=None,
+                data_before_apply=None, data_after_apply=None,
                 models=None, args=None, use_impl=None):
         if transformer is None:
             transformer = self.transformer
-        if data_from_apply is None:
-            data_from_apply = self._data_from_apply
+        if data_after_apply is None:
+            data_after_apply = self._data_after_apply
         if use_impl is None:
             use_impl = self._use_impl
         if args is None:
@@ -137,7 +155,10 @@ class ContainerModel(Model):
         if models is None:
             models = self.models
         model = ContainerModel(
-            transformer, data_from_apply, models, *args, use_impl=use_impl
+            transformer, data_before_apply,
+            data_after_apply, models, *args, use_impl=use_impl
         )
         model._name = f'Model[{responsible.name}[{model._name}]]'
+        if data_before_apply is None:
+            model._uuid_data_before_apply = self._uuid_data_before_apply
         return model

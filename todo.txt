@@ -38,6 +38,8 @@
 
 15) AutoML baseado em programação genética.
 
+
+
 ############# Ideias futuras #############
 
 1) Definir importancia/sensibilidade de parâmetros
@@ -60,7 +62,8 @@
 5) Pessoalmente prefiro apply(), mas seria fit() mais palatável ao público geral? Fazer congresso Pajé para ver reação à API?
 
 
-Apêndice:
+
+########################## Apêndice ###############################
 
 1)
     UUID Proof:

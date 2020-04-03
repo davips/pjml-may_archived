@@ -16,7 +16,7 @@ class Predictor(Algorithm, EnforceApply, ABC):
     def _apply_impl(self, data_apply):
         sklearn_model = self.algorithm_factory()
         sklearn_model.fit(*data_apply.Xy)
-        return Model(self, None, sklearn_model)
+        return Model(self, data_apply, None, sklearn_model)
 
     def _use_impl(self, data, sklearn_model=None):
         return data.updated(

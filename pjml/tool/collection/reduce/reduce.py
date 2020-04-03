@@ -12,4 +12,4 @@ class Reduce(LightTransformer, FunctionInspector, ABC):
 
     def _apply_impl(self, collection):
         applied = self._use_impl(collection, 'a')
-        return Model(self, applied)
+        return Model(self, collection, applied)
