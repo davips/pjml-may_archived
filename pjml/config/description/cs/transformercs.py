@@ -16,11 +16,13 @@ class TransformerCS(ComponentCS):
         Path (usually the Python module) of the component.
     """
 
-    def __init__(self, name=None, path=None, *nodes):
-        super().__init__(name, path, components=None, *nodes)
+    def __init__(self, name=None, path=None, nodes=None):
+        if nodes is None:
+            raise Exception('TransformerCS should have a list of nodes!')
+        super().__init__(name, path, None, nodes)
 
     def _sample_cfg(self):
         return {}
 
     def identified(self, name, path):
-        return self.__class__(name, path, *self.nodes)
+        return self.__class__(name, path, self.nodes)

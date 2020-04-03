@@ -5,7 +5,7 @@
 
 3) Arrumar ConfigLess1 e ConfigLess2 [Done]
 
-4) Ressuscitar o Random AutoML []
+4) Ressuscitar o Random AutoML [Done]
 
 5) Historico []
 
@@ -16,19 +16,40 @@
     aparece em vez de
     'NoData is not accepted by Binarize'?
 
-8) Resolver problemas com seed
+8) Incluir seed e versão no config
 
 9) Resolver problema do tempo (matar pipeline que passar o tempo permitido)
 
-10) Definir parametros default/prioridade
+10) Definir parametros default no CS e injetá-los no config durante init quando necessário
+
+11) Probabilidade dos nós do CS
+    SelectCS(A, B, C, probs=[0.2, 0.35, 0.45])
+    Node(children=[A, B, C], probs=[0.2, 0.35, 0.45])
+    ConfigList(A, B, C, probs=[0.2, 0.35, 0.45])
+
+    def choice(items, probs=None):
+        ...
+
+12) Remover parametros inuteis do config (ex. 'test_size' junto com 'cv')
+
+13) Fazer mapa de hints para ir junto com falha de pipeline (failure={'message':'sdfsdf', 'hint':'dsffgg'})
 
 
 ############# Ideias futuras #############
 
-1) Casca imperativa em cima do funcional.
-    IDEIA firulenta na gavetinha:
-    Casca imperativa em cima do funcional.
-    transf.apply/transf.use -> imperativo
-    fit/model.use -> function
+1) Definir importancia/sensibilidade de parâmetros
 
+2) Temos CS de parametros que afetam acurácia. Poderemos ter outro CS, com parâmetros que afetam apenas(?) tempo ou memória?
+    n_estimators do RF: quanto menor mais rápido; qto maior mais preciso; poderia haver um sugestão de direção em cada Param
+
+3) Possibilitar use() de componentes Light (sem gerar modelo / sem apply):
     data = File("abalone3.arff").use()
+
+4) Casca imperativa em cima do funcional.
+    Funcional:
+        model = transf.fit()
+        result = model.use()
+    Mutável:
+        data = transf.apply()
+        result = transf.use()
+    Funcionamento: transf mantém referência para o último Model gerado; Light transfs não precisam.

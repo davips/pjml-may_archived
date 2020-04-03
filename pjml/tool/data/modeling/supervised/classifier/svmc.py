@@ -1,6 +1,6 @@
 from functools import partial
 
-from numpy.random.mtrand import uniform
+from numpy.random import uniform
 from sklearn.svm import SVC
 
 from pjml.config.description.cs.transformercs import TransformerCS
@@ -14,6 +14,7 @@ class SVMC(Predictor):
     def __init__(self, **kwargs):
         algorithm_factory = partial(SVC, **kwargs)
         super().__init__(kwargs, algorithm_factory)
+
 
     @classmethod
     def _cs_impl(cls):
@@ -57,4 +58,4 @@ class SVMC(Predictor):
             children=[kernel_linear, kernel_nonlinear]
         )
 
-        return TransformerCS(top)
+        return TransformerCS(nodes=[top])

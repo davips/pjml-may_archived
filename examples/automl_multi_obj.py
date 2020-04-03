@@ -21,25 +21,36 @@ from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.feature.scaler.minmax import MinMax
 from pjml.tool.data.processing.feature.scaler.std import Std
-from pjml.tool.data.processing.feature.selector.selectkbest import SelectKB
+from pjml.tool.data.processing.feature.selector.selectkbest import SelectBest
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     UnderS
 from pjml.tool.meta.wrap import Wrap
 
+# print(SelectKB.cs)
+# exit()
+#
+# cs = Pipeline(SelectKB)
+# print(cs)
+# exit()
+#
+# s = cs.sample()
+# print(s)
+# exit()
+
 expr = Pipeline(
-    OnlyApply(File("abalone3.arff")),
+    OnlyApply(File("abalone3.arff"), Binarize()),
     Partition(),
     Map(
         Wrap(
-            Binarize(),
-            select(Std, UnderS, OverS, MinMax, SelectKB),
-            ApplyUsing(select(RF, DT, NB, SVMC)),
+            # select(SelectBest),
+            ApplyUsing(select(DT)),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))
         ),
     ),
+    Report('HISTORY ... S: {history}'),
     Summ(function='mean_std'),
     Report('mean and std ... S: $S'),
 
@@ -61,7 +72,7 @@ expr = Pipeline(
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')
 
 print('sample .................')
-pipe = full(rnd(expr, n=20), field='S', n=1).sample()
+pipe = full(rnd(expr, n=5), field='S', n=1).sample()
 
 #
 # pipes = rnd(expr, n=5)
@@ -74,7 +85,7 @@ pipe = full(rnd(expr, n=20), field='S', n=1).sample()
 
 
 print('apply .................')
-data = File("abalone3.arff").apply().data
+data = Pipeline(File("abalone3.arff"), Binarize()).apply().data
 
 c = Chain(pipe.wrapped, Report())
 model = c.apply(data)

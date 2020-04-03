@@ -1,5 +1,5 @@
 from functools import partial
-from random import uniform
+from numpy.random import uniform
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -31,4 +31,4 @@ class RF(Predictor):
             'max_depth': IntP(uniform, low=2, high=1000),
             'n_estimators':  CatP(choice, items=n_estimators),
         }
-        return TransformerCS(Node(params=params))
+        return TransformerCS(nodes=[Node(params=params)])

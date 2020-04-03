@@ -28,4 +28,4 @@ class NB(Predictor):
         params = {
             'distribution': CatP(choice, items=['gaussian', 'bernoulli'])
         }
-        return TransformerCS(Node(params=params))
+        return TransformerCS(nodes=[Node(params=params)])
