@@ -1,7 +1,6 @@
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.model import Model
-from pjml.tool.abc.transformer import Transformer
 from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.transformer import Transformer
 
 
 class ApplyUsing(NonConfigurableContainer1):
@@ -21,9 +20,10 @@ class ApplyUsing(NonConfigurableContainer1):
     def _apply_impl(self, data):
         model = self.transformer.apply(data, self._exit_on_error)
         output_data = model.use(data, self._exit_on_error)
-        return Model(output_data, self, model.use)
+        return model.updated(self, data_after_apply=output_data)
 
-    def transformations(self, step=None, training_data=None):
-        if training_data is None:
-            training_data = self._last_training_data
-        return self.transformer.transformations('u', training_data)
+    def _use_impl(self, data, *args):
+        pass
+
+    def transformations(self, step):
+        return self.transformer.transformations('u')

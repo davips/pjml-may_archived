@@ -5,11 +5,11 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
-class MConcat(Transformer, FunctionInspector):
+class MConcat(LightTransformer, FunctionInspector):
     """Calc to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
@@ -41,16 +41,20 @@ class MConcat(Transformer, FunctionInspector):
             )
 
     def _apply_impl(self, data_apply):
-        def use_impl(data_use, step='u'):
-            m1 = data_use.field(self.input_field1, self)
-            m2 = data_use.field(self.input_field2, self)
-            dic = {
-                self.output_field: np.concatenate((m1, m2), axis=self.direction)
-            }
-            return data_use.updated(self.transformations(step), **dic)
+        applied = self._use_impl(data_apply, step='a')
+        return Model(self, data_apply, applied)
 
-        applied = use_impl(data_apply, step='a')
-        return Model(applied, self, use_impl)
+    def _use_impl(self, data, step='u'):
+        m1 = data.field(self.input_field1, self)
+        m2 = data.field(self.input_field2, self)
+        dic = {
+            self.output_field: np.concatenate(
+                (m1, m2), axis=self.direction
+            )
+        }
+        return data.updated(
+            self.transformations(step), **dic
+        )
 
     @classmethod
     def _cs_impl(cls):

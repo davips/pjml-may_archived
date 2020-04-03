@@ -47,12 +47,11 @@ class File(Invisible, NoDataHandler):
 
     def _apply_impl(self, data_apply):
         self._enforce_nodata(data_apply)
+        return Model(self, data_apply, self.data)
 
-        def use_impl(data_use):
-            self._enforce_nodata(data_use)
-            return self.data
-
-        return Model(self.data, self, use_impl)
+    def _use_impl(self, data_use, *args):
+        self._enforce_nodata(data_use)
+        return self.data
 
     @classmethod
     def _cs_impl(cls):

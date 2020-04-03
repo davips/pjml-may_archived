@@ -1,13 +1,23 @@
 from abc import ABC
 
 from pjml.config.description.cs.emptycs import EmptyCS
-from pjdata.aux.decorator import classproperty
-from pjml.tool.abc.singleton import NoAlgorithm
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import HeavyTransformer, LightTransformer
 
 
-class ConfigLess(Transformer, ABC):
+class HeavyConfigLess(HeavyTransformer, ABC):
     """Parent class of all transformers without config."""
+
+    def __init__(self):
+        super().__init__({}, deterministic=True)
+
+    @classmethod
+    def _cs_impl(cls):
+        return EmptyCS()
+
+
+class LightConfigLess(LightTransformer, ABC):
+    """Parent class of all transformers without config."""
+
     def __init__(self):
         super().__init__({}, deterministic=True)
 

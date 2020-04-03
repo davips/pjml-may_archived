@@ -1,13 +1,17 @@
 from abc import ABC
 
 from pjdata.step.apply import Apply
+
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.data.sklalgorithm import SKLAlgorithm
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
-class SKLResampler(SKLAlgorithm, ABC):
+class Resampler(LightTransformer, ABC):
     """Base class for resampling methods. Not to be confused with Sample."""
+    def __init__(self, config, algorithm_factory, deterministic=False):
+        super().__init__(config, deterministic)
+        self.algorithm_factory = algorithm_factory
 
     def _apply_impl(self, data):
         # TODO: generalize this to resample all fields (xyzuvwpq...) or
@@ -15,7 +19,7 @@ class SKLResampler(SKLAlgorithm, ABC):
         sklearn_model = self.algorithm_factory()
         X, y = sklearn_model.fit_resample(*data.Xy)
         applied = data.updated(self.transformations('a'), X=X, y=y)
-        return Model(applied, self)
+        return Model(self, data, applied)
 
     def transformations(self, step):
         if step == 'a':

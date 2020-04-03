@@ -6,11 +6,11 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
-from pjml.tool.abc.transformer import Transformer
 
 
-class Metric(Transformer, FunctionInspector):
+class Metric(LightTransformer, FunctionInspector):
     """Metric to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
@@ -35,23 +35,23 @@ class Metric(Transformer, FunctionInspector):
         self.selected = [self.function_from_name[name] for name in functions]
 
     def _apply_impl(self, data):
-        def use_impl(data_use, step='u'):
-            if self.target not in data_use.matrices:
-                raise Exception(
-                    f'Impossible to calculate metric {self.functions}: Field '
-                    f'{self.target} does not exist!')
-            if self.prediction not in data_use.matrices:
-                raise Exception(
-                    f'Impossible to calculate metric {self.functions}: Field '
-                    f'{self.prediction} does not exist!')
-            return data_use.updated(
-                self.transformations(step),
-                R=np.array([[f(data_use, self.target, self.prediction)
-                             for f in self.selected]])
-            )
+        output_data = self._use_impl(data, step='a')
+        return Model(self, data, output_data)
 
-        output_data = use_impl(data, step='a')
-        return Model(output_data,self, use_impl)
+    def _use_impl(self, data_use, step='u'):
+        if self.target not in data_use.matrices:
+            raise Exception(
+                f'Impossible to calculate metric {self.functions}: Field '
+                f'{self.target} does not exist!')
+        if self.prediction not in data_use.matrices:
+            raise Exception(
+                f'Impossible to calculate metric {self.functions}: Field '
+                f'{self.prediction} does not exist!')
+        return data_use.updated(
+            self.transformations(step),
+            R=np.array([[f(data_use, self.target, self.prediction)
+                         for f in self.selected]])
+        )
 
     @classmethod
     def _cs_impl(cls):

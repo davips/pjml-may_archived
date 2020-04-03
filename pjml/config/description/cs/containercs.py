@@ -10,8 +10,8 @@ class ContainerCS(ComponentCS):
         Multiple CS.
     """
 
-    def __init__(self, name, path, components, *nodes):
-        super().__init__(name, path, components, *nodes)
+    def __init__(self, name, path, components, nodes=None):
+        super().__init__(name, path, components, nodes)
 
     def _sample_cfg(self):
         return {'transformers': [c.sample() for c in self.components]}

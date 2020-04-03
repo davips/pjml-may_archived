@@ -1,5 +1,5 @@
 from functools import partial
-from random import uniform
+from numpy.random import uniform
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -7,10 +7,10 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP, RealP, IntP
-from pjml.tool.data.modeling.supervised.sklpredictor import SKLPredictor
+from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 
-class RF(SKLPredictor):
+class RF(Predictor):
     """Random Forest."""
 
     def __init__(self, **kwargs):
@@ -31,4 +31,4 @@ class RF(SKLPredictor):
             'max_depth': IntP(uniform, low=2, high=1000),
             'n_estimators':  CatP(choice, items=n_estimators),
         }
-        return TransformerCS(Node(params=params))
+        return TransformerCS(nodes=[Node(params=params)])

@@ -1,8 +1,9 @@
-from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.abc.transformer import Transformer
-from pjml.tool.abc.containern import ContainerN
 from pjdata.finitecollection import FiniteCollection
-from pjml.tool.model import Model, ContainerModel
+
+from pjml.config.description.cs.containercs import ContainerCS
+from pjml.tool.abc.containern import ContainerN
+from pjml.tool.abc.transformer import Transformer
+from pjml.tool.model import ContainerModel
 
 
 class Multi(ContainerN):
@@ -36,19 +37,18 @@ class Multi(ContainerN):
         applied = collection_apply.updated(
             self.transformations('a'), datas=datas
         )
+        return ContainerModel(self, collection_apply, applied, models)
 
-        def use_impl(collection_use):
-            isfinite = isinstance(collection_use, FiniteCollection)
-            if isfinite and self.size != collection_use.size:
-                raise Exception(
-                    'Config space and collection should have the same '
-                    f'size {self.size} != collection {collection_use.size}'
-                )
-            datas = []
-            for model in models:
-                data = model.use(next(collection_use), self._exit_on_error)
-                datas.append(data)
-            return collection_use.updated(self.transformations('u'),
-                                          datas=datas)
-
-        return ContainerModel(models, applied, self, use_impl)
+    def _use_impl(self, collection_use, models=None):
+        isfinite = isinstance(collection_use, FiniteCollection)
+        if isfinite and self.size != collection_use.size:
+            raise Exception(
+                'Config space and collection should have the same '
+                f'size {self.size} != collection {collection_use.size}'
+            )
+        datas = []
+        for model in models:
+            data = model.use(next(collection_use), self._exit_on_error)
+            datas.append(data)
+        return collection_use.updated(self.transformations('u'),
+                                      datas=datas)

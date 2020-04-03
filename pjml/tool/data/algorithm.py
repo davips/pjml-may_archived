@@ -1,9 +1,9 @@
 from abc import ABC
 
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import HeavyTransformer
 
 
-class SKLAlgorithm(Transformer, ABC):
+class Algorithm(HeavyTransformer, ABC):
     """    Base class for scikitlearn algorithms.    """
 
     def __init__(self, config, algorithm_factory, deterministic=False):

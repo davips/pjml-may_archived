@@ -1,15 +1,9 @@
-import numpy as np
-
-from pjml.config.description.cs.transformercs import TransformerCS
-from pjml.config.description.distributions import choice
-from pjml.config.description.node import Node
-from pjml.config.description.parameter import CatP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.singleton import NoAlgorithm, NoModel
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import LightTransformer
+from pjml.tool.model import Model
 
 
-class Copy(Transformer, FunctionInspector):
+class Copy(LightTransformer, FunctionInspector):
     """Calc to evaluate a given Data field.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
@@ -34,9 +28,9 @@ class Copy(Transformer, FunctionInspector):
         self.from_field, self.to_field = from_field, to_field
 
     def _apply_impl(self, data):
-        return self._use_impl(data)
+        return Model(self, data, self._use_impl(data, step='a'))
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, step='u'):
         for field in [self.from_field]:
             if field not in data.matrices:
                 raise Exception(
@@ -47,4 +41,5 @@ class Copy(Transformer, FunctionInspector):
             self.to_field: data.field(self.from_field, self)
         }
 
-        return data.updated(self.transformations(), **dic)
+        return data.updated(
+            self.transformations(step='a'), **dic)

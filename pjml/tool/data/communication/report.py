@@ -1,11 +1,11 @@
-import numpy as np
-from pjml.config.description.cs.emptycs import EmptyCS
-from pjml.tool.model import Model
-from pjml.tool.abc.transformer import Transformer
-from pjml.tool.abc.invisible import Invisible
-from pjml.util import flatten
-
 import re
+
+import numpy as np
+
+from pjml.config.description.cs.emptycs import EmptyCS
+from pjml.tool.abc.invisible import Invisible
+from pjml.tool.model import Model
+from pjml.util import flatten
 
 
 class Report(Invisible):
@@ -17,24 +17,24 @@ class Report(Invisible):
     """
 
     def __init__(self, text='Default report r=$R'):
-        Transformer.__init__(self, {'text': text}, deterministic=True)
+        super().__init__({'text': text}, deterministic=True)
         self.text = text
 
     def _apply_impl(self, data):
         if data is not None:
             print('[apply] ', self._interpolate(self.text, data))
 
-        def use_impl(data_use):
-            print('[use] ', self._interpolate(self.text, data_use))
-            return data_use
+        return Model(self, data, data)
 
-        return Model(data, self, use_impl)
+    def _use_impl(self, data, *args):
+        print('[use] ', self._interpolate(self.text, data))
+        return data
 
     @classmethod
     def _interpolate(cls, text, data):
         def f(obj_match):
             M = data.field(obj_match.group(1), cls)
-            return str(np.round(M, decimals=4))
+            return np.array_repr(np.round(M, decimals=4)).replace('\n      ', '').replace('  ', '')
 
         p = re.compile(r'\$([a-zA-Z]+)')
         return cls._eval(p.sub(f, text), data)

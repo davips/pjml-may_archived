@@ -7,15 +7,20 @@ from pjml.config.description.node import Node
 
 
 class ComponentCS(ConfigSpace):
-    def __init__(self, name, path, components, *nodes):
+    def __init__(self, name, path, components, nodes):
+        if nodes is None:
+            nodes = []
         jsonable = {'component': {'name': name, 'path': path}, 'nodes': nodes}
         if components:
             components = [compo.cs for compo in components]
             jsonable['components'] = components
         super().__init__(jsonable)
-        if any([not isinstance(cs, Node) for cs in nodes]):
-            raise Exception(self.__class__.__name__,
-                            'can only have Node as nodes.')
+        for cs in nodes:
+            if not isinstance(cs, Node):
+                raise Exception(
+                    f'{self.__class__.__name__} can only have Node as nodes.'
+                    f' Not {type(cs)} !'
+                )
         self.name, self.path, self.nodes = name, path, nodes
         self.components = components
 

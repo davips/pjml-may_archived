@@ -19,10 +19,9 @@ def full(cs, data=NoData, n=1, field='S'):
 
     results = []
     for pipe in cs:
-        p = pipe
-        result_data = p.apply()
-        res = p.use(result_data).field(field, 'full search').item(0)
-        results.append((p, -res))
+        model = pipe.apply()
+        res = model.use(model.data).field(field, 'full search').item(0)
+        results.append((pipe, -res))
 
     pipes = [x[0] for x in sorted(results, key=itemgetter(1))[:n]]
     return ConfigList(transformers=pipes)

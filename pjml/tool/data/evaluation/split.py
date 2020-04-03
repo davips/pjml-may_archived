@@ -1,5 +1,3 @@
-from functools import partial
-
 import numpy
 from numpy.random import uniform
 from sklearn.model_selection import StratifiedShuffleSplit as HO, \
@@ -9,11 +7,11 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import IntP
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.transformer import HeavyTransformer
 from pjml.tool.model import Model
 
 
-class Split(Transformer, FunctionInspector):
+class Split(HeavyTransformer, FunctionInspector):
     """Split a given Data field into training/apply set and testing/use set.
 
     Developer: new metrics can be added just following the pattern '_fun_xxxxx'
@@ -57,17 +55,12 @@ class Split(Transformer, FunctionInspector):
     def _apply_impl(self, data):
         zeros = numpy.zeros(data.field(self.fields[0], self).shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
+        output_data = self._use_impl(data, partitions[self.partition][0], step='a')
+        return Model(self, data, output_data, partitions[self.partition][1])
 
-        def common(data_use, indices, step='u'):
-            new_dic = {f: data_use.field(f, self)[indices] for f in self.fields}
-            return data_use.updated(self.transformations(step), **new_dic)
-
-        output_data = common(data, partitions[self.partition][0], step='a')
-        use_impl = partial(
-            common,
-            indices=partitions[self.partition][1]
-        )
-        return Model(output_data, self, use_impl)
+    def _use_impl(self, data_use, indices=None, step='u'):
+        new_dic = {f: data_use.field(f, self)[indices] for f in self.fields}
+        return data_use.updated(self.transformations(step), **new_dic)
 
     @classmethod
     def _cs_impl(cls):

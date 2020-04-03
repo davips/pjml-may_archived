@@ -18,12 +18,12 @@ class Timers:
         t = os.times()
         return t[0] + t[1] + t[2] + t[3]
 
-    def _limit_by_time(self, function, data, max_time):
+    def _limit_by_time(self, function, data, max_time, *args):
         if max_time is None:
-            return function(data)
+            return function(data, *args)
         else:
             with self._time_limit(max_time):
-                return function(data)
+                return function(data, *args)
 
     @staticmethod
     @contextmanager

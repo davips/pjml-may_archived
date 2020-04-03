@@ -1,19 +1,20 @@
 from functools import partial
 
-from numpy.random.mtrand import uniform
+from numpy.random import uniform
 from sklearn.svm import SVC
 
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP, IntP, RealP, CatP, OrdP
-from pjml.tool.data.modeling.supervised.sklpredictor import SKLPredictor
+from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 
-class SVMC(SKLPredictor):
+class SVMC(Predictor):
     def __init__(self, **kwargs):
         algorithm_factory = partial(SVC, **kwargs)
         super().__init__(kwargs, algorithm_factory)
+
 
     @classmethod
     def _cs_impl(cls):
@@ -57,4 +58,4 @@ class SVMC(SKLPredictor):
             children=[kernel_linear, kernel_nonlinear]
         )
 
-        return TransformerCS(top)
+        return TransformerCS(nodes=[top])
