@@ -47,8 +47,10 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
         Printable.__init__(self, jsonable)
 
-        # TODO: we need to implement the random_state in the components
-        if not deterministic and 'seed' in config:
+        if not deterministic:
+            if 'seed' not in config:
+                config['seed'] = 0
+            # TODO: This only work for sklearn algs, not weka, MLR etc.
             config['random_state'] = config.pop('seed')
 
         self.config = config
@@ -83,7 +85,8 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
              'NoData' means 'pipeline alive, hoping to generate Data in
              the next transformer'.
          exit_on_error
-             Exit imediatly instead of just marking a failure inside Data object.
+             Exit imediatly instead of just marking a failure inside Data
+             object.
 
          Returns
          -------
@@ -241,10 +244,12 @@ class HeavyTransformer(Transformer, ABC):
     def apply(self, data: Data = NoData, exit_on_error=True):
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones:
-            return Model(self, data, data, use_impl=self._use_for_early_ended_pipeline)
+            return Model(self, data, data,
+                         use_impl=self._use_for_early_ended_pipeline)
 
         if data.failure:
-            return Model(self, data, data, use_impl=self._use_for_failed_pipeline)
+            return Model(self, data, data,
+                         use_impl=self._use_for_failed_pipeline)
 
         self._check_nodata(data)
 
@@ -268,7 +273,8 @@ class HeavyTransformer(Transformer, ABC):
             applied = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(self, data, applied, use_impl=self._use_for_failed_pipeline)
+            model = Model(self, data, applied,
+                          use_impl=self._use_for_failed_pipeline)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
@@ -282,7 +288,8 @@ class HeavyTransformer(Transformer, ABC):
 
     def _use_for_early_ended_pipeline(self, data, cause='failed'):
         raise Exception(
-            f"A {self.name} model from early ended pipelines during apply is not "
+            f"A {self.name} model from early ended pipelines during apply is "
+            f"not "
             f"usable!"
         )
 
