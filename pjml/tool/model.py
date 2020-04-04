@@ -1,6 +1,9 @@
 from abc import ABC
+from functools import lru_cache
 
-from pjdata.aux.identifyable import Identifyable
+from pjdata.mixin.identifyable import Identifyable
+
+from pjdata.abc.abstractdata import AbstractData
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
@@ -9,43 +12,74 @@ from pjml.tool.abc.mixin.timers import Timers
 
 
 class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
+    """A possibly interpretable ML model able to make predictions, or,
+    more generally, a data transformation.
+
+    data_before_apply can be a data object or directly its uuid
+    """
+
     def __init__(self, transformer, data_before_apply,
                  data_after_apply, *args, use_impl=None):
         self.transformer = transformer
         self._use_impl = use_impl if use_impl else self.transformer._use_impl
 
         if data_before_apply:
-            self._uuid_data_before_apply = data_before_apply.uuid
+            self._uuid_data_before_apply = data_before_apply.uuid \
+                if isinstance(data_before_apply, AbstractData) \
+                else data_before_apply
         else:
-            self._uuid_data_before_apply = Identifyable.none
+            self._uuid_data_before_apply = Identifyable.nothing
 
         self._data_after_apply = data_after_apply
-        self._name = f'Model[{transformer.name}]'
         self.args = args
 
     def _uuid_impl(self):
         return 'm', self._uuid_data_before_apply + self.transformer.uuid
 
-    def updated(self, responsible, transformer=None,
+    def updated(self, transformer,
                 data_before_apply=None, data_after_apply=None,
                 args=None, use_impl=None):
+        return self._updated(transformer,
+                             data_before_apply, data_after_apply,
+                             args=args, use_impl=use_impl)
+
+    def _updated(self, transformer,
+                 data_before_apply=None, data_after_apply=None,
+                 models=None,
+                 args=None, use_impl=None):
+        # Update values.
         if transformer is None:
-            transformer = self.transformer
+            raise Exception('Transformer cannot be None!')
+        if data_before_apply is None:
+            data_before_apply = self._uuid_data_before_apply
         if data_after_apply is None:
             data_after_apply = self._data_after_apply
-        if use_impl is None:
-            use_impl = self._use_impl
         if args is None:
             args = self.args
-        model = Model(transformer, data_before_apply,
-                      data_after_apply, *args, use_impl=use_impl)
-        model._name = f'Model[{responsible.name}[{model._name}]]'
-        if data_before_apply is None:
-            model._uuid_data_before_apply = self._uuid_data_before_apply
-        return model
+        if use_impl is None:
+            use_impl = self._use_impl
 
+        # Handle ContainerModel specifics.
+        if isinstance(self, ContainerModel):
+            if models is None:
+                models = self.models
+            return ContainerModel(
+                transformer,
+                data_before_apply, data_after_apply,
+                models,
+                *args, use_impl=use_impl
+            )
+
+        return Model(
+            transformer,
+            data_before_apply, data_after_apply,
+            *args, use_impl=use_impl
+        )
+
+    @property
+    @lru_cache()
     def name(self):
-        return self._name
+        return f'Model[{self.transformer.name}]'
 
     @property
     def data(self):
@@ -141,24 +175,11 @@ class ContainerModel(Model):
 
         self.models = models
 
-    def updated(self, responsible, transformer=None,
+    def updated(self, transformer,
                 data_before_apply=None, data_after_apply=None,
-                models=None, args=None, use_impl=None):
-        if transformer is None:
-            transformer = self.transformer
-        if data_after_apply is None:
-            data_after_apply = self._data_after_apply
-        if use_impl is None:
-            use_impl = self._use_impl
-        if args is None:
-            args = self.args
-        if models is None:
-            models = self.models
-        model = ContainerModel(
-            transformer, data_before_apply,
-            data_after_apply, models, *args, use_impl=use_impl
-        )
-        model._name = f'Model[{responsible.name}[{model._name}]]'
-        if data_before_apply is None:
-            model._uuid_data_before_apply = self._uuid_data_before_apply
-        return model
+                models=None,
+                args=None, use_impl=None):
+        return self._updated(transformer,
+                             data_before_apply, data_after_apply,
+                             models=models,
+                             args=args, use_impl=use_impl)

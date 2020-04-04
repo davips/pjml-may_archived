@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
-from pjdata.aux.identifyable import Identifyable
+from pjdata.mixin.identifyable import Identifyable
 from pjdata.aux.serialization import serialize, materialize
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
