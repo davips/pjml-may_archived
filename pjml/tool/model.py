@@ -132,20 +132,20 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             # dentro de
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
 
-            output_data = self._limit_by_time(self._use_impl,
+            used = self._limit_by_time(self._use_impl,
                                               data, self.transformer.max_time,
                                               *self.args)
 
             # Check result type.
-            isdata_or_collection = isinstance(output_data, AbstractData)
-            if not isdata_or_collection and output_data is not NoData:
+            isdata_or_collection = isinstance(used, AbstractData)
+            if not isdata_or_collection and used is not NoData:
                 raise Exception(
-                    f'{self.name} does not handle {type(output_data)}!\n'
-                    f'{output_data}'
+                    f'{self.name} does not handle {type(used)}!\n'
+                    f'{used}'
                 )
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
+            used = data.updated(
                 self.transformations('u'), failure=str(e)
             )
 
@@ -156,7 +156,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         # TODO: check_history to guide implementers whenever they need to
         #  implement transformations()
 
-        return output_data
+        return used
 
     def transformations(self, step):
         return self.transformer.transformations(step)

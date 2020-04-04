@@ -7,9 +7,9 @@ from pjml.tool.model import Model
 
 
 class Binarize(LightConfigLess):
-    def _apply_impl(self, data_apply):
-        output_data = self._use_impl(data_apply, step='a')
-        return Model(self, data_apply, output_data)
+    def _apply_impl(self, data):
+        applied = self._use_impl(data, step='a')
+        return Model(self, data, applied)
 
     def _use_impl(self, data, step='u'):
         # TODO: check Data object compatibility with applied one.

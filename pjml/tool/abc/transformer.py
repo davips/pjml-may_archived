@@ -265,10 +265,10 @@ class HeavyTransformer(Transformer, ABC):
                 raise Exception(f'{self.name} does not handle {type(model)}!')
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
+            applied = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(self, data, output_data, use_impl=self._use_for_failed_pipeline)
+            model = Model(self, data, applied, use_impl=self._use_for_failed_pipeline)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
@@ -323,10 +323,10 @@ class LightTransformer(Transformer, ABC):
                 raise Exception(f'{self.name} does not handle {type(model)}!')
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
+            applied = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(self, output_data)
+            model = Model(self, applied)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 

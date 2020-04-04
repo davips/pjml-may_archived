@@ -34,8 +34,8 @@ class Calc(LightTransformer, FunctionInspector):
         self.functions = functions
 
     def _apply_impl(self, data):
-        output_data = self._use_impl(data, step='a')
-        return Model(self, data, output_data)
+        applied = self._use_impl(data, step='a')
+        return Model(self, data, applied)
 
     def _use_impl(self, data, step='u'):
         if self.input_field not in data.matrices:

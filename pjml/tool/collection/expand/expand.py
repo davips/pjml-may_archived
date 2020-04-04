@@ -6,11 +6,11 @@ from pjml.tool.model import Model
 
 
 class Expand(LightConfigLess, Invisible):
-    def _apply_impl(self, data_apply):
-        applied = self._use_impl(data_apply)
-        return Model(self, data_apply, applied)
+    def _apply_impl(self, data):
+        applied = self._use_impl(data)
+        return Model(self, data, applied)
 
-    def _use_impl(self, data_use, *args):
+    def _use_impl(self, data, *args):
         return InfiniteCollection(
-            data_use, data_use.history, data_use.failure, data_use.dataset
+            data, data.history, data.failure, data.dataset
         )

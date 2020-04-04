@@ -35,21 +35,21 @@ class Metric(LightTransformer, FunctionInspector):
         self.selected = [self.function_from_name[name] for name in functions]
 
     def _apply_impl(self, data):
-        output_data = self._use_impl(data, step='a')
-        return Model(self, data, output_data)
+        applied = self._use_impl(data, step='a')
+        return Model(self, data, applied)
 
-    def _use_impl(self, data_use, step='u'):
-        if self.target not in data_use.matrices:
+    def _use_impl(self, data, step='u'):
+        if self.target not in data.matrices:
             raise Exception(
                 f'Impossible to calculate metric {self.functions}: Field '
                 f'{self.target} does not exist!')
-        if self.prediction not in data_use.matrices:
+        if self.prediction not in data.matrices:
             raise Exception(
                 f'Impossible to calculate metric {self.functions}: Field '
                 f'{self.prediction} does not exist!')
-        return data_use.updated(
+        return data.updated(
             self.transformations(step),
-            R=np.array([[f(data_use, self.target, self.prediction)
+            R=np.array([[f(data, self.target, self.prediction)
                          for f in self.selected]])
         )
 

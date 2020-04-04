@@ -38,20 +38,21 @@ class Keep(ConfigurableContainer1):
         super().__init__(config)
         self.fields = fields
 
-    def _apply_impl(self, data_apply):
-        model = self.transformer.apply(data_apply)
-        applied = self._step(data_apply, model.data, 'a')
+    def _apply_impl(self, data):
+        # TODO: port it to new schema
+        model = self.transformer.apply(data)
+        applied = self._step(data, model.data, 'a')
 
-        def use_impl(data_use):
-            output_data = model.use(data_use)
-            used = self._step(data_use, output_data, 'u')
+        def use_impl(data):
+            inner_used = model.use(data)
+            used = self._step(data, inner_used, 'u')
             return used
 
         return Model(applied, self, use_impl)
 
-    def _step(self, data, output_data, step):
+    def _step(self, data, inner_used, step):
         matrices = {k: data.field(k, self) for k in self.fields if
                     k in data.matrices}
-        new_matrices = {} if output_data is None else output_data.matrices
+        new_matrices = {} if inner_used is None else inner_used.matrices
         new_matrices.update(matrices)
         return data.updated(self.transformations(step), **new_matrices)
