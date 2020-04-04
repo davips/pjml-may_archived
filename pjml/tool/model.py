@@ -137,9 +137,10 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
                                               *self.args)
 
             # Check result type.
-            if not isinstance(output_data, (Data, Collection, type)):
+            isdata_or_collection = isinstance(output_data, AbstractData)
+            if not isdata_or_collection and output_data is not NoData:
                 raise Exception(
-                    f'{self.name()} does not handle {type(output_data)}!\n'
+                    f'{self.name} does not handle {type(output_data)}!\n'
                     f'{output_data}'
                 )
         except Exception as e:
