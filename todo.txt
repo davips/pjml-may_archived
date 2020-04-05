@@ -22,13 +22,16 @@
     aparece em vez de
     'NoData is not accepted by Binarize'?
 
-8) Incluir seed e versão no config
+8a) Incluir seed nos componentes [done]
+8b) Incluir seed nos redutores de CS (rnd, ...) [ ]
 
 9) Resolver problema do tempo (matar pipeline que passar o tempo permitido)
 
-10) Definir parametros default no CS e injetá-los no config durante init quando necessário
+10) Definir parametros default nos Param do CS
 
-11) Probabilidade dos nós do CS
+11) Injetar valores default no config durante init quando necessário
+
+12) Probabilidade dos nós do CS
     SelectCS(A, B, C, probs=[0.2, 0.35, 0.45])   # probs ou P ou ...?
     Node(children=[A, B, C], probs=[0.2, 0.35, 0.45])
     ConfigList(A, B, C, probs=[0.2, 0.35, 0.45])
@@ -36,15 +39,15 @@
     def choice(items, probs=None):
         ...
 
-12) Remover parametros inuteis do config (ex. 'test_size' junto com 'cv')
+13) Remover parametros inuteis do config (ex. 'test_size' junto com 'cv')
 
-13) Fazer mapa de hints para ir junto com falha de pipeline (failure={'message':'sdfsdf', 'hint':'dsffgg'})
+14) Fazer mapa de hints para ir junto com falha de pipeline (failure={'message':'sdfsdf', 'hint':'dsffgg'})
 
-14) Ressuscitar a PyMFE
+15) Ressuscitar a PyMFE
 
-15) AutoML baseado em programação genética.
+16) AutoML baseado em programação genética.
 
-
+17) Incluir versão no config
 
 ############# Ideias futuras #############
 
