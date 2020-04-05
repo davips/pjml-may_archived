@@ -1,9 +1,9 @@
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.minimalcontainer1 import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
 
 
-class ApplyUsing(NonConfigurableContainer1):
+class ApplyUsing(MinimalContainer1):
     """Run a 'use' step right after an 'apply' one.
 
     Useful to calculate training error in classifiers, which would otherwise

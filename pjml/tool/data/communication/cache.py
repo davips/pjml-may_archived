@@ -8,12 +8,12 @@ from pjdata.step.use import Use
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
-from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
+from pjml.tool.abc.container1 import Container1
 from pjml.tool.abc.singleton import NoModel
 from pjml.tool.abc.transformer import Transformer
 
 
-class Cache(ConfigurableContainer1, Storer):
+class Cache(Container1, Storer):
     def __new__(cls, *args, fields=None, engine="dump", settings=None,
                 transformers=None):
         """Shortcut to create a ConfigSpace."""
@@ -29,6 +29,7 @@ class Cache(ConfigurableContainer1, Storer):
         return ContainerCS(Cache.name, Cache.path, transformers, node)
 
     def __init__(self, *args, fields=None, engine="dump", settings=None,
+                 seed=0,
                  transformers=None):
         if transformers is None:
             transformers = args
@@ -38,7 +39,7 @@ class Cache(ConfigurableContainer1, Storer):
             settings = {}
         config = self._to_config(locals())
         del config['args']
-        super().__init__(config)
+        super().__init__(config, transformers)
 
         self.fields = fields
         self._set_storage(engine, settings)

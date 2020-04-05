@@ -2,11 +2,12 @@ from pjdata.finitecollection import FiniteCollection
 
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.containern import ContainerN
+from pjml.tool.abc.minimalcontainern import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model import ContainerModel
 
 
-class Multi(ContainerN):
+class Multi(MinimalContainerN):
     """Process each Data object from a collection with its respective
     transformer."""
 

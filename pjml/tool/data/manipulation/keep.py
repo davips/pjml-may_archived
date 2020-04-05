@@ -1,7 +1,7 @@
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
-from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
+from pjml.tool.abc.container1 import Container1
 
 # def keep(*args, engine="dump", settings=None, components=None):
 #     if components is None:
@@ -14,7 +14,7 @@ from pjml.tool.model import Model
 from pjml.tool.abc.transformer import Transformer
 
 
-class Keep(ConfigurableContainer1):
+class Keep(Container1):
     """Preserve original values of the given fields."""
 
     # TODO: implement __new__ to generate a CS
@@ -33,9 +33,7 @@ class Keep(ConfigurableContainer1):
             transformers = args
         if fields is None:
             fields = ['X', 'Y']
-        config = self._to_config(locals())
-        del config['args']
-        super().__init__(config)
+        super().__init__({'fields': fields}, transformers)
         self.fields = fields
 
     def _apply_impl(self, data):

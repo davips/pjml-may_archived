@@ -1,8 +1,7 @@
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
-from pjml.tool.abc.singleton import NoModel
+from pjml.tool.abc.minimalcontainer1 import MinimalContainer1
 
 
-class AlwaysApply(NonConfigurableContainer1):
+class AlwaysApply(MinimalContainer1):
     """Always 'apply' regardless of current step."""
 
     # TODO: implement __new__ to generate a CS
@@ -15,7 +14,7 @@ class AlwaysApply(NonConfigurableContainer1):
         return self.transformer.apply(data)
 
 
-class AlwaysUse(NonConfigurableContainer1):
+class AlwaysUse(MinimalContainer1):
     """Always 'use' regardless of current step."""
 
     # TODO: implement __new__ to generate a CS
