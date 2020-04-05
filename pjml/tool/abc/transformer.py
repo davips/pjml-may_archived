@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
-from pjdata.aux.identifyable import Identifyable
+from pjdata.mixin.identifyable import Identifyable
 from pjdata.aux.serialization import serialize, materialize
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
@@ -47,10 +47,6 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
         Printable.__init__(self, jsonable)
 
-        # TODO: we need to implement the random_state in the components
-        if not deterministic and 'seed' in config:
-            config['random_state'] = config.pop('seed')
-
         self.config = config
         self.deterministic = deterministic
 
@@ -83,7 +79,8 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
              'NoData' means 'pipeline alive, hoping to generate Data in
              the next transformer'.
          exit_on_error
-             Exit imediatly instead of just marking a failure inside Data object.
+             Exit imediatly instead of just marking a failure inside Data
+             object.
 
          Returns
          -------
@@ -148,14 +145,18 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         inside it."""
         return ConfigList(self)
 
-    def clone(self):
-        """Clone this transformer.
+    def updated(self, **kwargs):
+        """Clone this transformer, optionally replacing given params.
 
         Returns
         -------
         A ready to use transformer.
         """
-        return materialize(self.name, self.path, self.config)
+        config = self.config
+        if kwargs:
+            config = config.copy()
+            config.update(kwargs)
+        return materialize(self.name, self.path, config)
 
     @property
     @lru_cache()
@@ -241,10 +242,12 @@ class HeavyTransformer(Transformer, ABC):
     def apply(self, data: Data = NoData, exit_on_error=True):
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones:
-            return Model(self, data, data, use_impl=self._use_for_early_ended_pipeline)
+            return Model(self, data, data,
+                         use_impl=self._use_for_early_ended_pipeline)
 
         if data.failure:
-            return Model(self, data, data, use_impl=self._use_for_failed_pipeline)
+            return Model(self, data, data,
+                         use_impl=self._use_for_failed_pipeline)
 
         self._check_nodata(data)
 
@@ -265,10 +268,11 @@ class HeavyTransformer(Transformer, ABC):
                 raise Exception(f'{self.name} does not handle {type(model)}!')
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
+            applied = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(self, data, output_data, use_impl=self._use_for_failed_pipeline)
+            model = Model(self, data, applied,
+                          use_impl=self._use_for_failed_pipeline)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
@@ -282,7 +286,8 @@ class HeavyTransformer(Transformer, ABC):
 
     def _use_for_early_ended_pipeline(self, data, cause='failed'):
         raise Exception(
-            f"A {self.name} model from early ended pipelines during apply is not "
+            f"A {self.name} model from early ended pipelines during apply is "
+            f"not "
             f"usable!"
         )
 
@@ -323,10 +328,10 @@ class LightTransformer(Transformer, ABC):
                 raise Exception(f'{self.name} does not handle {type(model)}!')
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
+            applied = data.updated(
                 self.transformations('a'), failure=str(e)
             )
-            model = Model(self, output_data)
+            model = Model(self, applied)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
 

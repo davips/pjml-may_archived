@@ -1,9 +1,9 @@
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
 
 
-class ApplyUsing(NonConfigurableContainer1):
+class ApplyUsing(MinimalContainer1):
     """Run a 'use' step right after an 'apply' one.
 
     Useful to calculate training error in classifiers, which would otherwise
@@ -19,8 +19,8 @@ class ApplyUsing(NonConfigurableContainer1):
 
     def _apply_impl(self, data):
         model = self.transformer.apply(data, self._exit_on_error)
-        output_data = model.use(data, self._exit_on_error)
-        return model.updated(self, data_after_apply=output_data)
+        applied = model.use(data, self._exit_on_error)
+        return model.updated(self, data_after_apply=applied)
 
     def _use_impl(self, data, *args):
         pass

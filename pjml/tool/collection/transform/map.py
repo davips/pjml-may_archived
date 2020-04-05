@@ -1,12 +1,12 @@
 from pjdata.infinitecollection import InfiniteCollection
 
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model import ContainerModel
 
 
-class Map(NonConfigurableContainer1):
+class Map(MinimalContainer1):
     """Execute the same transformer for the entire collection."""
 
     def __new__(cls, *args, transformers=None):

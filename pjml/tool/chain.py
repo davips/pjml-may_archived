@@ -1,11 +1,12 @@
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.containern import ContainerN
+from pjml.tool.abc.minimalcontainer import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model import Model, ContainerModel
 from pjml.util import flatten
 
 
-class Chain(ContainerN):
+class Chain(MinimalContainerN):
     """Chain the execution of the given transformers.
 
     Each arg is a transformer. Optionally, a list of them can be passed as a

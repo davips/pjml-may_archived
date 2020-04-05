@@ -13,10 +13,10 @@ class Predictor(Algorithm, EnforceApply, ABC):
     Base class for classifiers, regressors, ... that implement fit/predict.
     """
 
-    def _apply_impl(self, data_apply):
+    def _apply_impl(self, data):
         sklearn_model = self.algorithm_factory()
-        sklearn_model.fit(*data_apply.Xy)
-        return Model(self, data_apply, None, sklearn_model)
+        sklearn_model.fit(*data.Xy)
+        return Model(self, data, None, sklearn_model)
 
     def _use_impl(self, data, sklearn_model=None):
         return data.updated(

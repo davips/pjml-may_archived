@@ -1,6 +1,9 @@
 from abc import ABC
+from functools import lru_cache
 
-from pjdata.aux.identifyable import Identifyable
+from pjdata.mixin.identifyable import Identifyable
+
+from pjdata.abc.abstractdata import AbstractData
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
@@ -9,43 +12,77 @@ from pjml.tool.abc.mixin.timers import Timers
 
 
 class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
+    """A possibly interpretable ML model able to make predictions, or,
+    more generally, a data transformation.
+
+    data_before_apply can be a data object or directly its uuid
+    """
+
     def __init__(self, transformer, data_before_apply,
                  data_after_apply, *args, use_impl=None):
         self.transformer = transformer
-        self._use_impl = use_impl if use_impl else self.transformer._use_impl
+        self._use_impl = self.transformer._use_impl if use_impl is None else \
+            use_impl
 
-        if data_before_apply:
+        if data_before_apply is None:
+            raise Exception('None data_before_apply, eh normal isso?')
+            # self._uuid_data_before_apply = Identifyable.nothing
+
+        if isinstance(data_before_apply, AbstractData):
             self._uuid_data_before_apply = data_before_apply.uuid
         else:
-            self._uuid_data_before_apply = Identifyable.none
+            self._uuid_data_before_apply = data_before_apply
 
         self._data_after_apply = data_after_apply
-        self._name = f'Model[{transformer.name}]'
         self.args = args
 
     def _uuid_impl(self):
         return 'm', self._uuid_data_before_apply + self.transformer.uuid
 
-    def updated(self, responsible, transformer=None,
+    def updated(self, transformer,
                 data_before_apply=None, data_after_apply=None,
                 args=None, use_impl=None):
+        return self._updated(transformer,
+                             data_before_apply, data_after_apply,
+                             args=args, use_impl=use_impl)
+
+    def _updated(self, transformer,
+                 data_before_apply=None, data_after_apply=None,
+                 models=None,
+                 args=None, use_impl=None):
+        # Update values.
         if transformer is None:
-            transformer = self.transformer
+            raise Exception('Transformer cannot be None!')
+        if data_before_apply is None:
+            data_before_apply = self._uuid_data_before_apply
         if data_after_apply is None:
             data_after_apply = self._data_after_apply
-        if use_impl is None:
-            use_impl = self._use_impl
         if args is None:
             args = self.args
-        model = Model(transformer, data_before_apply,
-                      data_after_apply, *args, use_impl=use_impl)
-        model._name = f'Model[{responsible.name}[{model._name}]]'
-        if data_before_apply is None:
-            model._uuid_data_before_apply = self._uuid_data_before_apply
-        return model
+        if use_impl is None:
+            use_impl = self._use_impl
 
+        # Handle ContainerModel specifics.
+        if isinstance(self, ContainerModel):
+            if models is None:
+                models = self.models
+            return ContainerModel(
+                transformer,
+                data_before_apply, data_after_apply,
+                models,
+                *args, use_impl=use_impl
+            )
+
+        return Model(
+            transformer,
+            data_before_apply, data_after_apply,
+            *args, use_impl=use_impl
+        )
+
+    @property
+    @lru_cache()
     def name(self):
-        return self._name
+        return f'Model[{self.transformer.name}]'
 
     @property
     def data(self):
@@ -98,19 +135,20 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             # dentro de
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
 
-            output_data = self._limit_by_time(self._use_impl,
-                                              data, self.transformer.max_time,
-                                              *self.args)
+            used = self._limit_by_time(self._use_impl,
+                                       data, self.transformer.max_time,
+                                       *self.args)
 
             # Check result type.
-            if not isinstance(output_data, (Data, Collection, type)):
+            isdata_or_collection = isinstance(used, AbstractData)
+            if not isdata_or_collection and used is not NoData:
                 raise Exception(
-                    f'{self.name()} does not handle {type(output_data)}!\n'
-                    f'{output_data}'
+                    f'{self.name} does not handle {type(used)}!\n'
+                    f'{used}'
                 )
         except Exception as e:
             self._handle_exception(e, exit_on_error)
-            output_data = data.updated(
+            used = data.updated(
                 self.transformations('u'), failure=str(e)
             )
 
@@ -121,7 +159,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         # TODO: check_history to guide implementers whenever they need to
         #  implement transformations()
 
-        return output_data
+        return used
 
     def transformations(self, step):
         return self.transformer.transformations(step)
@@ -141,24 +179,11 @@ class ContainerModel(Model):
 
         self.models = models
 
-    def updated(self, responsible, transformer=None,
+    def updated(self, transformer,
                 data_before_apply=None, data_after_apply=None,
-                models=None, args=None, use_impl=None):
-        if transformer is None:
-            transformer = self.transformer
-        if data_after_apply is None:
-            data_after_apply = self._data_after_apply
-        if use_impl is None:
-            use_impl = self._use_impl
-        if args is None:
-            args = self.args
-        if models is None:
-            models = self.models
-        model = ContainerModel(
-            transformer, data_before_apply,
-            data_after_apply, models, *args, use_impl=use_impl
-        )
-        model._name = f'Model[{responsible.name}[{model._name}]]'
-        if data_before_apply is None:
-            model._uuid_data_before_apply = self._uuid_data_before_apply
-        return model
+                models=None,
+                args=None, use_impl=None):
+        return self._updated(transformer,
+                             data_before_apply, data_after_apply,
+                             models=models,
+                             args=args, use_impl=use_impl)

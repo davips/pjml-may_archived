@@ -26,16 +26,16 @@ class Partition(HeavyTransformer):
             split(split_type, partitions, test_size, seed, fields)
         )
 
-    def _apply_impl(self, data_apply):
-        splitter_model = self.transformer.apply(data_apply)
+    def _apply_impl(self, data):
+        splitter_model = self.transformer.apply(data)
         applied = splitter_model.data.last_transformation_replaced(
             self.transformations('a')[0]
         )
 
-        return Model(self, data_apply, applied, splitter_model)
+        return Model(self, data, applied, splitter_model)
 
-    def _use_impl(self, data_use, splitter_model=None):
-        used = splitter_model.use(data_use)
+    def _use_impl(self, data, splitter_model=None):
+        used = splitter_model.use(data)
         return used.last_transformation_replaced(
             self.transformations('u')[0]
         )

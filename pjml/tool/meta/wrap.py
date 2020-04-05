@@ -1,11 +1,11 @@
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.config.description.cs.chaincs import ChainCS
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+
+from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
 from pjml.util import flatten
 
 
-class Wrap(NonConfigurableContainer1):
+class Wrap(MinimalContainer1):
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:

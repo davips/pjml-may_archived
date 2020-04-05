@@ -55,12 +55,12 @@ class Split(HeavyTransformer, FunctionInspector):
     def _apply_impl(self, data):
         zeros = numpy.zeros(data.field(self.fields[0], self).shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
-        output_data = self._use_impl(data, partitions[self.partition][0], step='a')
-        return Model(self, data, output_data, partitions[self.partition][1])
+        applied = self._use_impl(data, partitions[self.partition][0], step='a')
+        return Model(self, data, applied, partitions[self.partition][1])
 
-    def _use_impl(self, data_use, indices=None, step='u'):
-        new_dic = {f: data_use.field(f, self)[indices] for f in self.fields}
-        return data_use.updated(self.transformations(step), **new_dic)
+    def _use_impl(self, data, indices=None, step='u'):
+        new_dic = {f: data.field(f, self)[indices] for f in self.fields}
+        return data.updated(self.transformations(step), **new_dic)
 
     @classmethod
     def _cs_impl(cls):

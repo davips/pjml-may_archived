@@ -1,7 +1,7 @@
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
-from pjml.tool.abc.configurablecontainer1 import ConfigurableContainer1
+from pjml.tool.abc.container1 import Container1
 
 # def keep(*args, engine="dump", settings=None, components=None):
 #     if components is None:
@@ -14,7 +14,7 @@ from pjml.tool.model import Model
 from pjml.tool.abc.transformer import Transformer
 
 
-class Keep(ConfigurableContainer1):
+class Keep(Container1):
     """Preserve original values of the given fields."""
 
     # TODO: implement __new__ to generate a CS
@@ -33,25 +33,24 @@ class Keep(ConfigurableContainer1):
             transformers = args
         if fields is None:
             fields = ['X', 'Y']
-        config = self._to_config(locals())
-        del config['args']
-        super().__init__(config)
+        super().__init__({'fields': fields}, transformers, deterministic=True)
         self.fields = fields
 
-    def _apply_impl(self, data_apply):
-        model = self.transformer.apply(data_apply)
-        applied = self._step(data_apply, model.data, 'a')
+    def _apply_impl(self, data):
+        # TODO: port it to new schema
+        model = self.transformer.apply(data)
+        applied = self._step(data, model.data, 'a')
 
-        def use_impl(data_use):
-            output_data = model.use(data_use)
-            used = self._step(data_use, output_data, 'u')
+        def use_impl(data):
+            inner_used = model.use(data)
+            used = self._step(data, inner_used, 'u')
             return used
 
         return Model(applied, self, use_impl)
 
-    def _step(self, data, output_data, step):
+    def _step(self, data, inner_used, step):
         matrices = {k: data.field(k, self) for k in self.fields if
                     k in data.matrices}
-        new_matrices = {} if output_data is None else output_data.matrices
+        new_matrices = {} if inner_used is None else inner_used.matrices
         new_matrices.update(matrices)
         return data.updated(self.transformations(step), **new_matrices)

@@ -21,17 +21,22 @@ class SelectBest(Algorithm):
         "mutual_info_classif": mutual_info_classif
     }
 
-    def __init__(self, score_func, k_perc):
+    def __init__(self, score_func, k_perc, seed=0):
         sklearn_score = self.SCORE_FUNCTIONS[score_func]
 
-        def algorithm_factory(nfeatures):
+        def algorithm_factory(nfeatures, random_state):
+            if score_func == 'mutual_info_classif':
+                np.random.seed(random_state)
+
             return SelectKBest(
                 score_func=sklearn_score,
                 k=int(np.ceil(nfeatures * k_perc))
             )
 
-        config = {'score_func': score_func, 'k_perc': k_perc}
-        super().__init__(config, algorithm_factory)
+        config = {'score_func': score_func, 'k_perc': k_perc, 'seed': seed}
+        if score_func != 'mutual_info_classif':
+            del config['seed']
+        super().__init__(config, algorithm_factory, {})
 
     @classmethod
     def _cs_impl(cls):

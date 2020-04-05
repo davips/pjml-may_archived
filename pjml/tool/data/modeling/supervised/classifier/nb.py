@@ -15,12 +15,13 @@ class NB(Predictor):
 
     def __init__(self, distribution="gaussian"):
         if distribution == "gaussian":
-            algorithm_factory = partial(GaussianNB)
+            func = GaussianNB
         elif distribution == "bernoulli":
-            algorithm_factory = partial(BernoulliNB)
+            func = BernoulliNB
         else:
             raise Exception('Wrong distribution:', distribution)
-        super().__init__({'distribution': distribution}, algorithm_factory)
+        config = {'distribution': distribution}
+        super().__init__(config, func, {}, deterministic=True)
         self.distribution = distribution
 
     @classmethod

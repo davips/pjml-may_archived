@@ -45,12 +45,12 @@ class File(Invisible, NoDataHandler):
         super().__init__(config, deterministic=True)
         self.data = data
 
-    def _apply_impl(self, data_apply):
-        self._enforce_nodata(data_apply)
-        return Model(self, data_apply, self.data)
+    def _apply_impl(self, data):
+        self._enforce_nodata(data)
+        return Model(self, data, self.data)
 
-    def _use_impl(self, data_use, *args):
-        self._enforce_nodata(data_use)
+    def _use_impl(self, data, *args):
+        self._enforce_nodata(data)
         return self.data
 
     @classmethod

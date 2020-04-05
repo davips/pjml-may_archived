@@ -1,11 +1,11 @@
 from pjdata.data import NoData, Data
 from pjml.config.description.cs.containercs import ContainerCS
-from pjml.tool.abc.nonconfigurablecontainer1 import NonConfigurableContainer1
+from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer, LightTransformer
 from pjml.tool.model import Model
 
 
-class OnlyApply(NonConfigurableContainer1):
+class OnlyApply(MinimalContainer1):
     """Does nothing during 'apply'."""
 
     def __new__(cls, *args, transformers=None):
@@ -30,7 +30,7 @@ class OnlyApply(NonConfigurableContainer1):
         return LightTransformer.apply(self, data, exit_on_error)
 
 
-class OnlyUse(NonConfigurableContainer1):
+class OnlyUse(MinimalContainer1):
     """Does nothing during 'apply'."""
 
     def __new__(cls, *args, transformers=None):

@@ -10,13 +10,27 @@ from pjml.tool.abc.transformer import HeavyTransformer
 class Container(HeavyTransformer, NoDataHandler, ABC):
     """A container modifies 'transformer(s)'."""
 
-    def __init__(self, transformers):
+    def __init__(self, config, seed, transformers, deterministic):
         if not transformers:
             raise Exception(
                 f'A container ({self.name}) should have at least one '
                 f'transformer!')
-        super().__init__({'transformers': transformers})
-        self.transformers = transformers
+
+        # transformers=[Chain(A)] should appear as transformers=[A] in config.
+        from pjml.tool.chain import Chain
+        if len(transformers) == 1 and isinstance(transformers[0], Chain):
+            transformers = transformers[0].transformers
+
+        # Propagate seed.
+        self.transformers = []
+        for transformer in transformers:
+            if not ('seed' in transformer.config or transformer.deterministic):
+                transformer = transformer.updated(seed=seed)
+            self.transformers.append(transformer)
+
+        complete_config = {'transformers': self.transformers}
+        complete_config.update(config)
+        super().__init__(complete_config, deterministic=deterministic)
 
     @property
     @lru_cache()
