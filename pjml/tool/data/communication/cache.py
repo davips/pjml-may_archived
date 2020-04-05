@@ -39,7 +39,7 @@ class Cache(Container1, Storer):
             settings = {}
         config = self._to_config(locals())
         del config['args']
-        super().__init__(config, transformers)
+        super().__init__(config, transformers, seed, deterministic=True)
 
         self.fields = fields
         self._set_storage(engine, settings)

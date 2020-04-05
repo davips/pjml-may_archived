@@ -1,4 +1,4 @@
-from pjml.tool.abc.minimalcontainer1 import MinimalContainer1
+from pjml.tool.abc.minimalcontainer import MinimalContainer1
 
 
 class AlwaysApply(MinimalContainer1):

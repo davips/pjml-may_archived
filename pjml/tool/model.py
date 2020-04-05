@@ -21,14 +21,17 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     def __init__(self, transformer, data_before_apply,
                  data_after_apply, *args, use_impl=None):
         self.transformer = transformer
-        self._use_impl = use_impl if use_impl else self.transformer._use_impl
+        self._use_impl = self.transformer._use_impl if use_impl is None else \
+            use_impl
 
-        if data_before_apply:
-            self._uuid_data_before_apply = data_before_apply.uuid \
-                if isinstance(data_before_apply, AbstractData) \
-                else data_before_apply
+        if data_before_apply is None:
+            raise Exception('None data_before_apply, eh normal isso?')
+            # self._uuid_data_before_apply = Identifyable.nothing
+
+        if isinstance(data_before_apply, AbstractData):
+            self._uuid_data_before_apply = data_before_apply.uuid
         else:
-            self._uuid_data_before_apply = Identifyable.nothing
+            self._uuid_data_before_apply = data_before_apply
 
         self._data_after_apply = data_after_apply
         self.args = args
@@ -133,8 +136,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
 
             used = self._limit_by_time(self._use_impl,
-                                              data, self.transformer.max_time,
-                                              *self.args)
+                                       data, self.transformer.max_time,
+                                       *self.args)
 
             # Check result type.
             isdata_or_collection = isinstance(used, AbstractData)

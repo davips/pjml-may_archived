@@ -43,8 +43,8 @@ expr = Pipeline(
     Partition(),
     Map(
         Wrap(
-            # select(SelectBest),
-            ApplyUsing(select(DT)),
+            select(SelectBest),
+            ApplyUsing(select(DT, RF, NB)),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))

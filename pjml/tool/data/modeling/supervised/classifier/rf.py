@@ -1,6 +1,4 @@
-from functools import partial
 from numpy.random import uniform
-
 from sklearn.ensemble import RandomForestClassifier
 
 from pjml.config.description.cs.transformercs import TransformerCS
@@ -14,8 +12,7 @@ class RF(Predictor):
     """Random Forest."""
 
     def __init__(self, **kwargs):
-        algorithm_factory = partial(RandomForestClassifier, **kwargs)
-        super().__init__(kwargs, algorithm_factory)
+        super().__init__(kwargs, RandomForestClassifier)
 
     @classmethod
     def _cs_impl(cls):

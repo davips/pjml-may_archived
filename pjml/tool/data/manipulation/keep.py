@@ -33,7 +33,7 @@ class Keep(Container1):
             transformers = args
         if fields is None:
             fields = ['X', 'Y']
-        super().__init__({'fields': fields}, transformers)
+        super().__init__({'fields': fields}, transformers, deterministic=True)
         self.fields = fields
 
     def _apply_impl(self, data):

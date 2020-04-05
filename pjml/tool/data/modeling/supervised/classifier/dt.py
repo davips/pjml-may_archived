@@ -14,8 +14,7 @@ class DT(Predictor):
     """Decision Tree."""
 
     def __init__(self, **kwargs):
-        algorithm_factory = partial(DecisionTreeClassifier, **kwargs)
-        super().__init__(kwargs, algorithm_factory)
+        super().__init__(kwargs, DecisionTreeClassifier)
 
     @classmethod
     def _cs_impl(cls):

@@ -8,8 +8,8 @@ class Container1(Container, ABC):
 
     If more are given, they will be handled as a single Seq transformer."""
 
-    def __init__(self, config, transformers):
-        super().__init__(config, transformers)
+    def __init__(self, config, seed, transformers, deterministic):
+        super().__init__(config, seed, transformers, deterministic)
 
         # Implementation-wise, Container1(Chain(a,b,c)) is needed to make
         # Container1(a,b,c) possible.

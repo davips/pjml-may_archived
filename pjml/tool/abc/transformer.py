@@ -47,12 +47,6 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
         Printable.__init__(self, jsonable)
 
-        if not deterministic:
-            if 'seed' not in config:
-                config['seed'] = 0
-            # TODO: This only work for sklearn algs, not weka, MLR etc.
-            config['random_state'] = config.pop('seed')
-
         self.config = config
         self.deterministic = deterministic
 
@@ -151,14 +145,18 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         inside it."""
         return ConfigList(self)
 
-    def clone(self):
-        """Clone this transformer.
+    def updated(self, **kwargs):
+        """Clone this transformer, optionally replacing given params.
 
         Returns
         -------
         A ready to use transformer.
         """
-        return materialize(self.name, self.path, self.config)
+        config = self.config
+        if kwargs:
+            config = config.copy()
+            config.update(kwargs)
+        return materialize(self.name, self.path, config)
 
     @property
     @lru_cache()
