@@ -67,7 +67,7 @@
 
 5) Pessoalmente prefiro apply(), mas seria fit() mais palatável ao público geral? Fazer congresso Pajé para ver reação à API?
 
-
+6) Um IC poderia fazer um "ipython" pra rodar o pjml e parsear a saída de texto para collapsar/expandir o modo prettyprinting com o mouse.
 
 ########################## Apêndice ###############################
 
