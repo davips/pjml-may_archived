@@ -23,7 +23,7 @@ class Predictor(Algorithm, EnforceApply, ABC):
             z=sklearn_model.predict(data.X)
         )
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         if step == 'a':
             return []
         elif step == 'u':

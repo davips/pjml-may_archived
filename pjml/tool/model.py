@@ -114,12 +114,14 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
+        from pjdata.data import NoData
+
         data = self.data if own_data else data
 
         # Some data checking.
         if data and data.failure:
             return data
-        self._check_nodata(data)
+        self._check_nodata(data, self.transformer)
 
         # Detecting step.
         if data is None:
@@ -163,8 +165,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
 
         return used
 
-    def transformations(self, step):
-        return self.transformer.transformations(step)
+    def transformations(self, step, clean=True):
+        return self.transformer.transformations(step, clean)
 
 
 class ContainerModel(Model):

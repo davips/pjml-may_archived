@@ -17,7 +17,7 @@
 
 6) Cache []
 
-7) Por que a msg de erro
+7) Por que a msg de erro [done]
     'AttributeError: type object 'NoData' has no attribute 'Xt''
     aparece em vez de
     'NoData is not accepted by Binarize'?
@@ -74,6 +74,11 @@
 5) Pessoalmente prefiro apply(), mas seria fit() mais palatável ao público geral? Fazer congresso Pajé para ver reação à API?
 
 6) Um IC poderia fazer um "ipython" pra rodar o pjml e parsear a saída de texto para collapsar/expandir o modo prettyprinting com o mouse.
+
+7) Para cada Param deveria ser possível estipular uma lista de microotimizadores, para que o automl selecione o melhor e delegue para ele a tarefa de tunar o parametro.
+    Exemplo: Estou vendo de puxar do Marcos Bedo do RJ alguns critérios de determinação do nr. ideal de atributos do PCA (ou qualquer seletor)
+    "Microotimizadores" (heurísticas):
+        Random, Scree-Plot %,	Scree-Plot GAP,	Kaiser Guttman,	Broken Stick e Rho-Score.
 
 ########################## Apêndice ###############################
 

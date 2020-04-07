@@ -1,15 +1,17 @@
-from pjml.tool.abc.configless import ConfigLess
+from pjml.tool.abc.configless import LightConfigLess
+from pjml.tool.model import Model
 
 
-class Sink(ConfigLess):
+class Sink(LightConfigLess):
     """End of Data object."""
-    from pjdata.data import NoData
 
     def __init__(self):
         super().__init__()
 
     def _apply_impl(self, data):
-        return NoData
+        from pjdata.data import NoData
+        return Model(self, data, NoData)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
+        from pjdata.data import NoData
         return NoData

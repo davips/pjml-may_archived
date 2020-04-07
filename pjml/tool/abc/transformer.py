@@ -101,7 +101,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         """Expected transformation described as a list of Transformation
         objects.
 

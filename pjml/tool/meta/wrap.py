@@ -2,7 +2,6 @@ from pjml.config.description.cs.containercs import ContainerCS
 
 from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
-from pjml.util import flatten
 
 
 class Wrap(MinimalContainer1):
@@ -24,5 +23,5 @@ class Wrap(MinimalContainer1):
     def wrapped(self):
         return self
 
-    def transformations(self, step):
-        return self.transformer.transformations(step)
+    def transformations(self, step, clean=True):
+        return self.transformer.transformations(step, clean)

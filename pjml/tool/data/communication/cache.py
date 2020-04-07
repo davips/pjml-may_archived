@@ -144,7 +144,7 @@ class Cache(Container1, Storer):
 
         return output_data
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         """Cache produce no transformations by itself , so it needs to
         override the list of expected transformations."""
-        return self.transformer.transformations(step)
+        return self.transformer.transformations(step, clean)

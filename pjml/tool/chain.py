@@ -1,6 +1,9 @@
+from itertools import dropwhile
+
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.minimalcontainer import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.data.flow.sink import Sink
 from pjml.tool.model import ContainerModel
 from pjml.util import flatten
 
@@ -42,11 +45,22 @@ class Chain(MinimalContainerN):
                 break
         return data
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         lst = []
-        for tr in self.transformers:
-            lst.append(tr.transformations(step))
-        return flatten(lst)
+        for transformer in self.transformers:
+            transformations = transformer.transformations(step, clean=False)
+            lst.append(transformations)
+        result = flatten(lst)
+        if clean:
+            lst = []
+            previous = None
+            for transformation in result:
+                if previous and previous.name == "Sink":
+                    lst = []
+                lst.append(transformation)
+                previous = transformation
+            result = lst
+        return result
 
     def __str__(self, depth=''):
         if not self.pretty_printing:

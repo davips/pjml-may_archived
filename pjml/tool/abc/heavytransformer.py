@@ -30,7 +30,7 @@ class HeavyTransformer(Transformer, ABC):
             return Model(self, data, data,
                          use_impl=self._use_for_failed_pipeline)
 
-        self._check_nodata(data)
+        self._check_nodata(data, self)
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

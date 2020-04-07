@@ -18,7 +18,7 @@ class LightTransformer(Transformer, ABC):
         if data is None or collection_all_nones or data.failure:
             return Model(self, data, data)
 
-        self._check_nodata(data)
+        self._check_nodata(data, self)
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

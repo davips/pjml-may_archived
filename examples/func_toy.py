@@ -1,5 +1,6 @@
 from pjdata.mixin.printable import Printable, disable_global_pretty_printing
 from pjml.pipeline import Pipeline
+from pjml.tool.chain import Chain
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map
@@ -10,6 +11,7 @@ from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
 from pjml.tool.data.flow.onlyoperation import OnlyApply, OnlyUse
+from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.manipulation.copy import Copy
 from pjml.tool.data.modeling.supervised.classifier.rf import RF
 from pjml.tool.data.processing.feature.binarize import Binarize
@@ -18,11 +20,12 @@ from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
-print('Desligando pretty...')
-disable_global_pretty_printing()
+# disable_global_pretty_printing()
 
 print('Construindo...')
 pipe = Pipeline(
+    OnlyApply(File("iris.arff")),
+    OnlyApply(Sink()),
     OnlyApply(File("iris.arff")),
     # Binarize(),
     ApplyUsing(RF()),
@@ -64,6 +67,6 @@ print('Applying...')
 model = pipe.apply()
 for t in model.data.history:
     print(t)
-
+# exit()
 print('Using...')
 d2 = model.use(File("iris.arff").apply().data)

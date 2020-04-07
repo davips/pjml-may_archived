@@ -5,7 +5,6 @@ from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.invisible import Invisible
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 
-
 # Precisa herdar de Invisible, pois o mesmo Data pode vir de diferentes
 # caminhos de arquivo (File) ou servidores (Source) e essas informações são
 # irrelevantes para reprodutibilidade. Herdando de Invisible, o histórico é [].
@@ -54,6 +53,3 @@ class File(Invisible, NoDataHandler):
             'description': FixedP('No description.')
         }
         return TransformerCS(Node(params=params))
-
-    def transformations(self, step):
-        return []

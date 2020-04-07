@@ -20,7 +20,7 @@ class Resampler(LightTransformer, ABC):
         applied = data.updated(self.transformations('a'), X=X, y=y)
         return Model(self, data, applied)
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         if step == 'a':
             return [Transformation(self, step)]
         else:

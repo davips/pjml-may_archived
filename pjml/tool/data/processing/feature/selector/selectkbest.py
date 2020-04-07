@@ -61,7 +61,7 @@ class SelectBest(Algorithm):
         X_new = sklearn_model.transform(data.X)
         return data.updated(self.transformations('u'), X=X_new)
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         if step == 'a':
             return []
         elif step == 'u':

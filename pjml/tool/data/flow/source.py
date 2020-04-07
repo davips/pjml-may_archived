@@ -2,18 +2,13 @@ from cururu.storer import Storer
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
-from pjml.tool.abc.invisible import Invisible
+from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.model import Model
 
 
-class Source(Invisible, NoDataHandler, Storer):
-    """Source of Data object from a storage like MySQL, Pickle files, ...
-
-        TODO: create a special case for Source/File (HistoryKiller class)
-            in Transformer history checker?
-            Todo container precisar testar por HistoryKiller?
-    """
+class Source(LightTransformer, NoDataHandler, Storer):
+    """Source of Data object from a storage like MySQL, Pickle files, ... """
 
     def __init__(self, name, fields=None, engine='dump', settings=None):
         if fields is None:
@@ -35,7 +30,7 @@ class Source(Invisible, NoDataHandler, Storer):
         data = self.storage.fetch(phantom_data, fields=fields)
         if data is None:
             raise Exception('Dataset not found: ', phantom_data.name)
-        self.model = self.data = data
+        self.data = data
         super().__init__(config, self.data, deterministic=True)
 
     def _apply_impl(self, data):
@@ -43,18 +38,21 @@ class Source(Invisible, NoDataHandler, Storer):
         if data is not NoData:
             raise Exception('Source component needs to be applied with NoData. '
                             'Use Sink before it if needed.')
-        return self.data
+        return Model(self, NoData, self.data)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         from pjdata.data import NoData
         if data is not NoData:
             raise Exception('Source component needs to be used with NoData. '
                             'Use Sink before it if needed.')
         return self.data
 
+    def transformations(self, step, clean=True):
+        return self.data.history.transformations
+
     @classmethod
     def _cs_impl(cls):
         params = {
             'name': FixedP('iris_OFÆdñO')
         }
-        return TransformerCS(Node(params=params))
+        return TransformerCS(nodes=[Node(params=params)])

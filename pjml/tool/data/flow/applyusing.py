@@ -20,10 +20,10 @@ class ApplyUsing(MinimalContainer1):
     def _apply_impl(self, data):
         model = self.transformer.apply(data, self._exit_on_error)
         applied = model.use(data, self._exit_on_error)
-        return model.updated(self, data_after_apply=applied)
+        return model.updated(self.transformer, data_after_apply=applied)
 
     def _use_impl(self, data, *args):
         pass
 
-    def transformations(self, step):
-        return self.transformer.transformations('u')
+    def transformations(self, step, clean=True):
+        return self.transformer.transformations('u', clean)

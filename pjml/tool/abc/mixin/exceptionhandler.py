@@ -72,10 +72,10 @@ class ExceptionHandler:
             print(' just a known pipeline failure.'
                   'Will be put onto Data object.')
 
-    def _check_nodata(self, data):
+    def _check_nodata(self, data, transformer):
         from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
         from pjdata.data import NoData
-        if data is NoData and not isinstance(self, NoDataHandler):
+        if data is NoData and not isinstance(transformer, NoDataHandler):
             raise Exception(f'NoData is not accepted by {self.name}!')
 
     def _check_history(self, datain, dataout, transformations):
@@ -83,7 +83,7 @@ class ExceptionHandler:
         _transformations() implementation provided by the current
         component."""
         from pjdata.data import NoData
-        if isinstance(dataout, NoData) or dataout is None:
+        if dataout is NoData or dataout is None:
             return dataout
 
         recent = dataout.history.transformations[datain.history.size:]

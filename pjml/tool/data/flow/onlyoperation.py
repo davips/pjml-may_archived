@@ -20,7 +20,7 @@ class OnlyApply(MinimalContainer1):
 
     def _apply_impl(self, data):
         model = self.transformer.apply(data)
-        return model.updated(self, use_impl=self._use_impl)
+        return model.updated(self.transformer, use_impl=self._use_impl)
 
     def _use_impl(self, data, *args):
         return data
@@ -30,9 +30,9 @@ class OnlyApply(MinimalContainer1):
         # OnlyApply is less harsh than a real HeavyTransformer.
         return LightTransformer.apply(self, data, exit_on_error)
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         if step == 'a':
-            return self.transformer.transformations(step)
+            return self.transformer.transformations(step, clean)
         else:
             return []
 
@@ -50,7 +50,7 @@ class OnlyUse(MinimalContainer1):
         return ContainerCS(OnlyUse.name, OnlyUse.path, transformers)
 
     def _apply_impl(self, data):
-        return Model(self, data, data)
+        return Model(self.transformer, data, data)
 
     def _use_impl(self, data, *args):
         return self.transformer._use_impl(data, *args)
@@ -60,8 +60,8 @@ class OnlyUse(MinimalContainer1):
         # OnlyUse is less harsh than a real HeavyTransformer.
         return LightTransformer.apply(self, data, exit_on_error)
 
-    def transformations(self, step):
+    def transformations(self, step, clean=True):
         if step == 'u':
-            return self.transformer.transformations(step)
+            return self.transformer.transformations(step, clean)
         else:
             return []
