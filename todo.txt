@@ -1,7 +1,7 @@
 ############# Alertas #############
 1) Sempre que a porquice do sklearn exigir setar random_state globalmente,
     precisamos fazer isso imediatamente antes da chamada que uso o gerador de números.
-    Exemplo SelectKBest com mutual_info_classif.
+    Exemplo: SelectKBest com mutual_info_classif.
     É impossível setar o random_state do mutual_info_classif, sem ser globalmente.
 
 ############# Prioridades #############
@@ -13,7 +13,7 @@
 
 4) Ressuscitar o Random AutoML [Done]
 
-5) Historico []
+5) Historico [Done]
 
 6) Cache []
 
