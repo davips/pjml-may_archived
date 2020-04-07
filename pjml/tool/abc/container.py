@@ -2,8 +2,8 @@ from abc import ABC
 from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
+from pjml.tool.abc.heavytransformer import HeavyTransformer
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
-from pjml.tool.abc.transformer import HeavyTransformer
 
 
 class Container(HeavyTransformer, NoDataHandler, ABC):

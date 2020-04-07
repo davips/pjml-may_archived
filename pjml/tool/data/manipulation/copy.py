@@ -1,5 +1,5 @@
+from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 
 
@@ -28,7 +28,8 @@ class Copy(LightTransformer, FunctionInspector):
         self.from_field, self.to_field = from_field, to_field
 
     def _apply_impl(self, data):
-        return Model(self, data, self._use_impl(data, step='a'))
+        applied = self._use_impl(data, step='a')
+        return Model(self, data, applied)
 
     def _use_impl(self, data, step='u'):
         for field in [self.from_field]:

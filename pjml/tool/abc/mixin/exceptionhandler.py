@@ -1,9 +1,9 @@
-import traceback
 from abc import abstractmethod
 
 import numpy
 
 from pjdata.aux.decorator import classproperty
+from pjdata.history import History
 
 
 class ExceptionHandler:
@@ -44,9 +44,13 @@ class ExceptionHandler:
     def _handle_exception(self, e, exit_on_error):
         """Pipeline failure is different from python error."""
         if isinstance(self.name, str):
-            print(f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: {self.name}...\n')
+            print(
+                f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: '
+                f'{self.name}...\n')
         else:
-            print(f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: {self.name()}...\n')
+            print(
+                f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: '
+                f'{self.name()}...\n')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
 
             # HINTS
@@ -57,7 +61,8 @@ class ExceptionHandler:
                       f'{Binarize.name} component')
 
             # end of handling
-            print('TODO: is exit_on_error implemented? exit_on_error=', exit_on_error)
+            print('TODO: is exit_on_error implemented? exit_on_error=',
+                  exit_on_error)
             # if exit_on_error:
             #     traceback.print_exc()
             #     exit(0)
@@ -73,6 +78,31 @@ class ExceptionHandler:
         if data is NoData and not isinstance(self, NoDataHandler):
             raise Exception(f'NoData is not accepted by {self.name}!')
 
+    def _check_history(self, datain, dataout, transformations):
+        """Check consistency between resulting Data object and
+        _transformations() implementation provided by the current
+        component."""
+        from pjdata.data import NoData
+        if isinstance(dataout, NoData) or dataout is None:
+            return dataout
+
+        recent = dataout.history.transformations[datain.history.size:]
+        transfs = transformations
+
+        if History(recent).id != History(transfs).id:
+            print('\nTransformed Data object recent history:::::::::::::::::\n'
+                  f'{recent}\n'
+                  f'Expected transformations::::::::::::::::::::::::::::::::\n'
+                  f'{transfs}\n'
+                  'Transformed Data object history does not '
+                  'match expected transformation list.\n'
+                  'Please override self._transformations() '
+                  f'method for {self.name} or extend a proper parent class '
+                  f'like \'Invisible\'.')
+            raise BadComponent(f'Inconsistent Data object history!')
+
+        return dataout
+
 
 class MissingModel(Exception):
     pass
@@ -80,12 +110,6 @@ class MissingModel(Exception):
 
 class BadComponent(Exception):
     pass
-
-
-
-
-
-
 
 # import traceback
 # from abc import abstractmethod

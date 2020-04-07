@@ -1,6 +1,6 @@
 from abc import ABC
 
-from pjml.tool.abc.transformer import LightTransformer
+from pjml.tool.abc.lighttransformer import LightTransformer
 
 
 class Invisible(LightTransformer, ABC):

@@ -1,7 +1,8 @@
 from abc import ABC
 
 from pjml.config.description.cs.emptycs import EmptyCS
-from pjml.tool.abc.transformer import HeavyTransformer, LightTransformer
+from pjml.tool.abc.heavytransformer import HeavyTransformer
+from pjml.tool.abc.lighttransformer import LightTransformer
 
 
 class HeavyConfigLess(HeavyTransformer, ABC):

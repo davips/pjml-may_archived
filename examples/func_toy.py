@@ -64,6 +64,6 @@ print('Applying...')
 model = pipe.apply()
 for t in model.data.history:
     print(t)
-exit()
+
 print('Using...')
 d2 = model.use(File("iris.arff").apply().data)

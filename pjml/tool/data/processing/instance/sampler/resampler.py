@@ -1,7 +1,7 @@
 from abc import ABC
 
 from pjdata.step.transformation import Transformation
-from pjml.tool.abc.transformer import LightTransformer
+from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.model import Model
 
 

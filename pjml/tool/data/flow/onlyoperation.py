@@ -1,12 +1,13 @@
 from pjdata.data import Data
 from pjml.config.description.cs.containercs import ContainerCS
+from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.minimalcontainer import MinimalContainer1
-from pjml.tool.abc.transformer import Transformer, LightTransformer
+from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model import Model
 
 
 class OnlyApply(MinimalContainer1):
-    """Does nothing during 'apply'."""
+    """Does nothing during 'use'."""
     from pjdata.data import NoData
 
     def __new__(cls, *args, transformers=None):
@@ -25,10 +26,15 @@ class OnlyApply(MinimalContainer1):
         return data
 
     def apply(self, data: Data = NoData, exit_on_error=True):
-        # We are using the 'use()' method from LightTransformer
-        # since OnlyApply transforms HeavyTransformer
-        # in LightTransformer.
+        # We are using here the 'apply()' method from LightTransformer since
+        # OnlyApply is less harsh than a real HeavyTransformer.
         return LightTransformer.apply(self, data, exit_on_error)
+
+    def transformations(self, step):
+        if step == 'a':
+            return self.transformer.transformations(step)
+        else:
+            return []
 
 
 class OnlyUse(MinimalContainer1):
@@ -50,7 +56,12 @@ class OnlyUse(MinimalContainer1):
         return self.transformer._use_impl(data, *args)
 
     def apply(self, data: Data = NoData, exit_on_error=True):
-        # We are using the 'use()' method from LightTransformer
-        # since OnlyApply transforms HeavyTransformer
-        # in LightTransformer.
+        # We are using here the 'apply()' method from LightTransformer since
+        # OnlyUse is less harsh than a real HeavyTransformer.
         return LightTransformer.apply(self, data, exit_on_error)
+
+    def transformations(self, step):
+        if step == 'u':
+            return self.transformer.transformations(step)
+        else:
+            return []

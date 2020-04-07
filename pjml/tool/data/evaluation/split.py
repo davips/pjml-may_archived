@@ -6,8 +6,8 @@ from sklearn.model_selection import StratifiedShuffleSplit as HO, \
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import IntP
+from pjml.tool.abc.heavytransformer import HeavyTransformer
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.abc.transformer import HeavyTransformer
 from pjml.tool.model import Model
 
 

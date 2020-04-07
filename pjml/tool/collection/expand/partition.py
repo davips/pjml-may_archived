@@ -1,4 +1,4 @@
-from pjml.tool.abc.transformer import HeavyTransformer
+from pjml.tool.abc.heavytransformer import HeavyTransformer
 from pjml.tool.chain import Chain
 from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.model import Model

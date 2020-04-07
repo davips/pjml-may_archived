@@ -1,7 +1,7 @@
 from abc import ABC
 from functools import partial
 
-from pjml.tool.abc.transformer import HeavyTransformer
+from pjml.tool.abc.heavytransformer import HeavyTransformer
 
 
 class Algorithm(HeavyTransformer, ABC):

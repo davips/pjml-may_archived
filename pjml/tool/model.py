@@ -139,6 +139,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             used = self._limit_by_time(self._use_impl,
                                        data, self.transformer.max_time,
                                        *self.args)
+            self._check_history(data, used, self.transformations('u'))
 
             # Check result type.
             isdata_or_collection = isinstance(used, AbstractData)
