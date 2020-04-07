@@ -28,27 +28,33 @@ class Split(HeavyTransformer, FunctionInspector):
     """
 
     def __init__(self, split_type='holdout', partitions=2, partition=0,
-                 test=0.3, seed=0, fields=None):
+                 test_size=0.3, seed=0, fields=None):
         if fields is None:
             fields = ['X', 'Y']
+        config = self._to_config(locals())
 
         # Using 'self.algorithm' here to avoid 'algorithm' inside config.
         if split_type == "cv":
             self.algorithm = SKF(shuffle=True, n_splits=partitions,
                                  random_state=seed)
+            del config['test_size']
         elif split_type == "loo":
             self.algorithm = LOO()
+            del config['partitions']
+            del config['partition']
+            del config['test_size']
+            del config['seed']
         elif split_type == 'holdout':
-            self.algorithm = HO(n_splits=partitions, test_size=test,
+            self.algorithm = HO(n_splits=partitions, test_size=test_size,
                                 random_state=seed)
         else:
             raise Exception('Wrong split_type: ', split_type)
 
-        super().__init__(self._to_config(locals()))
+        super().__init__(config)
 
         self.partitions = partitions
         self.partition = partition
-        self.test = test
+        self.test_size = test_size
         self.seed = seed
         self.fields = fields
 

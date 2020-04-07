@@ -19,7 +19,22 @@ class Partition(HeavyTransformer):
                  fields=None):
         if fields is None:
             fields = ['X', 'Y']
-        super().__init__(self._to_config(locals()))
+        config = self._to_config(locals())
+
+        # config cleaning.
+        if split_type == "cv":
+            del config['test_size']
+        elif split_type == "loo":
+            del config['partitions']
+            del config['partition']
+            del config['test']
+            del config['seed']
+        elif split_type == 'holdout':
+            pass
+        else:
+            raise Exception('Wrong split_type: ', split_type)
+
+        super().__init__(config)
         from pjml.macro import split
         self.transformer = Chain(
             Expand(),

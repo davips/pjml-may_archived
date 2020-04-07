@@ -29,7 +29,7 @@
 
 10) Definir parametros default nos Param do CS
 
-11) Injetar valores default no config durante init quando necessário
+11) Injetar valores default no config durante init quando usuário não prover alguns parâmetros
 
 12) Probabilidade dos nós do CS
     SelectCS(A, B, C, probs=[0.2, 0.35, 0.45])   # probs ou P ou ...?
@@ -39,7 +39,10 @@
     def choice(items, probs=None):
         ...
 
-13) Remover parametros inuteis do config (ex. 'test_size' junto com 'cv')
+13a) Remover parametros sem sentido do config [done]
+    Split, Partition
+
+13b) Fazer o mesmo para todos componentes especialmente quando defaults forem injetados?
 
 14) Fazer mapa de hints para ir junto com falha de pipeline (failure={'message':'sdfsdf', 'hint':'dsffgg'})
 
