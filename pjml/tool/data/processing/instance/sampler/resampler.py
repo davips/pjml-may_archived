@@ -1,7 +1,6 @@
 from abc import ABC
 
 from pjdata.step.transformation import Transformation
-from pjml.tool.abc.mixin.exceptionhandler import BadComponent
 from pjml.tool.abc.transformer import LightTransformer
 from pjml.tool.model import Model
 

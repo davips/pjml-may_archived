@@ -2,10 +2,8 @@ from abc import ABC
 from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
-
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.transformer import HeavyTransformer
-from pjml.util import flatten
 
 
 class Container(HeavyTransformer, NoDataHandler, ABC):
@@ -56,7 +54,7 @@ class Container(HeavyTransformer, NoDataHandler, ABC):
         raise Exception(f'Wrong calling of {cls.name}._cs_impl!')
 
     def __str__(self, depth=''):
-        if not self._pretty_printing:
+        if not self.pretty_printing:
             return super().__str__()
 
         inner = []

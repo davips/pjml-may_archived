@@ -1,5 +1,4 @@
 from cururu.storer import Storer
-from pjdata.data import NoData
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
@@ -40,12 +39,14 @@ class Source(Invisible, NoDataHandler, Storer):
         super().__init__(config, self.data, deterministic=True)
 
     def _apply_impl(self, data):
+        from pjdata.data import NoData
         if data is not NoData:
             raise Exception('Source component needs to be applied with NoData. '
                             'Use Sink before it if needed.')
         return self.data
 
     def _use_impl(self, data):
+        from pjdata.data import NoData
         if data is not NoData:
             raise Exception('Source component needs to be used with NoData. '
                             'Use Sink before it if needed.')

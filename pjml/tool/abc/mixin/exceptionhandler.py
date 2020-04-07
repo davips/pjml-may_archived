@@ -4,7 +4,6 @@ from abc import abstractmethod
 import numpy
 
 from pjdata.aux.decorator import classproperty
-from pjdata.data import NoData
 
 
 class ExceptionHandler:
@@ -70,6 +69,7 @@ class ExceptionHandler:
 
     def _check_nodata(self, data):
         from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
+        from pjdata.data import NoData
         if data is NoData and not isinstance(self, NoDataHandler):
             raise Exception(f'NoData is not accepted by {self.name}!')
 

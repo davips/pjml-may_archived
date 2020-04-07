@@ -1,7 +1,5 @@
 import traceback
 
-from pjdata.data import NoData
-
 from cururu.storer import Storer
 from pjdata.step.apply import Apply
 from pjdata.step.use import Use

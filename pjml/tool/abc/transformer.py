@@ -5,7 +5,7 @@ from pjdata.aux.decorator import classproperty
 from pjdata.mixin.identifyable import Identifyable
 from pjdata.aux.serialization import serialize, materialize
 from pjdata.collection import Collection
-from pjdata.data import NoData, Data
+from pjdata.data import Data
 from pjdata.mixin.printable import Printable
 from pjdata.step.transformation import Transformation
 
@@ -236,6 +236,8 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
 
 
 class HeavyTransformer(Transformer, ABC):
+    from pjdata.data import NoData
+
     def apply(self, data: Data = NoData, exit_on_error=True):
         collection_all_nones = isinstance(data, Collection) and data.all_nones
         if data is None or collection_all_nones:
@@ -296,6 +298,7 @@ class HeavyTransformer(Transformer, ABC):
 
 
 class LightTransformer(Transformer, ABC):
+    from pjdata.data import NoData
 
     def _use_impl(self, data, *args):
         """Each component should implement its core 'apply' functionality."""

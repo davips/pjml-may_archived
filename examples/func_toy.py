@@ -1,3 +1,4 @@
+from pjdata.mixin.printable import Printable, disable_global_pretty_printing
 from pjml.pipeline import Pipeline
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
@@ -17,6 +18,9 @@ from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
+print('Desligando pretty...')
+disable_global_pretty_printing()
+
 print('Construindo...')
 pipe = Pipeline(
     OnlyApply(File("iris.arff")),
@@ -34,20 +38,6 @@ pipe = Pipeline(
     ),
     Summ(function='mean_std'),
     Report('$S'),
-
-    # ApplyUsing(RF()),
-    # Partition(),
-    # Map(
-    #     Wrap(
-    #         MinMax(),
-    #         ApplyUsing(RF()),
-    #         OnlyApply(Metric(functions=['length'])),
-    #         OnlyUse(Metric(functions=['accuracy', 'error'])),
-    #         # AfterUse(Metric(function=['diversity']))
-    #     ),
-    # ),
-    # Summ(function='mean_std'),
-    # Report('$S'),
 )
 
 # pipe = Pipeline(
@@ -72,8 +62,8 @@ pipe = Pipeline(
 
 print('Applying...')
 model = pipe.apply()
-
-print('DDDDDDD\n', model.data.history)
+for t in model.data.history:
+    print(t)
 exit()
 print('Using...')
 d2 = model.use(File("iris.arff").apply().data)

@@ -5,7 +5,7 @@ from pjdata.mixin.identifyable import Identifyable
 
 from pjdata.abc.abstractdata import AbstractData
 from pjdata.collection import Collection
-from pjdata.data import NoData, Data
+from pjdata.data import Data
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.mixin.timers import Timers
@@ -17,6 +17,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
 
     data_before_apply can be a data object or directly its uuid
     """
+    from pjdata.data import NoData
 
     def __init__(self, transformer, data_before_apply,
                  data_after_apply, *args, use_impl=None):

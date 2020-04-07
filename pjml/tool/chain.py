@@ -1,8 +1,7 @@
 from pjml.config.description.cs.chaincs import ChainCS
-from pjml.tool.abc.containern import ContainerN
 from pjml.tool.abc.minimalcontainer import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import Model, ContainerModel
+from pjml.tool.model import ContainerModel
 from pjml.util import flatten
 
 
@@ -50,7 +49,7 @@ class Chain(MinimalContainerN):
         return flatten(lst)
 
     def __str__(self, depth=''):
-        if not self._pretty_printing:
+        if not self.pretty_printing:
             return super().__str__()
 
         txts = []

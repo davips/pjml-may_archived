@@ -1,4 +1,4 @@
-from pjdata.data import NoData, Data
+from pjdata.data import Data
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer, LightTransformer
@@ -7,6 +7,7 @@ from pjml.tool.model import Model
 
 class OnlyApply(MinimalContainer1):
     """Does nothing during 'apply'."""
+    from pjdata.data import NoData
 
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
@@ -32,6 +33,7 @@ class OnlyApply(MinimalContainer1):
 
 class OnlyUse(MinimalContainer1):
     """Does nothing during 'apply'."""
+    from pjdata.data import NoData
 
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
