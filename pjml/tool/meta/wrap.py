@@ -25,7 +25,4 @@ class Wrap(MinimalContainer1):
         return self
 
     def transformations(self, step):
-        lst = []
-        for tr in self.transformers:
-            lst.append(tr.transformations(step))
-        return flatten(lst)
+        return self.transformer.transformations(step)
