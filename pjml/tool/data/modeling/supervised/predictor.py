@@ -1,7 +1,6 @@
 from abc import ABC
 
-from pjdata.step.use import Use
-
+from pjdata.step.transformation import Transformation
 from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
 from pjml.tool.data.algorithm import Algorithm
@@ -20,7 +19,7 @@ class Predictor(Algorithm, EnforceApply, ABC):
 
     def _use_impl(self, data, sklearn_model=None):
         return data.updated(
-            self.transformations('a'),
+            self.transformations('u'),
             z=sklearn_model.predict(data.X)
         )
 
@@ -28,6 +27,6 @@ class Predictor(Algorithm, EnforceApply, ABC):
         if step == 'a':
             return []
         elif step == 'u':
-            return [Use(self, 0)]
+            return [Transformation(self, step)]
         else:
             raise BadComponent('Wrong current step:', step)

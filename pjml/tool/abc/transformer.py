@@ -7,8 +7,7 @@ from pjdata.aux.serialization import serialize, materialize
 from pjdata.collection import Collection
 from pjdata.data import NoData, Data
 from pjdata.mixin.printable import Printable
-from pjdata.step.apply import Apply
-from pjdata.step.use import Use
+from pjdata.step.transformation import Transformation
 
 from pjml.config.description.cs.configlist import ConfigList
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent, ExceptionHandler
@@ -44,7 +43,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
     """
 
     def __init__(self, config, deterministic=False, max_time=3600):
-        jsonable = {'id': f'{self.name}@{self.path}', 'config': config}
+        jsonable = {'_id': f'{self.name}@{self.path}', 'config': config}
         Printable.__init__(self, jsonable)
 
         self.config = config
@@ -107,16 +106,14 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
     def transformations(self, step):
-        """Ongoing transformation described as a list of Transformation
+        """Expected transformation described as a list of Transformation
         objects.
 
         Child classes should override this method to perform non-atomic or
         non-trivial transformations.
         A missing implementation will be detected during apply/use."""
-        if step == 'a':
-            return [Apply(self)]
-        elif step == 'u':
-            return [Use(self, 0)]
+        if step in 'au':
+            return [Transformation(self, step)]
         else:
             raise BadComponent('Wrong current step:', step)
 

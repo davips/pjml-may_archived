@@ -5,6 +5,7 @@ from pjdata.aux.decorator import classproperty
 
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.transformer import HeavyTransformer
+from pjml.util import flatten
 
 
 class Container(HeavyTransformer, NoDataHandler, ABC):
@@ -53,14 +54,6 @@ class Container(HeavyTransformer, NoDataHandler, ABC):
     @classmethod
     def _cs_impl(cls):
         raise Exception(f'Wrong calling of {cls.name}._cs_impl!')
-
-    # def transformations(self, step=None):
-    #     if step is None:
-    #         step = self._current_step
-    #     lst = []
-    #     for tr in self.transformers:
-    #         lst.append(tr.transformations(step, training_data))
-    #     return flatten(lst)
 
     def __str__(self, depth=''):
         if not self._pretty_printing:

@@ -21,7 +21,7 @@ class Std(Scaler):
             with_mean=with_mean, with_std=with_std
         )
         config = {'operation': operation}
-        super().__init__(config, algorithm_factory)
+        super().__init__(config, algorithm_factory, deterministic=True)
 
     @classmethod
     def _cs_impl(cls, data=None):

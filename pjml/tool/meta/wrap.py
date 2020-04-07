@@ -23,13 +23,9 @@ class Wrap(MinimalContainer1):
     @property
     def wrapped(self):
         return self
-
-    def transformations(self, step=None, training_data=None):
-        if step is None:
-            step = self._current_step
-        # if training_data is None:
-        #     training_data = self._last_training_data
-        lst = []
-        for tr in self.transformers:
-            lst.append(tr.transformations(step, training_data))
-        return flatten(lst)
+    # repetido?
+    # def transformations(self, step):
+    #     lst = []
+    #     for tr in self.transformers:
+    #         lst.append(tr.transformations(step))
+    #     return flatten(lst)

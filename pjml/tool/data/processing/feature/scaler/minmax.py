@@ -12,7 +12,7 @@ from pjml.tool.data.processing.feature.scaler.scaler import Scaler
 class MinMax(Scaler):
     def __init__(self, **kwargs):
         algorithm_factory = partial(MinMaxScaler, **kwargs)
-        super().__init__(kwargs, algorithm_factory)
+        super().__init__(kwargs, algorithm_factory, deterministic=True)
 
     @classmethod
     def _cs_impl(cls):

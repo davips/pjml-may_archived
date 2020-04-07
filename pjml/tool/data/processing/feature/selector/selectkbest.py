@@ -5,6 +5,8 @@ from sklearn.feature_selection import f_classif, mutual_info_classif, \
     SelectFwe, GenericUnivariateSelect, SelectKBest, chi2
 
 from pjdata.step.use import Use
+
+from pjdata.step.transformation import Transformation
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
@@ -63,6 +65,6 @@ class SelectBest(Algorithm):
         if step == 'a':
             return []
         elif step == 'u':
-            return [Use(self, 0)]
+            return [Transformation(self, step)]
         else:
             raise BadComponent('Wrong current step:', step)

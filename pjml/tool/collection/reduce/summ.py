@@ -36,7 +36,10 @@ class Summ(Reduce):
         data = Data(
             dataset=collection.dataset,
             failure=collection.failure
-        ).updated(collection.history, **collection.original_data.matrices)
+        ).updated(
+            collection.history.transformations,
+            **collection.original_data.matrices
+        )
 
         res = self.function(collection)
         if isinstance(res, tuple):

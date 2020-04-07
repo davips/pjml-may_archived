@@ -32,7 +32,22 @@ pipe = Pipeline(
             # AfterUse(Metric(function=['diversity']))
         ),
     ),
-    Summ(function='mean_std')
+    Summ(function='mean_std'),
+    Report('$S'),
+
+    # ApplyUsing(RF()),
+    # Partition(),
+    # Map(
+    #     Wrap(
+    #         MinMax(),
+    #         ApplyUsing(RF()),
+    #         OnlyApply(Metric(functions=['length'])),
+    #         OnlyUse(Metric(functions=['accuracy', 'error'])),
+    #         # AfterUse(Metric(function=['diversity']))
+    #     ),
+    # ),
+    # Summ(function='mean_std'),
+    # Report('$S'),
 )
 
 # pipe = Pipeline(
@@ -58,5 +73,7 @@ pipe = Pipeline(
 print('Applying...')
 model = pipe.apply()
 
+print('DDDDDDD\n', model.data.history)
+exit()
 print('Using...')
-d2 = model.use(File("abalone3.arff").apply().data)
+d2 = model.use(File("iris.arff").apply().data)

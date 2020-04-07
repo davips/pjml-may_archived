@@ -43,6 +43,12 @@ class Chain(MinimalContainerN):
                 break
         return data
 
+    def transformations(self, step):
+        lst = []
+        for tr in self.transformers:
+            lst.append(tr.transformations(step))
+        return flatten(lst)
+
     def __str__(self, depth=''):
         if not self._pretty_printing:
             return super().__str__()
