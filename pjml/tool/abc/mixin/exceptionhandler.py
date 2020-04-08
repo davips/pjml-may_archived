@@ -73,9 +73,8 @@ class ExceptionHandler:
                   'Will be put onto Data object.')
 
     def _check_nodata(self, data, transformer):
-        from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
         from pjdata.data import NoData
-        if data is NoData and not isinstance(transformer, NoDataHandler):
+        if data is NoData and not transformer.nodata_handler:
             raise Exception(f'NoData is not accepted by {self.name}!')
 
     def _check_history(self, datain, dataout, transformations):

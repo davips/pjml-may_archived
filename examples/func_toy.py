@@ -20,7 +20,7 @@ from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
-# disable_global_pretty_printing()
+disable_global_pretty_printing()
 
 print('Construindo...')
 pipe = Pipeline(

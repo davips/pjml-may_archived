@@ -42,4 +42,4 @@ class Copy(LightTransformer, FunctionInspector):
             self.to_field: data.field(self.from_field, self)
         }
 
-        return data.updated(self.transformations(step='a'), **dic)
+        return data.updated(self.transformations(step), **dic)

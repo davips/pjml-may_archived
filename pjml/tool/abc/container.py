@@ -3,10 +3,9 @@ from functools import lru_cache
 
 from pjdata.aux.decorator import classproperty
 from pjml.tool.abc.heavytransformer import HeavyTransformer
-from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 
 
-class Container(HeavyTransformer, NoDataHandler, ABC):
+class Container(HeavyTransformer, ABC):
     """A container modifies 'transformer(s)'."""
 
     def __init__(self, config, seed, transformers, deterministic):
@@ -29,7 +28,9 @@ class Container(HeavyTransformer, NoDataHandler, ABC):
 
         complete_config = {'transformers': self.transformers}
         complete_config.update(config)
-        super().__init__(complete_config, deterministic=deterministic)
+        super().__init__(complete_config,
+                         deterministic=deterministic,
+                         nodata_handler=self.transformers[0].nodata_handler)
 
     @property
     @lru_cache()
@@ -48,6 +49,12 @@ class Container(HeavyTransformer, NoDataHandler, ABC):
             f'{cls.name} depends on transformers to build a CS.\n'
             f'Just instantiate the class {cls.name} instead of calling its .cs!'
         )
+
+    @property
+    @lru_cache()
+    def longname(self):
+        names = ", ".join([tr.longname for tr in self.transformers])
+        return self.name + f'[{names}]'
 
     @classmethod
     def _cs_impl(cls):

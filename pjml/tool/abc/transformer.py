@@ -38,12 +38,15 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
     ³: induced/fitted/describing model to use()
     """
 
-    def __init__(self, config, deterministic=False, max_time=3600):
+    def __init__(self, config,
+                 deterministic=False, nodata_handler=False, max_time=3600):
         jsonable = {'_id': f'{self.name}@{self.path}', 'config': config}
         Printable.__init__(self, jsonable)
 
         self.config = config
         self.deterministic = deterministic
+        from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
+        self.nodata_handler = isinstance(self, NoDataHandler) or nodata_handler
 
         self._exit_on_error = True
 
@@ -101,6 +104,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
+    @lru_cache()
     def transformations(self, step, clean=True):
         """Expected transformation described as a list of Transformation
         objects.
@@ -171,6 +175,11 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
     @lru_cache()
     def name(cls):
         return cls.__name__
+
+    @property
+    @lru_cache()
+    def longname(self):
+        return self.name
 
     @classproperty
     @lru_cache()
