@@ -3,8 +3,8 @@ from itertools import dropwhile
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.minimalcontainer import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.containermodel import FailedContainerModel, ContainerModel
 from pjml.tool.data.flow.sink import Sink
-from pjml.tool.model import ContainerModel
 from pjml.util import flatten
 
 
@@ -32,13 +32,15 @@ class Chain(MinimalContainerN):
             if data and data.failure:
                 print(f'Applying subtransformer {transformer} failed! ',
                       data.failure)
-                return ContainerModel(self, before_data, data, models,
-                                      use_impl=self._use_for_failed_pipeline)
+                return FailedContainerModel(self, before_data, data, models)
 
         return ContainerModel(self, before_data, data, models)
 
     def _use_impl(self, data, models=None):
         for model in models:
+            print(model.name)
+            print('=== = = = = ====\n', model._use_impl)
+
             data = model.use(data, exit_on_error=self._exit_on_error)
             if data and data.failure:
                 print(f'Using submodel {model} failed! ', data.failure)

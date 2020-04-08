@@ -8,7 +8,7 @@ from pjml.tool.model import Model
 
 class OnlyApply(MinimalContainer1):
     """Does nothing during 'use'."""
-    from pjdata.data import NoData
+    from pjdata.specialdata import NoData
 
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
@@ -20,7 +20,8 @@ class OnlyApply(MinimalContainer1):
 
     def _apply_impl(self, data):
         model = self.transformer.apply(data)
-        return model.updated(self, use_impl=self._use_impl)
+        # return model.updated(self, use_impl=self._use_impl)
+        return Model(self, data, model.data)
 
     def _use_impl(self, data, *args):
         return data
@@ -39,7 +40,7 @@ class OnlyApply(MinimalContainer1):
 
 class OnlyUse(MinimalContainer1):
     """Does nothing during 'apply'."""
-    from pjdata.data import NoData
+    from pjdata.specialdata import NoData
 
     def __new__(cls, *args, transformers=None):
         """Shortcut to create a ConfigSpace."""
@@ -53,7 +54,7 @@ class OnlyUse(MinimalContainer1):
         return Model(self, data, data)
 
     def _use_impl(self, data, *args):
-        return self.transformer._use_impl(data, *args)
+        return self.transformer._use_impl(data, )
 
     def apply(self, data: Data = NoData, exit_on_error=True):
         # We are using here the 'apply()' method from LightTransformer since

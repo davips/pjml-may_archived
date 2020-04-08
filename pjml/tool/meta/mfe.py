@@ -28,5 +28,5 @@ class MFE(Transformer):
         return data.updated(self.transformations(),
                             M=np.array([ft[1]]), Md=ft[0])
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         return self._apply_impl(data)

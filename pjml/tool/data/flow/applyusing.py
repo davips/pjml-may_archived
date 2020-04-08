@@ -1,6 +1,7 @@
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.model import Model
 
 
 class ApplyUsing(MinimalContainer1):
@@ -21,8 +22,11 @@ class ApplyUsing(MinimalContainer1):
         model = self.transformer.apply(data, self._exit_on_error)
         applied = model.use(data, exit_on_error=self._exit_on_error)
         return model.updated(self, data_after_apply=applied)
+        # print(model._use_impl)
+        # return Model(self, data, applied, use_impl=model._use_impl)
 
     def _use_impl(self, data, *args):
+        print(45545454545454545, self.transformer.name)
         pass
 
     def transformations(self, step, clean=True):

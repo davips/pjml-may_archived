@@ -34,14 +34,14 @@ class Source(LightTransformer, NoDataHandler, Storer):
         super().__init__(config, self.data, deterministic=True)
 
     def _apply_impl(self, data):
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
         if data is not NoData:
             raise Exception('Source component needs to be applied with NoData. '
                             'Use Sink before it if needed.')
         return Model(self, NoData, self.data)
 
     def _use_impl(self, data, *args):
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
         if data is not NoData:
             raise Exception('Source component needs to be used with NoData. '
                             'Use Sink before it if needed.')

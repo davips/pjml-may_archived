@@ -1,3 +1,4 @@
+import traceback
 from abc import abstractmethod
 
 import numpy
@@ -61,10 +62,11 @@ class ExceptionHandler:
                       f'{Binarize.name} component')
 
             # end of handling
-            print('TODO: is exit_on_error implemented? exit_on_error=',
-                  exit_on_error)
+            # print('TODO: is exit_on_error implemented? exit_on_error=',
+            #       exit_on_error)
             # if exit_on_error:
             #     traceback.print_exc()
+            #     print('Exiting...')
             #     exit(0)
             # else:
             raise e
@@ -73,7 +75,7 @@ class ExceptionHandler:
                   'Will be put onto Data object.')
 
     def _check_nodata(self, data, transformer):
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
         if data is NoData and not transformer.nodata_handler:
             raise Exception(f'NoData is not accepted by {self.name}!')
 
@@ -81,7 +83,7 @@ class ExceptionHandler:
         """Check consistency between resulting Data object and
         _transformations() implementation provided by the current
         component."""
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
         if dataout is NoData or dataout is None:
             return dataout
 

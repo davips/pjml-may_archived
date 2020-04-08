@@ -3,7 +3,7 @@ from pjdata.finitecollection import FiniteCollection
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.minimalcontainer import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import ContainerModel
+from pjml.tool.containermodel import ContainerModel
 
 
 class Multi(MinimalContainerN):

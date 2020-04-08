@@ -9,9 +9,9 @@ class Sink(LightConfigLess):
         super().__init__()
 
     def _apply_impl(self, data):
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
         return Model(self, data, NoData)
 
     def _use_impl(self, data, *args):
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
         return NoData

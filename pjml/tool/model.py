@@ -16,11 +16,9 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
 
     data_before_apply can be a data object or directly its uuid
     """
-    from pjdata.data import NoData
+    from pjdata.specialdata import NoData
 
-    def __init__(self,
-                 transformer,
-                 data_before_apply, data_after_apply,
+    def __init__(self, transformer, data_before_apply, data_after_apply,
                  *args, use_impl=None):
         self.transformer = transformer
         self._use_impl = self.transformer._use_impl if use_impl is None else \
@@ -63,6 +61,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
                  data_before_apply=None, data_after_apply=None,
                  models=None,
                  args=None, use_impl=None):
+        from pjml.tool.containermodel import ContainerModel
+
         # Update values.
         if transformer is None:
             raise Exception('Transformer cannot be None!')
@@ -126,7 +126,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             Data object resulting history should be consistent with
             _transformations() implementation.
         """
-        from pjdata.data import NoData
+        from pjdata.specialdata import NoData
 
         data = self.data if own_data else data
 
@@ -160,7 +160,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             if not isdata_or_collection and used is not NoData:
                 raise Exception(
                     f'{self.name} does not handle {type(used)}!\n'
-                    f'{used}'
+                    f'Value: {used}'
                 )
         except Exception as e:
             self._handle_exception(e, exit_on_error)
@@ -180,25 +180,28 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     def transformations(self, step, clean=True):
         return self.transformer.transformations(step, clean)
 
+    def _use_for_failed_pipeline(self, data):
+        raise Exception(
+            f"A {self.name} model from failed pipelines during apply is not "
+            f"usable!"
+        )
 
-class ContainerModel(Model):
-    def __init__(self, transformer, data_before_apply,
-                 data_after_apply, models, *args,
+    def _use_for_early_ended_pipeline(self, data):
+        raise Exception(
+            f"A {self.name} model from early ended pipelines during apply is "
+            f"not usable!"
+        )
+
+
+class FailedModel(Model):
+    def __init__(self, transformer, data_before_apply, data_after_apply, *args,
                  use_impl=None):
-        super().__init__(transformer, data_before_apply,
-                         data_after_apply, *args, use_impl=use_impl)
+        super().__init__(transformer, data_before_apply, data_after_apply,
+                         *args, use_impl=self._use_for_failed_pipeline)
 
-        # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
-        if len(models) == 1 and isinstance(models[0], ContainerModel):
-            models = models[0].models
 
-        self.models = models
-
-    def updated(self, transformer,
-                data_before_apply=None, data_after_apply=None,
-                models=None,
-                args=None, use_impl=None):
-        return self._updated(transformer,
-                             data_before_apply, data_after_apply,
-                             models=models,
-                             args=args, use_impl=use_impl)
+class EarlyEndedModel(Model):
+    def __init__(self, transformer, data_before_apply, data_after_apply, *args,
+                 use_impl=None):
+        super().__init__(transformer, data_before_apply, data_after_apply,
+                         *args, use_impl=self._use_for_early_ended_pipeline)

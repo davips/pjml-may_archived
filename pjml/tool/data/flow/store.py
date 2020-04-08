@@ -39,7 +39,7 @@ class Store(Invisible, Storer):
     def _apply_impl(self, data):
         return self._use_impl(data)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         # Enforce a unique name.
         uuid_ = ''
         for name in self.fields:

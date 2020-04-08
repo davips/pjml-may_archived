@@ -1,14 +1,13 @@
 import traceback
 
 from cururu.storer import Storer
-from pjdata.step.apply import Apply
-from pjdata.step.use import Use
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.container1 import Container1
-from pjml.tool.abc.singleton import NoModel
 from pjml.tool.abc.transformer import Transformer
+from pjml.tool.containermodel import ContainerModel
+from pjml.tool.model import Model
 
 
 class Cache(Container1, Storer):
@@ -27,8 +26,7 @@ class Cache(Container1, Storer):
         return ContainerCS(Cache.name, Cache.path, transformers, node)
 
     def __init__(self, *args, fields=None, engine="dump", settings=None,
-                 seed=0,
-                 transformers=None):
+                 seed=0, transformers=None):
         if transformers is None:
             transformers = args
         if fields is None:
@@ -37,7 +35,7 @@ class Cache(Container1, Storer):
             settings = {}
         config = self._to_config(locals())
         del config['args']
-        super().__init__(config, transformers, seed, deterministic=True)
+        super().__init__(config, seed, transformers, deterministic=True)
 
         self.fields = fields
         self._set_storage(engine, settings)
@@ -46,24 +44,11 @@ class Cache(Container1, Storer):
         # TODO: CV() is too cheap to be recovered from storage, specially if
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
 
-        # TODO: Cache poderia remover NoOps dos conteineres antes de
-        #  gravar/recuperar resultados. Isso evitaria que o acréscimo de
-        #  Seqs/Wraps, p. ex., inúteis criasse recálculo e rearmazenamento do
-        #  mesmo resultado. Outra forma de resolver é criar no Transformer um
-        #  método uuid_transf específico para a necessidade do Cache; talvez
-        #  mudando History.id também e usando
-        #  History(self.transformer.transformations).id e um método id em
-        #  Apply() lá no storage.
-        #
-        #  Seria um id representando o pipeline higienizado/efetivo.
-        #  Assim, há o id das transformações e o uuid do pipeline.
+        transformations = self.transformer.transformations('a')
+        hollow = data.hollow_extended(transformations=transformations)
+        output_data = self.storage.fetch(hollow, self.fields, lock=True)
 
-        transformation = Apply(self.transformer)
-        output_data = self.storage.fetch(
-            data, transformation, self.fields,
-            lock=True
-        )
-        # pra carregar modelo:
+        # pra carregar modelo [outdated!!]:
         # self.transformer = self.storage.fetch_transformer(
         #     data, self.transformer, lock=True
         # )
@@ -75,39 +60,42 @@ class Cache(Container1, Storer):
         # Apply if still needed  ----------------------------------
         if output_data is None:
             try:
-                output_data = self.transformer.apply(data, exit_on_error=False)
+                # model usável
+                model = self.transformer.apply(data, exit_on_error=False)
             except:
-                self.storage.unlock(data, transformation)
+                print('unlocking due to exception...')
+                self.storage.unlock(data)
                 traceback.print_exc()
                 exit(0)
 
             # TODO: Source -> DT = entra NoData, sai None...
-            #   AttributeError: type object 'NoData' has no attribute 'phantom'
+            #   AttributeError: type object 'NoData' has no attribute 'hollow'
             data_to_store = data.hollow if output_data is None else output_data
-            self.storage.store(
-                data_to_store,
-                data, transformation,
-                self.fields,
-                check_dup=False
-            )
+            self.storage.store(data_to_store, self.fields, check_dup=False)
+        else:
+            # model não usável
+            model = Model(self.transformer, data, output_data,
+                          use_impl=self._use_for_cached_apply)
+        print('===========\n', model._use_impl)
 
-        self.model = NoModel if self.transformer.model is None \
-            else self.transformer.model
+        m = ContainerModel(self.transformer, data, model.data, [model])
+        print('===========\n', m._use_impl)
+        return m
 
-        return output_data
-
-    def _use_impl(self, data):
-        # exit(0)
-        transformation = Use(self.transformer, self._last_training_data)
+    def _use_impl(self, data, model=None):
+        exit()
+        transformations = self.transformer.transformations('u')
+        hollow = data.hollow_extended(transformations=transformations)
         output_data = self.storage.fetch(
-            data, transformation, self.fields,
-            lock=True
+            hollow, self.fields, training_data_uuid=model.data.uuid, lock=True
         )
 
         # Use if still needed  ----------------------------------
         if output_data is None:
-            # If the component was applied (probably simulated by storage),
-            # but there is no model, we reapply it...
+            # If the apply step was simulated by cache, but the use step is
+            # not fetcheable, the internal model is not usable. We need to
+            # create a usable Model resurrecting the internal transformer or
+            # loading it from a previously dumped model.
             if self.transformer.model is None:
                 # Melhor deixar quebrar caso um
                 # apply() seja armazenado e o use() correspondente não?

@@ -61,7 +61,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         """Each component should implement its core 'apply' functionality."""
 
     @abstractmethod
-    def apply(self, data):
+    def apply(self, data, exit_on_error=False):
         """Training step (usually).
 
          Fit/remove-noise-from/evaluate/... Data.

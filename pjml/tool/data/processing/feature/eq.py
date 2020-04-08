@@ -23,7 +23,7 @@ class Eq(ConfigLess):
             newX.append(newxs)
         np.transpose(newX)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         pass
 
     # def _convert(self, x):

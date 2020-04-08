@@ -1,6 +1,6 @@
 from operator import itemgetter
 
-from pjdata.data import NoData
+from pjdata.specialdata import NoData
 from pjml.config.description.cs.configlist import ConfigList
 
 

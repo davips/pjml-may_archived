@@ -10,7 +10,7 @@ class AlwaysApply(MinimalContainer1):
         self.model = NoModel
         return self.transformer.apply(data)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         return self.transformer.apply(data)
 
 
@@ -23,5 +23,5 @@ class AlwaysUse(MinimalContainer1):
         self.model = NoModel
         return self.transformer.use(data)
 
-    def _use_impl(self, data):
+    def _use_impl(self, data, *args):
         return self.transformer.use(data)
