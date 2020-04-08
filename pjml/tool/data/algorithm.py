@@ -13,10 +13,11 @@ class Algorithm(HeavyTransformer, ABC):
         sklconfig = config if kwargs is None else kwargs
 
         if not deterministic:
+            sklconfig = sklconfig.copy()
+
             # TODO: this won't be needed after defaults are enforced in all
             #  components.
             if 'seed' not in sklconfig:
-                sklconfig = sklconfig.copy()
                 sklconfig['seed'] = 0
 
             sklconfig['random_state'] = sklconfig.pop('seed')
