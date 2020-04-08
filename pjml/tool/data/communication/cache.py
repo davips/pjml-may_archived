@@ -1,3 +1,4 @@
+import inspect
 import traceback
 
 from cururu.storer import Storer
@@ -7,7 +8,7 @@ from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.container1 import Container1
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.containermodel import ContainerModel
-from pjml.tool.model import Model
+from pjml.tool.model import Model, CachedApplyModel
 
 
 class Cache(Container1, Storer):
@@ -59,6 +60,7 @@ class Cache(Container1, Storer):
 
         # Apply if still needed  ----------------------------------
         if output_data is None:
+            print('output_data is None')
             try:
                 # model usável
                 model = self.transformer.apply(data, exit_on_error=False)
@@ -73,61 +75,49 @@ class Cache(Container1, Storer):
             data_to_store = data.hollow if output_data is None else output_data
             self.storage.store(data_to_store, self.fields, check_dup=False)
         else:
+            print('output_data is not None')
             # model não usável
-            model = Model(self.transformer, data, output_data,
-                          use_impl=self._use_for_cached_apply)
-        print('===========\n', model._use_impl)
+            model = CachedApplyModel(self.transformer, data, output_data)
 
-        m = ContainerModel(self.transformer, data, model.data, [model])
-        print('===========\n', m._use_impl)
-        return m
+        return Model(self, data, model.data, model)
 
     def _use_impl(self, data, model=None):
-        exit()
         transformations = self.transformer.transformations('u')
         hollow = data.hollow_extended(transformations=transformations)
         output_data = self.storage.fetch(
-            hollow, self.fields, training_data_uuid=model.data.uuid, lock=True
+            hollow, self.fields,
+            training_data_uuid=model.data.uuid, lock=True
         )
 
         # Use if still needed  ----------------------------------
         if output_data is None:
             # If the apply step was simulated by cache, but the use step is
-            # not fetcheable, the internal model is not usable. We need to
+            # not fetchable, the internal model is not usable. We need to
             # create a usable Model resurrecting the internal transformer or
             # loading it from a previously dumped model.
-            if self.transformer.model is None:
-                # Melhor deixar quebrar caso um
-                # apply() seja armazenado e o use() correspondente não?
-                # Ou guardar referência pro conjunto de treino para reinduzir?
-                # Fazer dump do transformer resolve melhor, mas pode ser
-                # custoso.
-                # Usuário pode decidir, escolhendo um cache local para isso.
+            if isinstance(model, CachedApplyModel):
                 print('It is possible that a previous apply() was successfully'
                       ' stored, but use() with current data wasn\'t.\n'
                       'E.g. you are trying to use in new data, or use() never '
                       'was stored before.\n')
-                print('Recovering training data from transformer to reapply it.'
+                print('Recovering training data from model to reapply it.'
                       'The goal is to induce a model usable by use()...\n'
                       f'comp: {self.transformer.sid} '
                       f'data: {data.sid}'
-                      f'training data: {self._last_training_data}')
+                      f'training data: {model.data}')
                 # stored_train_data = self.storage.fetch(train_uuid)
-                self.transformer.apply(self._last_training_data)
+                model = self.transformer.apply(model.data)
 
             try:
-                output_data = self.transformer.use(data, exit_on_error=False)
+                output_data = model.use(data, exit_on_error=False)
             except:
-                self.storage.unlock(data, transformation)
+                self.storage.unlock(data, training_data_uuid=model.data.uuid)
                 traceback.print_exc()
                 exit(0)
 
-            self.storage.store(
-                output_data,
-                data, transformation, self.fields,
-                check_dup=False
-            )
-
+            self.storage.store(output_data, self.fields,
+                               training_data_uuid=model.data.uuid,
+                               check_dup=False)
         return output_data
 
     def transformations(self, step, clean=True):

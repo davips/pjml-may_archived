@@ -1,3 +1,5 @@
+import inspect
+
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
@@ -21,9 +23,11 @@ class ApplyUsing(MinimalContainer1):
     def _apply_impl(self, data):
         model = self.transformer.apply(data, self._exit_on_error)
         applied = model.use(data, exit_on_error=self._exit_on_error)
-        return model.updated(self, data_after_apply=applied)
-        # print(model._use_impl)
-        # return Model(self, data, applied, use_impl=model._use_impl)
+        # m = Model(self.transformer, data, applied, *model.args)
+        # m = model.updated(self.transformer, data_after_apply=applied)
+        # m = model.updated(self, data_after_apply=applied)
+        model.data = applied  # Monkeypatch.
+        return model
 
     def _use_impl(self, data, *args):
         print(45545454545454545, self.transformer.name)

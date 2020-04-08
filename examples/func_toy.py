@@ -22,6 +22,17 @@ from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
 disable_global_pretty_printing()
+d = File("iris.arff").apply().data
+
+print('monta')
+p = Cache(ApplyUsing(RF()))
+
+print('aplica')
+m = p.apply(d)
+
+print('usa')
+m.use(d)
+exit()
 
 print('Construindo...')
 pipe = Pipeline(
@@ -70,4 +81,4 @@ for t in model.data.history:
     print(t)
 # exit()
 print('Using...')
-d2 = model.use(File("iris.arff").apply().data)
+d2 = model.use(d)

@@ -18,24 +18,19 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     """
     from pjdata.specialdata import NoData
 
-    def __init__(self, transformer, data_before_apply, data_after_apply,
-                 *args, use_impl=None):
+    def __init__(self, transformer, data_before_apply, data_after_apply, *args):
         self.transformer = transformer
-        self._use_impl = self.transformer._use_impl if use_impl is None else \
-            use_impl
 
         if data_before_apply is None:
             raise Exception('None data_before_apply, eh normal isso?')
-            # self._uuid_data_before_apply = Identifyable.nothing
 
-        if isinstance(data_before_apply, AbstractData):
-            self._uuid_data_before_apply = data_before_apply.uuid
-        else:
-            self._uuid_data_before_apply = data_before_apply
-
-        self._data_after_apply = data_after_apply
+        self.data_before_apply = data_before_apply
+        self.data = data_after_apply  # WARN: mutable monkey patched field!
         self._args = args
         self.models = None
+
+    def _use_impl(self, *args):  # WARN: mutable monkey patched method!
+        return self.transformer._use_impl(*args)
 
     @property
     @lru_cache()
@@ -46,60 +41,54 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             return (self.models,) + self._args
 
     def _uuid_impl(self):
-        return 'm', self._uuid_data_before_apply + self.transformer.uuid
+        return 'm', self.data_before_apply.uuid + self.transformer.uuid
         # TODO: Should Container transformers override uuid in some cases?
         #  E.g. to avoid storing the same model twice in SGBD?
 
-    def updated(self, transformer,
-                data_before_apply=None, data_after_apply=None,
-                args=None, use_impl=None):
-        return self._updated(transformer,
-                             data_before_apply, data_after_apply,
-                             args=args, use_impl=use_impl)
-
-    def _updated(self, transformer,
-                 data_before_apply=None, data_after_apply=None,
-                 models=None,
-                 args=None, use_impl=None):
-        from pjml.tool.containermodel import ContainerModel
-
-        # Update values.
-        if transformer is None:
-            raise Exception('Transformer cannot be None!')
-        if data_before_apply is None:
-            data_before_apply = self._uuid_data_before_apply
-        if data_after_apply is None:
-            data_after_apply = self._data_after_apply
-        if args is None:
-            args = self._args
-        if use_impl is None:
-            use_impl = self._use_impl
-
-        # Handle ContainerModel specifics.
-        if isinstance(self, ContainerModel):
-            if models is None:
-                models = self.models
-            return ContainerModel(
-                transformer,
-                data_before_apply, data_after_apply,
-                models,
-                *args, use_impl=use_impl
-            )
-
-        return Model(
-            transformer,
-            data_before_apply, data_after_apply,
-            *args, use_impl=use_impl
-        )
+    # def updated(self, transformer, data_before_apply=None,
+    #             data_after_apply=None, args=None):
+    #     return self._updated(transformer, data_before_apply, data_after_apply,
+    #                          args=args)
+    #
+    # def _updated(self, transformer, data_before_apply=None,
+    #              data_after_apply=None, models=None, args=None):
+    #     from pjml.tool.containermodel import ContainerModel
+    #
+    #     # Update values.
+    #     if transformer is None:
+    #         raise Exception('Transformer cannot be None!')
+    #     if data_before_apply is None:
+    #         data_before_apply = self._uuid_data_before_apply
+    #     if data_after_apply is None:
+    #         data_after_apply = self._data_after_apply
+    #     if args is None:
+    #         args = self._args
+    #
+    #     # Handle ContainerModel specifics.
+    #     if isinstance(self, ContainerModel):
+    #         if models is None:
+    #             models = self.models
+    #         return ContainerModel(
+    #             transformer,
+    #             data_before_apply, data_after_apply,
+    #             models,
+    #             *args
+    #         )
+    #
+    #     return Model(
+    #         transformer,
+    #         data_before_apply, data_after_apply,
+    #         *args
+    #     )
 
     @property
     @lru_cache()
     def name(self):
         return f'Model[{self.transformer.longname}]'
 
-    @property
-    def data(self):
-        return self._data_after_apply
+    # @property
+    # def data(self):
+    #     return self._data_after_apply
 
     def use(self, data: Data = NoData, exit_on_error=True, own_data=False):
         """Testing step (usually).
@@ -180,28 +169,38 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     def transformations(self, step, clean=True):
         return self.transformer.transformations(step, clean)
 
-    def _use_for_failed_pipeline(self, data):
+
+class FailedModel(Model):
+    def __init__(self, transformer, data_before_apply, data_after_apply, *args):
+        super().__init__(transformer, data_before_apply, data_after_apply,
+                         *args)
+
+    def _use_impl(self, *args):
         raise Exception(
             f"A {self.name} model from failed pipelines during apply is not "
             f"usable!"
         )
 
-    def _use_for_early_ended_pipeline(self, data):
+
+class EarlyEndedModel(Model):
+    def __init__(self, transformer, data_before_apply, data_after_apply, *args):
+        super().__init__(transformer, data_before_apply, data_after_apply,
+                         *args)
+
+    def _use_impl(self, *args):
         raise Exception(
             f"A {self.name} model from early ended pipelines during apply is "
             f"not usable!"
         )
 
 
-class FailedModel(Model):
-    def __init__(self, transformer, data_before_apply, data_after_apply, *args,
-                 use_impl=None):
+class CachedApplyModel(Model):
+    def __init__(self, transformer, data_before_apply, data_after_apply, *args):
         super().__init__(transformer, data_before_apply, data_after_apply,
-                         *args, use_impl=self._use_for_failed_pipeline)
+                         *args)
 
-
-class EarlyEndedModel(Model):
-    def __init__(self, transformer, data_before_apply, data_after_apply, *args,
-                 use_impl=None):
-        super().__init__(transformer, data_before_apply, data_after_apply,
-                         *args, use_impl=self._use_for_early_ended_pipeline)
+    def _use_impl(self, *args):
+        raise Exception(
+            f"A {self.name} model from a succesfully cached apply is not "
+            f"usable!"
+        )

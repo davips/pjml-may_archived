@@ -49,9 +49,3 @@ class HeavyTransformer(Transformer, ABC):
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
         return model
-
-    def _use_for_cached_apply(self, data):
-        raise Exception(
-            f"A {self.name} model from a succesfully cached apply is not "
-            f"usable!"
-        )

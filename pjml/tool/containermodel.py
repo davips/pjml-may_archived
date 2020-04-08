@@ -13,9 +13,9 @@ from pjml.tool.model import Model
 
 class ContainerModel(Model):
     def __init__(self, transformer, data_before_apply, data_after_apply, models,
-                 *args, use_impl=None):
-        super().__init__(transformer, data_before_apply,
-                         data_after_apply, *args, use_impl=use_impl)
+                 *args):
+        super().__init__(transformer, data_before_apply, data_after_apply,
+                         *args)
 
         # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
         if len(models) == 1 and isinstance(models[0], ContainerModel):
@@ -23,18 +23,20 @@ class ContainerModel(Model):
 
         self.models = models
 
-    def updated(self, transformer,
-                data_before_apply=None, data_after_apply=None,
-                models=None,
-                args=None, use_impl=None):
-        return self._updated(transformer,
-                             data_before_apply, data_after_apply,
-                             models=models,
-                             args=args, use_impl=use_impl)
+    # def updated(self, transformer, data_before_apply=None,
+    #             data_after_apply=None, models=None, args=None):
+    #     return self._updated(transformer, data_before_apply, data_after_apply,
+    #                          models=models, args=args)
 
 
 class FailedContainerModel(ContainerModel):
     def __init__(self, transformer, data_before_apply, data_after_apply, models,
-                 *args, use_impl=None):
+                 *args):
         super().__init__(transformer, data_before_apply, data_after_apply,
-                         models, *args, use_impl=self._use_for_failed_pipeline)
+                         models, *args)
+
+    def _use_impl(self, *args):
+        raise Exception(
+            f"A {self.name} model from failed pipelines during apply is not "
+            f"usable!"
+        )
