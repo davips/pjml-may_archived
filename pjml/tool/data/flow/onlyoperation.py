@@ -20,7 +20,7 @@ class OnlyApply(MinimalContainer1):
 
     def _apply_impl(self, data):
         model = self.transformer.apply(data)
-        return model.updated(self.transformer, use_impl=self._use_impl)
+        return model.updated(self, use_impl=self._use_impl)
 
     def _use_impl(self, data, *args):
         return data
@@ -50,7 +50,7 @@ class OnlyUse(MinimalContainer1):
         return ContainerCS(OnlyUse.name, OnlyUse.path, transformers)
 
     def _apply_impl(self, data):
-        return Model(self.transformer, data, data)
+        return Model(self, data, data)
 
     def _use_impl(self, data, *args):
         return self.transformer._use_impl(data, *args)
