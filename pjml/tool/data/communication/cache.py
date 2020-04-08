@@ -83,7 +83,7 @@ class Cache(Container1, Storer):
 
             # TODO: Source -> DT = entra NoData, sai None...
             #   AttributeError: type object 'NoData' has no attribute 'phantom'
-            data_to_store = data.phantom if output_data is None else output_data
+            data_to_store = data.hollow if output_data is None else output_data
             self.storage.store(
                 data_to_store,
                 data, transformation,
