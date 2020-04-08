@@ -11,6 +11,4 @@ class Expand(LightConfigLess, Invisible):
         return Model(self, data, applied)
 
     def _use_impl(self, data, *args):
-        return InfiniteCollection(
-            data, data.history, data.failure, data.dataset
-        )
+        return InfiniteCollection(data, data.history, data.failure)

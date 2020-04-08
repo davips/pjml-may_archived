@@ -2,6 +2,7 @@ import numpy
 from numpy import mean
 from numpy import std
 from pjdata.data import Data
+from pjdata.history import History
 
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
@@ -31,13 +32,12 @@ class Summ(Reduce):
         if collection.has_nones:
             # collection = Shrink().apply(collection)
             raise Exception(
-                "Warning: You shuld use 'Shirink()' to handling collections with None. ")
+                "Warning: You shuld use 'Shirink()' to handling collections "
+                "with None. ")
 
         data = Data(
-            dataset=collection.dataset,
-            failure=collection.failure
-        ).updated(
-            collection.history.transformations,
+            History(collection.history.transformations),
+            failure=collection.failure,
             **collection.original_data.matrices
         )
 
