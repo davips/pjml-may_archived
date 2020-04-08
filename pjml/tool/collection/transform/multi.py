@@ -10,7 +10,7 @@ class Multi(MinimalContainerN):
     """Process each Data object from a collection with its respective
     transformer."""
 
-    def __new__(cls, *args, transformers=None):
+    def __new__(cls, *args, transformers=None, seed=0):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
@@ -18,37 +18,36 @@ class Multi(MinimalContainerN):
             return object.__new__(cls)
         return ContainerCS(Multi.name, Multi.path, transformers)
 
-    def _apply_impl(self, collection_apply):
-        isfinite = isinstance(collection_apply, FiniteCollection)
-        if isfinite and self.size != collection_apply.size:
+    def _apply_impl(self, collection):
+        isfinite = isinstance(collection, FiniteCollection)
+        if isfinite and self.size != collection.size:
             raise Exception(
                 f'Config space and collection should have the same size '
-                f'{self.size} != collection {collection_apply.size}'
+                f'{self.size} != collection {collection.size}'
             )
         models = []
         datas = []
         for transformer in self.transformers:
             model = transformer.apply(
-                next(collection_apply), self._exit_on_error
+                next(collection), self._exit_on_error
             )
             datas.append(model.data)
             models.append(model)
 
-        applied = collection_apply.updated(
+        applied = collection.updated(
             self.transformations('a'), datas=datas
         )
-        return ContainerModel(self, collection_apply, applied, models)
+        return ContainerModel(self, collection, applied, models)
 
-    def _use_impl(self, collection_use, models=None):
-        isfinite = isinstance(collection_use, FiniteCollection)
-        if isfinite and self.size != collection_use.size:
+    def _use_impl(self, collection, models=None):
+        isfinite = isinstance(collection, FiniteCollection)
+        if isfinite and self.size != collection.size:
             raise Exception(
                 'Config space and collection should have the same '
-                f'size {self.size} != collection {collection_use.size}'
+                f'size {self.size} != collection {collection.size}'
             )
         datas = []
         for model in models:
-            data = model.use(next(collection_use), self._exit_on_error)
+            data = model.use(next(collection), self._exit_on_error)
             datas.append(data)
-        return collection_use.updated(self.transformations('u'),
-                                      datas=datas)
+        return collection.updated(self.transformations('u'), datas=datas)

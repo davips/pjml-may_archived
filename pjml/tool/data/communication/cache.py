@@ -12,7 +12,7 @@ from pjml.tool.abc.transformer import Transformer
 
 
 class Cache(Container1, Storer):
-    def __new__(cls, *args, fields=None, engine="dump", settings=None,
+    def __new__(cls, *args, fields=None, engine="dump", settings=None, seed=0,
                 transformers=None):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
@@ -57,8 +57,6 @@ class Cache(Container1, Storer):
         #
         #  Seria um id representando o pipeline higienizado/efetivo.
         #  Assim, há o id das transformações e o uuid do pipeline.
-
-
 
         transformation = Apply(self.transformer)
         output_data = self.storage.fetch(

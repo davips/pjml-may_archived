@@ -14,7 +14,7 @@ class Chain(MinimalContainerN):
     Each arg is a transformer. Optionally, a list of them can be passed as a
     named arg called 'transformers'."""
 
-    def __new__(cls, *args, transformers=None):
+    def __new__(cls, *args, seed=0, transformers=None):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
@@ -39,7 +39,7 @@ class Chain(MinimalContainerN):
 
     def _use_impl(self, data, models=None):
         for model in models:
-            data = model.use(data, self._exit_on_error)
+            data = model.use(data, exit_on_error=self._exit_on_error)
             if data and data.failure:
                 print(f'Using submodel {model} failed! ', data.failure)
                 break
@@ -54,12 +54,12 @@ class Chain(MinimalContainerN):
         if clean:
             lst = []
             previous = None
-            for transformation in result:
+            for transformation in result + [None]:
                 if previous and previous.name == "Sink":
                     lst = []
                 lst.append(transformation)
                 previous = transformation
-            result = lst
+            result = lst[:-1]
         return result
 
     def __str__(self, depth=''):

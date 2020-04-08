@@ -9,7 +9,7 @@ from pjml.tool.model import ContainerModel
 class Map(MinimalContainer1):
     """Execute the same transformer for the entire collection."""
 
-    def __new__(cls, *args, transformers=None):
+    def __new__(cls, *args, transformers=None, seed=0):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
