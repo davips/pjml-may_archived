@@ -1,11 +1,10 @@
 from abc import ABC
 from functools import lru_cache
 
-from pjdata.mixin.identifyable import Identifyable
-
 from pjdata.abc.abstractdata import AbstractData
 from pjdata.collection import Collection
 from pjdata.data import Data
+from pjdata.mixin.identifyable import Identifyable
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.mixin.timers import Timers
@@ -19,8 +18,10 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     """
     from pjdata.data import NoData
 
-    def __init__(self, transformer, data_before_apply,
-                 data_after_apply, *args, use_impl=None):
+    def __init__(self,
+                 transformer,
+                 data_before_apply, data_after_apply,
+                 *args, use_impl=None):
         self.transformer = transformer
         self._use_impl = self.transformer._use_impl if use_impl is None else \
             use_impl
@@ -35,10 +36,21 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             self._uuid_data_before_apply = data_before_apply
 
         self._data_after_apply = data_after_apply
-        self.args = args
+        self._args = args
+        self.models = None
+
+    @property
+    @lru_cache()
+    def args(self):
+        if self.models is None:
+            return self._args
+        else:
+            return (self.models,) + self._args
 
     def _uuid_impl(self):
         return 'm', self._uuid_data_before_apply + self.transformer.uuid
+        # TODO: Should Container transformers override uuid in some cases?
+        #  E.g. to avoid storing the same model twice in SGBD?
 
     def updated(self, transformer,
                 data_before_apply=None, data_after_apply=None,
@@ -59,7 +71,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         if data_after_apply is None:
             data_after_apply = self._data_after_apply
         if args is None:
-            args = self.args
+            args = self._args
         if use_impl is None:
             use_impl = self._use_impl
 
@@ -83,7 +95,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     @property
     @lru_cache()
     def name(self):
-        return f'Model[{self.transformer.name}]'
+        return f'Model[{self.transformer.longname}]'
 
     @property
     def data(self):
@@ -173,7 +185,6 @@ class ContainerModel(Model):
     def __init__(self, transformer, data_before_apply,
                  data_after_apply, models, *args,
                  use_impl=None):
-        args = (models,) + args
         super().__init__(transformer, data_before_apply,
                          data_after_apply, *args, use_impl=use_impl)
 
