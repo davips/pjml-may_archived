@@ -1,3 +1,4 @@
+from pjdata.mixin.printable import disable_global_pretty_printing
 from pjml.config.operator.many import select
 from pjml.config.operator.reduction.full import full
 from pjml.config.operator.reduction.rnd import rnd
@@ -26,6 +27,7 @@ from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     UnderS
 from pjml.tool.meta.wrap import Wrap
+disable_global_pretty_printing()
 
 # print(SelectKB.cs)
 # exit()

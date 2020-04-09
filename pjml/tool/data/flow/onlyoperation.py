@@ -57,7 +57,7 @@ class OnlyUse(MinimalContainer1):
         return Model(self, data, data)
 
     def _use_impl(self, data, *args):
-        return self.transformer._use_impl(data, )
+        return self.transformer._use_impl(data, *args)
 
     def apply(self, data: Data = NoData, exit_on_error=True):
         # We are using here the 'apply()' method from LightTransformer since

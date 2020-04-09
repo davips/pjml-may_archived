@@ -4,8 +4,6 @@ from sklearn.feature_selection import f_classif, mutual_info_classif, \
     SelectPercentile, SelectFpr, SelectFdr, \
     SelectFwe, GenericUnivariateSelect, SelectKBest, chi2
 
-from pjdata.step.use import Use
-
 from pjdata.step.transformation import Transformation
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
