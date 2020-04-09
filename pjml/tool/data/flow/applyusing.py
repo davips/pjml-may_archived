@@ -26,7 +26,7 @@ class ApplyUsing(MinimalContainer1):
         # m = Model(self.transformer, data, applied, *model.args)
         # m = model.updated(self.transformer, data_after_apply=applied)
         # m = model.updated(self, data_after_apply=applied)
-        model.data = applied  # Monkeypatch.
+        model.data = applied  # monkeypatch
         return model
 
     def _use_impl(self, data, *args):

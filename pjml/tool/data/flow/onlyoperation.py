@@ -22,7 +22,8 @@ class OnlyApply(MinimalContainer1):
         model = self.transformer.apply(data)
         # return model.updated(self, use_impl=self._use_impl)
         # return Model(self, data, model.data)
-        model._use_impl = self._use_impl  # Monkeypatch
+        model._use_impl = self._use_impl  # monkeypatch
+        model.transformations = self.transformations  # monkeypatch
         return model
 
     def _use_impl(self, data, *args):

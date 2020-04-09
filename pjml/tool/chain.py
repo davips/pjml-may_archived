@@ -38,9 +38,6 @@ class Chain(MinimalContainerN):
 
     def _use_impl(self, data, models=None):
         for model in models:
-            print(model.name)
-            print('=== = = = = ====\n', model._use_impl)
-
             data = model.use(data, exit_on_error=self._exit_on_error)
             if data and data.failure:
                 print(f'Using submodel {model} failed! ', data.failure)

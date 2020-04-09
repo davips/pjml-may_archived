@@ -1,4 +1,4 @@
-from pjdata.mixin.printable import Printable, disable_global_pretty_printing
+from pjdata.mixin.printable import Printable, disable_global_pretty_printing, enable_global_pretty_printing
 from pjml.pipeline import Pipeline
 from pjml.tool.chain import Chain
 from pjml.tool.collection.expand.partition import Partition
@@ -24,15 +24,15 @@ from pjml.tool.meta.wrap import Wrap
 disable_global_pretty_printing()
 d = File("iris.arff").apply().data
 
-print('monta')
-p = Cache(ApplyUsing(RF()))
-
-print('aplica')
-m = p.apply(d)
-
-print('usa')
-m.use(d)
-exit()
+# print('monta')
+# p = Cache(ApplyUsing(RF()))
+#
+# print('aplica')
+# m = p.apply(d)
+#
+# print('usa')
+# m.use(d)
+# exit()
 
 print('Construindo...')
 pipe = Pipeline(
@@ -40,7 +40,8 @@ pipe = Pipeline(
     OnlyApply(Sink()),
     OnlyApply(File("iris.arff")),
     # Binarize(),
-    Cache(ApplyUsing(RF())),
+    # Cache(ApplyUsing(RF())),
+    ApplyUsing(RF()),
     Partition(),
     Map(
         Wrap(
@@ -77,8 +78,10 @@ pipe = Pipeline(
 
 print('Applying...')
 model = pipe.apply()
-for t in model.data.history:
-    print(t)
+for i, t in enumerate(model.data.history):
+    print(f'hist {i}', t)
 # exit()
+
 print('Using...')
+enable_global_pretty_printing()
 d2 = model.use(d)
