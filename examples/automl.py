@@ -2,6 +2,7 @@ import numpy
 
 from cururu.persistence import DuplicateEntryException, FailedEntryException
 from pjdata.data_creation import read_arff
+from pjdata.mixin.printable import disable_global_pretty_printing
 from pjml.config.operator.many import shuffle, select
 from pjml.config.operator.reduction.full import full
 from pjml.config.operator.reduction.rnd import rnd
@@ -16,6 +17,7 @@ from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.evaluation.split import Split
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
+from pjml.tool.data.flow.onlyoperation import OnlyApply
 from pjml.tool.data.flow.source import Source
 from pjml.tool.data.flow.sink import Sink
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
@@ -33,6 +35,8 @@ from cururu.pickleserver import PickleServer
 from pjml.tool.meta.wrap import Wrap
 from pjml.tool.chain import Chain
 
+disable_global_pretty_printing()
+
 print('Storing iris...')
 try:
     PickleServer().store(read_arff('iris.arff'))
@@ -45,7 +49,7 @@ numpy.random.seed(50)
 # print('The scikit-learn version is {}.'.format(sklearn.__version__))
 print('expr .................')
 expr = Pipeline(
-    File('iris.arff'),
+    OnlyApply(File('iris.arff')),
     Cache(
     evaluator(
     Wrap(
@@ -69,14 +73,14 @@ pipe = Chain(File('abalone3.arff'), Binarize(), Split(), pipe.unwrap,
              Metric(), Report())
 
 print('apply .................')
-dataout = pipe.apply()
+model = pipe.apply()
 
 # print(222222222222222, dataout.history)
 # data morre no apply() do predictor
 
 
 print('use .................')
-dataout = pipe.use()
+dataout = model.use()
 # print(3333333333333333, dataout.history)
 # RUS desaparece no use()
 
