@@ -9,6 +9,7 @@ from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map
+from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.calc import Calc
 from pjml.tool.data.evaluation.mconcat import MConcat

@@ -65,7 +65,13 @@ class Split(HeavyTransformer, FunctionInspector):
         return Model(self, data, applied, partitions[self.partition][1])
 
     def _use_impl(self, data, indices=None, step='u'):
-        new_dic = {f: data.field(f, self)[indices] for f in self.fields}
+        new_dic = {}
+        for f in self.fields:
+            try:
+                new_dic[f] = data.field(f, self)[indices]
+            except Exception as e:
+                print(f'\nProblems splitting matrix {f}:', e)
+                exit()
         return data.updated(self.transformations(step), **new_dic)
 
     @classmethod
