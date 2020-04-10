@@ -11,8 +11,7 @@ from pjml.tool.data.processing.instance.sampler.resampler import Resampler
 
 class UnderS(Resampler):
     def __init__(self, **kwargs):
-        algorithm_factory = partial(RandomUnderSampler, **kwargs)
-        super().__init__(kwargs, algorithm_factory)
+        super().__init__(kwargs, RandomUnderSampler)
 
     @classmethod
     def _cs_impl(cls, data=None):

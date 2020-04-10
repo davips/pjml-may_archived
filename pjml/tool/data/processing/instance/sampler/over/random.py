@@ -13,8 +13,7 @@ class OverS(Resampler):
     def __init__(self, **kwargs):
         # TODO: Default values should be extracted from CS (via (new) property
         #  'default'), to appear here in 'self.config'.
-        algorithm_factory = partial(RandomOverSampler, **kwargs)
-        super().__init__(kwargs, algorithm_factory)
+        super().__init__(kwargs, RandomOverSampler)
 
     @classmethod
     def _cs_impl(cls, data=None):

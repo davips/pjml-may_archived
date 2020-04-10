@@ -2,15 +2,12 @@ from abc import ABC
 
 from pjdata.step.transformation import Transformation
 from pjml.tool.abc.lighttransformer import LightTransformer
+from pjml.tool.data.algorithm import LightAlgorithm
 from pjml.tool.model import Model
 
 
-class Resampler(LightTransformer, ABC):
+class Resampler(LightAlgorithm, ABC):
     """Base class for resampling methods. Not to be confused with Sample."""
-
-    def __init__(self, config, algorithm_factory, deterministic=False):
-        super().__init__(config, deterministic)
-        self.algorithm_factory = algorithm_factory
 
     def _apply_impl(self, data):
         # TODO: generalize this to resample all fields (xyzuvwpq...) or
