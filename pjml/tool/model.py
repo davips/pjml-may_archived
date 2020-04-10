@@ -16,7 +16,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
 
     data_before_apply can be a data object or directly its uuid
 
-    transformer is needed to define the following model members/values:
+    transformer is needed to define the following model members/values
+    (besides direct calls to trans):
         use_impl, uuid, max_time, nodata_handler, transformations, name (based on transformer.longname)
     """
     from pjdata.specialdata import NoData
