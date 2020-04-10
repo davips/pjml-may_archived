@@ -9,8 +9,8 @@ from pjml.tool.data.modeling.supervised.predictor import Predictor
 
 
 class SVMC(Predictor):
-    def __init__(self, **kwargs):
-        super().__init__(kwargs, SVC)
+    def __init__(self, **sklconfig):
+        super().__init__(sklconfig, SVC)
 
     @classmethod
     def _cs_impl(cls):

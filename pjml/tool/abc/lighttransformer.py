@@ -30,7 +30,11 @@ class LightTransformer(Transformer, ABC):
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
             self._exit_on_error = exit_on_error
 
-            model = self._limit_by_time(self._apply_impl, data, self.max_time)
+            model = self._limit_by_time(
+                function=self._apply_impl,
+                data=data,
+                max_time=self.max_time
+            )
             self._check_history(data, model.data, self.transformations('a'))
 
             # Check result type.

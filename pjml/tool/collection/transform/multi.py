@@ -29,7 +29,8 @@ class Multi(MinimalContainerN):
         datas = []
         for transformer in self.transformers:
             model = transformer.apply(
-                next(collection), self._exit_on_error
+                next(collection),
+                exit_on_error=self._exit_on_error
             )
             datas.append(model.data)
             models.append(model)
@@ -48,6 +49,9 @@ class Multi(MinimalContainerN):
             )
         datas = []
         for model in models:
-            data = model.use(next(collection), self._exit_on_error)
+            data = model.use(
+                next(collection),
+                exit_on_error=self._exit_on_error
+            )
             datas.append(data)
         return collection.updated(self.transformations('u'), datas=datas)

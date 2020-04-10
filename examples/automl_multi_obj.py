@@ -2,8 +2,10 @@ from pjdata.mixin.printable import disable_global_pretty_printing
 from pjml.config.operator.many import select
 from pjml.config.operator.reduction.full import full
 from pjml.config.operator.reduction.rnd import rnd
+from pjml.macro import split
 from pjml.pipeline import Pipeline
 from pjml.tool.chain import Chain
+from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.collection.expand.partition import Partition
 from pjml.tool.collection.reduce.summ import Summ
 from pjml.tool.collection.transform.map import Map

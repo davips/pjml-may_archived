@@ -3,7 +3,8 @@ from abc import ABC
 from pjdata.collection import Collection
 from pjdata.data import Data
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import Model, FailedModel, EarlyEndedModel
+from pjml.tool.model import Model
+from pjml.tool.specialmodel import FailedModel, EarlyEndedModel
 
 
 class HeavyTransformer(Transformer, ABC):
@@ -29,7 +30,11 @@ class HeavyTransformer(Transformer, ABC):
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
             self._exit_on_error = exit_on_error
 
-            model = self._limit_by_time(self._apply_impl, data, self.max_time)
+            model = self._limit_by_time(
+                function=self._apply_impl,
+                data=data,
+                max_time=self.max_time
+            )
             self._check_history(data, model.data, self.transformations('a'))
 
             # Check result type.

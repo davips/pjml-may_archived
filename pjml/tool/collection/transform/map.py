@@ -23,7 +23,7 @@ class Map(MinimalContainer1):
         models = []
         datas = []
         for data in collection:
-            model = self.transformer.apply(data, self._exit_on_error)
+            model = self.transformer.apply(data, exit_on_error=self._exit_on_error)
             datas.append(model.data)
             models.append(model)
         applied = collection.updated(self.transformations(step='a'), datas=datas)
@@ -37,6 +37,6 @@ class Map(MinimalContainer1):
                             f'the same size a- {size} != u- {collection.size}')
         datas = []
         for model in models:
-            data = model.use(next(collection), self._exit_on_error)
+            data = model.use(next(collection), exit_on_error=self._exit_on_error)
             datas.append(data)
         return collection.updated(self.transformations(step='u'), datas=datas)

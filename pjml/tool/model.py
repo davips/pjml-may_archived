@@ -18,7 +18,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
 
     transformer is needed to define the following model members/values
     (besides direct calls to trans):
-        use_impl, uuid, max_time, nodata_handler, transformations, name (based on transformer.longname)
+        use_impl, uuid, max_time, nodata_handler, transformations,
+        name (based on transformer.longname)
     """
     from pjdata.specialdata import NoData
 
@@ -80,7 +81,6 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         from pjdata.specialdata import NoData
 
         data = self.data if own_data else data
-
         # Some data checking.
         if data and data.failure:
             return data
@@ -101,9 +101,12 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             # dentro de
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
 
-            used = self._limit_by_time(self._use_impl,
-                                       data, self.transformer.max_time,
-                                       *self.args)
+            used = self._limit_by_time(
+                *self.args,
+                function=self._use_impl,
+                data=data,
+                max_time=self.transformer.max_time
+            )
             self._check_history(data, used, self.transformations('u'))
 
             # Check result type.
@@ -128,7 +131,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
 
         return used
 
-    def transformations(self, step, clean=True):  # WARN: mutable monkey patched method!
+    def transformations(self, step,
+                        clean=True):  # WARN: mutable monkey patched method!
         return self.transformer.transformations(step, clean)
 
     # def updated(self, transformer, data_before_apply=None,

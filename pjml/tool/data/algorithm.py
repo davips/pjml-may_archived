@@ -7,10 +7,10 @@ from pjml.tool.abc.heavytransformer import HeavyTransformer
 class Algorithm(HeavyTransformer, ABC):
     """    Base class for scikitlearn algorithms.    """
 
-    def __init__(self, config, func, kwargs=None, deterministic=False):
+    def __init__(self, config, func, sklconfig=None, deterministic=False):
         super().__init__(config, deterministic)
 
-        sklconfig = config if kwargs is None else kwargs
+        sklconfig = config if sklconfig is None else sklconfig
 
         if not deterministic:
             sklconfig = sklconfig.copy()

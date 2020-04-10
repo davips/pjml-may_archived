@@ -21,7 +21,7 @@ class ApplyUsing(MinimalContainer1):
         return ContainerCS(ApplyUsing.name, ApplyUsing.path, transformers)
 
     def _apply_impl(self, data):
-        model = self.transformer.apply(data, self._exit_on_error)
+        model = self.transformer.apply(data, exit_on_error=self._exit_on_error)
         applied = model.use(data, exit_on_error=self._exit_on_error)
         # m = Model(self.transformer, data, applied, *model.args)
         # m = model.updated(self.transformer, data_after_apply=applied)

@@ -3,7 +3,6 @@ from operator import itemgetter
 from pjdata.specialdata import NoData
 from pjml.config.description.cs.configlist import ConfigList
 
-
 # nonTODO: PEP 8 requires lowercase in function names; so is that ok to use a
 #  class instead? Or should we change all operators to function/lowercase?
 from pjml.tool.data.manipulation.keep import Keep

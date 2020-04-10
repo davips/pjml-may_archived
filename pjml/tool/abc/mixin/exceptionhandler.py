@@ -44,14 +44,10 @@ class ExceptionHandler:
 
     def _handle_exception(self, e, exit_on_error):
         """Pipeline failure is different from python error."""
-        if isinstance(self.name, str):
-            print(
-                f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: '
-                f'{self.name}...\n')
+        if isinstance(self.name, str):  # TODO: remove the need for this IF, if it still exists
+            print(f'At {self.name},\nTrying to handle:\n[{str(e)}]')
         else:
-            print(
-                f'At {self},\nTrying to handle:\n[{str(e)}]\nObject: '
-                f'{self.name()}...\n')
+            print(f'At {self.name()},\nTrying to handle:\n[{str(e)}]')
         if not any([str(e).__contains__(msg) for msg in self.msgs]):
 
             # HINTS
@@ -91,9 +87,9 @@ class ExceptionHandler:
         transfs = transformations
 
         if History(recent).id != History(transfs).id:
-            print('\nTransformed Data object recent history:::::::::::::::::\n'
+            print('\nActual history:::::::::::::::::\n'
                   f'{recent}\n'
-                  f'Expected transformations::::::::::::::::::::::::::::::::\n'
+                  f'Expected history::::::::::::::::::::::::::::::::\n'
                   f'{transfs}\n'
                   'Transformed Data object history does not '
                   'match expected transformation list.\n'

@@ -26,7 +26,7 @@ class Chain(MinimalContainerN):
         before_data = data
         models = []
         for transformer in self.transformers:
-            model = transformer.apply(data, self._exit_on_error)
+            model = transformer.apply(data, exit_on_error=self._exit_on_error)
             data = model.data
             models.append(model)
             if data and data.failure:

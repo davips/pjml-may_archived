@@ -11,8 +11,8 @@ from pjml.tool.data.modeling.supervised.predictor import Predictor
 class RF(Predictor):
     """Random Forest."""
 
-    def __init__(self, **kwargs):
-        super().__init__(kwargs, RandomForestClassifier)
+    def __init__(self, **sklconfig):
+        super().__init__(sklconfig, RandomForestClassifier)
 
     @classmethod
     def _cs_impl(cls):

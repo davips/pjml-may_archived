@@ -18,7 +18,7 @@ class Timers:
         t = os.times()
         return t[0] + t[1] + t[2] + t[3]
 
-    def _limit_by_time(self, function, data, max_time, *args):
+    def _limit_by_time(self, *args, function, data, max_time):
         if max_time is None:
             return function(data, *args)
         else:

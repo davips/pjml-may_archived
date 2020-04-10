@@ -13,8 +13,8 @@ from pjml.tool.data.modeling.supervised.predictor import Predictor
 class DT(Predictor):
     """Decision Tree."""
 
-    def __init__(self, **kwargs):
-        super().__init__(kwargs, DecisionTreeClassifier)
+    def __init__(self, **sklconfig):
+        super().__init__(sklconfig, DecisionTreeClassifier)
 
     @classmethod
     def _cs_impl(cls):

@@ -25,7 +25,7 @@ class Summ(Reduce):
     """
 
     def __init__(self, field='R', function='mean'):
-        super().__init__(self._to_config(locals()), True)
+        super().__init__(self._to_config(locals()), deterministic=True)
         self.field = field
 
     def _use_impl(self, collection, step='u'):

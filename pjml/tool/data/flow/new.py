@@ -18,11 +18,11 @@ class New(LightTransformer, NoDataHandler):
         self.data = Data(History(self.transformations('u')), **kwargs)
 
     def _apply_impl(self, data):
-        self._enforce_nodata(data)
+        self._enforce_nodata(data, 'a')
         return Model(self, data, self.data)
 
     def _use_impl(self, data, *args):
-        self._enforce_nodata(data)
+        self._enforce_nodata(data, 'u')
         return self.data
 
     @classmethod
