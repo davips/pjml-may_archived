@@ -16,12 +16,9 @@ class Std(Scaler):
         else:
             with_mean, with_std = 'translate' == operation, 'scale' == operation
 
-        algorithm_factory = partial(
-            StandardScaler,
-            with_mean=with_mean, with_std=with_std
-        )
+        sklconfig = {'with_mean': with_mean, 'with_std': with_std}
         config = {'operation': operation}
-        super().__init__(config, algorithm_factory, deterministic=True)
+        super().__init__(config, StandardScaler, sklconfig, deterministic=True)
 
     @classmethod
     def _cs_impl(cls, data=None):
@@ -29,4 +26,4 @@ class Std(Scaler):
             'operation':
                 CatP(choice, items=['full', 'translate', 'scale'])
         }
-        return TransformerCS(Node(params=params))
+        return TransformerCS(nodes=[Node(params=params)])

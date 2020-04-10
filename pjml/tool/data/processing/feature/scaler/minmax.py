@@ -10,13 +10,12 @@ from pjml.tool.data.processing.feature.scaler.scaler import Scaler
 
 
 class MinMax(Scaler):
-    def __init__(self, **kwargs):
-        algorithm_factory = partial(MinMaxScaler, **kwargs)
-        super().__init__(kwargs, algorithm_factory, deterministic=True)
+    def __init__(self, **sklconfig):
+        super().__init__(sklconfig, MinMaxScaler, deterministic=True)
 
     @classmethod
     def _cs_impl(cls):
         params = {
             'feature_range': CatP(choice, items=[(-1, 1), (0, 1)])
         }
-        return TransformerCS(Node(params=params))
+        return TransformerCS(nodes=[Node(params=params)])
