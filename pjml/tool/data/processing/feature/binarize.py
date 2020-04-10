@@ -16,13 +16,13 @@ class Binarize(LightConfigLess):
         # TODO: update Xt/Xd.
         data_nominal_idxs = nominal_idxs(data.Xt)
         encoder = OneHotEncoder()
+        matrices = {}
         if len(data_nominal_idxs) > 0:
             nom = encoder.fit_transform(
                 data.X[:, data_nominal_idxs]
             ).toarray()
             num = np.delete(data.X,
                             data_nominal_idxs, axis=1).astype(float)
-            X = np.column_stack((nom, num))
-            return data.updated(self.transformations(step), X=X)
-        else:
-            return data
+            matrices['X'] = np.column_stack((nom, num))
+
+        return data.updated(self.transformations(step), **matrices)
