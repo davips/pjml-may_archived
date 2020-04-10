@@ -61,8 +61,8 @@ class Cache(Container1, Storer):
         if output_data is None:
             try:
                 # model usável
-                model = self.transformer.apply(data, exit_on_error=False)
-                output_data = model.data
+                sub_model = self.transformer.apply(data, exit_on_error=False)
+                output_data = sub_model.data
             except:
                 self.storage.unlock(data)
                 traceback.print_exc()
@@ -74,17 +74,19 @@ class Cache(Container1, Storer):
             self.storage.store(data_to_store, self.fields, check_dup=False)
         else:
             # model não usável
-            model = CachedApplyModel(self.transformer, data, output_data)
+            sub_model = CachedApplyModel(self.transformer, data, output_data)
 
-        return Model(self, data, model.data, model)
+        return Model(self, data, output_data, model=sub_model)
 
-    def _use_impl(self, data, model=None):
+    def _use_impl(self, data, model=None, **kwargs):
+        training_data = model.data_before_apply
         transformations = self.transformer.transformations('u')
         hollow = data.hollow_extended(transformations=transformations)
         output_data = self.storage.fetch(
             hollow, self.fields,
-            training_data_uuid=model.data.uuid, lock=True
+            training_data_uuid=training_data.uuid, lock=True
         )
+        print(self.name, output_data)
 
         # Use if still needed  ----------------------------------
         if output_data is None:
@@ -101,19 +103,19 @@ class Cache(Container1, Storer):
                       'The goal is to induce a model usable by use()...\n'
                       f'comp: {self.transformer.sid} '
                       f'data: {data.sid}'
-                      f'training data: {model.data}')
+                      f'training data: {training_data}')
                 # stored_train_data = self.storage.fetch(train_uuid)
-                model = self.transformer.apply(model.data)
+                model = self.transformer.apply(training_data)
 
             try:
                 output_data = model.use(data, exit_on_error=False)
             except:
-                self.storage.unlock(data, training_data_uuid=model.data.uuid)
+                self.storage.unlock(data, training_data_uuid=training_data.uuid)
                 traceback.print_exc()
                 exit(0)
 
             self.storage.store(output_data, self.fields,
-                               training_data_uuid=model.data.uuid,
+                               training_data_uuid=training_data.uuid,
                                check_dup=False)
         return output_data
 
