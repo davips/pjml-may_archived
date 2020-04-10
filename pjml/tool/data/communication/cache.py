@@ -7,8 +7,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.container1 import Container1
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.containermodel import ContainerModel
-from pjml.tool.model import Model, CachedApplyModel
+from pjml.tool.specialmodel import Model, CachedApplyModel
 
 
 class Cache(Container1, Storer):
@@ -24,7 +23,7 @@ class Cache(Container1, Storer):
             'engine': FixedP(engine),
             'settings': FixedP(settings)
         })
-        return ContainerCS(Cache.name, Cache.path, transformers, node)
+        return ContainerCS(Cache.name, Cache.path, transformers, nodes=[node])
 
     def __init__(self, *args, fields=None, engine="dump", settings=None,
                  seed=0, transformers=None):
@@ -49,7 +48,7 @@ class Cache(Container1, Storer):
         hollow = data.hollow_extended(transformations=transformations)
         output_data = self.storage.fetch(hollow, self.fields, lock=True)
 
-        # pra carregar modelo [outdated!!]:
+        # pra carregar modelo [outdated code here!!]:
         # self.transformer = self.storage.fetch_transformer(
         #     data, self.transformer, lock=True
         # )
@@ -60,22 +59,20 @@ class Cache(Container1, Storer):
 
         # Apply if still needed  ----------------------------------
         if output_data is None:
-            print('output_data is None')
             try:
                 # model usável
                 model = self.transformer.apply(data, exit_on_error=False)
+                output_data = model.data
             except:
-                print('unlocking due to exception...')
                 self.storage.unlock(data)
                 traceback.print_exc()
                 exit(0)
 
-            # TODO: Source -> DT = entra NoData, sai None...
-            #   AttributeError: type object 'NoData' has no attribute 'hollow'
-            data_to_store = data.hollow if output_data is None else output_data
+            # TODO: quando 'output_data is None', está gravando sem matrizes!
+            #  Na hora de recuperar, isso precisa ser interpretado como None.
+            data_to_store = hollow if output_data is None else output_data
             self.storage.store(data_to_store, self.fields, check_dup=False)
         else:
-            print('output_data is not None')
             # model não usável
             model = CachedApplyModel(self.transformer, data, output_data)
 
