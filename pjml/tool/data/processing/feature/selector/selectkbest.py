@@ -10,11 +10,11 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP, RealP
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
-from pjml.tool.data.algorithm import Algorithm
+from pjml.tool.data.algorithm import HeavyAlgorithm
 from pjml.tool.model import Model
 
 
-class SelectBest(Algorithm):
+class SelectBest(HeavyAlgorithm):
     SCORE_FUNCTIONS = {
         "chi2": chi2,
         "f_classif": f_classif,
@@ -53,7 +53,7 @@ class SelectBest(Algorithm):
         sklearn_model = self.algorithm_factory(data.X.shape[1])
         X_new = sklearn_model.fit_transform(*data.Xy)
         applied = data.updated(self.transformations('a'), X=X_new)
-        return Model(self, data, applied, sklearn_model)
+        return Model(self, data, applied, sklearn_model=sklearn_model)
 
     def _use_impl(self, data, sklearn_model=None):
         X_new = sklearn_model.transform(data.X)
