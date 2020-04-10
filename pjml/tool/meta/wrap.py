@@ -16,7 +16,7 @@ class Wrap(MinimalContainer1):
     def _apply_impl(self, data):
         return self.transformer.apply(data)
 
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         pass
 
     @property

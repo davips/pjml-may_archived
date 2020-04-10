@@ -62,7 +62,7 @@ class Split(HeavyTransformer, FunctionInspector):
         zeros = numpy.zeros(data.field(self.fields[0], self).shape[0])
         partitions = list(self.algorithm.split(X=zeros, y=zeros))
         applied = self._use_impl(data, partitions[self.partition][0], step='a')
-        return Model(self, data, applied, partitions[self.partition][1])
+        return Model(self, data, applied, indices=partitions[self.partition][1])
 
     def _use_impl(self, data, indices=None, step='u'):
         new_dic = {}

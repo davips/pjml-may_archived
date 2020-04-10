@@ -22,66 +22,53 @@ from pjml.tool.data.processing.instance.sampler.under.random import UnderS
 from pjml.tool.meta.wrap import Wrap
 
 disable_global_pretty_printing()
-d = File("iris.arff").apply().data
-
-# print('monta')
-# p = Cache(ApplyUsing(RF()))
-#
-# print('aplica')
-# m = p.apply(d)
-#
-# print('usa')
-# m.use(d)
-# exit()
+d = File("abalone3.arff").apply().data
 
 print('Construindo...')
-pipe = Pipeline(
-    OnlyApply(File("iris.arff")),
-    OnlyApply(Sink()),
-    OnlyApply(File("iris.arff")),
-    # Binarize(),
-    # Cache(ApplyUsing(RF())),
-    ApplyUsing(RF()),
-    Partition(),
-    Map(
-        Wrap(
-            MinMax(),
-            ApplyUsing(RF()),
-            OnlyApply(Metric(functions=['length'])),
-            OnlyUse(Metric(functions=['accuracy', 'error'])),
-            # AfterUse(Metric(function=['diversity']))
-        ),
-    ),
-    Summ(function='mean_std'),
-    Report('$S'),
-)
-
 # pipe = Pipeline(
-#     File("abalone3.arff"),
-#     Binarize(),
+#     OnlyApply(File("abalone3.arff")),
+#     Cache(Binarize()),
 #     Partition(),
 #     Map(
-#         UnderS(sampling_strategy='not minority'),
-#         RF(),
-#         Metric()
+#         Wrap(
+#             MinMax(),
+#             Cache(ApplyUsing(RF())),
+#             OnlyApply(Metric(functions=['length'])),
+#             OnlyUse(Metric(functions=['accuracy', 'error'])),
+#             # AfterUse(Metric(function=['diversity']))
+#         ),
 #     ),
 #     Summ(function='mean_std'),
-#     Report('mean S --> \n$S'),
-#
-#     Report('mean S --> $S'),
-#     OnlyApply(Copy(from_field="S", to_field="B")),
-#     OnlyUse(MConcat(input_field1="S", input_field2="S",
-#                     output_field="S", direction='vertical')),
-#     Calc(functions=['flatten']),
-#     Report('mean S --> $S')
+#     Report('$S'),
 # )
+
+pipe = Pipeline(
+    File("abalone3.arff"),
+    Binarize(),
+    Partition(),
+    Map(
+        UnderS(sampling_strategy='not minority'),
+        Cache(RF()),
+        Metric()
+    ),
+    Summ(function='mean_std'),
+    Report('mean S --> \n$S'),
+
+    Report('mean S --> $S'),
+    OnlyApply(Copy(from_field="S", to_field="B")),
+    OnlyUse(MConcat(input_field1="S", input_field2="S",
+                    output_field="S", direction='vertical')),
+    Calc(functions=['flatten']),
+    Report('mean S --> $S')
+)
 
 print('Applying...')
 model = pipe.apply()
-for i, t in enumerate(model.data.history):
-    print(f'hist {i}', t)
+if model.data:
+    for i, t in enumerate(model.data.history):
+        print(f'hist {i}', t)
 # exit()
 
 print('Using...')
 enable_global_pretty_printing()
-d2 = model.use(d)
+d2 = model.use()

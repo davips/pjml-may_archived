@@ -13,9 +13,9 @@ from pjml.tool.model import Model
 
 class ContainerModel(Model):
     def __init__(self, transformer, data_before_apply, data_after_apply, models,
-                 *args):
+                 **kwargs):
         super().__init__(transformer, data_before_apply, data_after_apply,
-                         *args)
+                         **kwargs)
 
         # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
         if len(models) == 1 and isinstance(models[0], ContainerModel):
@@ -31,11 +31,11 @@ class ContainerModel(Model):
 
 class FailedContainerModel(ContainerModel):
     def __init__(self, transformer, data_before_apply, data_after_apply, models,
-                 *args):
+                 **kwargs):
         super().__init__(transformer, data_before_apply, data_after_apply,
-                         models, *args)
+                         models, **kwargs)
 
-    def _use_impl(self, *args):
+    def _use_impl(self, data, **kwargs):
         raise Exception(
             f"A {self.name} model from failed pipelines during apply is not "
             f"usable!"

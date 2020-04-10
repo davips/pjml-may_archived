@@ -29,9 +29,8 @@ class ApplyUsing(MinimalContainer1):
         model.data = applied  # monkeypatch
         return model
 
-    def _use_impl(self, data, *args):
-        print(45545454545454545, self.transformer.name)
-        pass
+    def _use_impl(self, data, **kwargs):
+        raise Exception('This should never happen!')
 
     def transformations(self, step, clean=True):
         return self.transformer.transformations('u', clean)

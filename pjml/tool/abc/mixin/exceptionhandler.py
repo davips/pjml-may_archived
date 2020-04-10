@@ -44,7 +44,8 @@ class ExceptionHandler:
 
     def _handle_exception(self, e, exit_on_error):
         """Pipeline failure is different from python error."""
-        if isinstance(self.name, str):  # TODO: remove the need for this IF, if it still exists
+        if isinstance(self.name, str):
+            # TODO: remove the need for this IF, if it still exists
             print(f'At {self.name},\nTrying to handle:\n[{str(e)}]')
         else:
             print(f'At {self.name()},\nTrying to handle:\n[{str(e)}]')
@@ -96,6 +97,8 @@ class ExceptionHandler:
                   'Please override self._transformations() '
                   f'method for {self.name} or extend a proper parent class '
                   f'like \'Invisible\'.')
+            print('in:', type(datain), datain)
+            print('out:', type(dataout), dataout)
             raise BadComponent(f'Inconsistent Data object history!')
 
         return dataout

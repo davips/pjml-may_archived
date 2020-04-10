@@ -11,5 +11,5 @@ class Reduce(LightTransformer, FunctionInspector, ABC):
         self.function = self.function_from_name[config['function']]
 
     def _apply_impl(self, collection):
-        applied = self._use_impl(collection, 'a')
+        applied = self._use_impl(collection, step='a')
         return Model(self, collection, applied)

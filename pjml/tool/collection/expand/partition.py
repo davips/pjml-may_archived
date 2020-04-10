@@ -47,7 +47,7 @@ class Partition(HeavyTransformer):
             self.transformations('a')[0]
         )
 
-        return Model(self, data, applied, splitter_model)
+        return Model(self, data, applied, splitter_model=splitter_model)
 
     def _use_impl(self, data, splitter_model=None):
         used = splitter_model.use(data)

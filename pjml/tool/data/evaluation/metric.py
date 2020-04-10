@@ -40,9 +40,11 @@ class Metric(LightTransformer, FunctionInspector):
 
     def _use_impl(self, data, step='u'):
         if self.target not in data.matrices:
-            raise Exception(
-                f'Impossible to calculate metric {self.functions}: Field '
-                f'{self.target} does not exist!')
+            print(f'Impossible to calculate metric {self.functions}: \n'
+                  f'Field {self.target} does not exist!\nAvailable fields:',
+                data.fields)
+            raise Exception('Missing field!')
+
         if self.prediction not in data.matrices:
             raise Exception(
                 f'Impossible to calculate metric {self.functions}: Field '

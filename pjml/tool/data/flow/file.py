@@ -65,7 +65,7 @@ class File(LightTransformer, NoDataHandler):
         self._enforce_nodata(data, 'a')
         return Model(self, data, self.data)
 
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         self._enforce_nodata(data, 'u')
         return self.data
 

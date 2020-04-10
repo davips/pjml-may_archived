@@ -27,7 +27,7 @@ class Save(Invisible):
     def _apply_impl(self, data):
         return self._use_impl(data)
 
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         Xt = [translate_type(typ) for typ in data.Xt]
         Yt = [translate_type(typ) for typ in data.Yt]
         dic = {

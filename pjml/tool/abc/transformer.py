@@ -57,7 +57,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         self.max_time = max_time  # TODO: who/when to define maxtime?
 
     @abstractmethod
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         """Each component should implement its core 'apply' functionality."""
 
     @abstractmethod

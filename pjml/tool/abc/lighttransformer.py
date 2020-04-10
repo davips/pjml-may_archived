@@ -9,7 +9,7 @@ from pjml.tool.model import Model
 class LightTransformer(Transformer, ABC):
     from pjdata.specialdata import NoData
 
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         """Each component should implement its core 'apply' functionality."""
         return data
 

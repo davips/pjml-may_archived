@@ -23,27 +23,26 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     """
     from pjdata.specialdata import NoData
 
-    def __init__(self, transformer, data_before_apply, data_after_apply, *args):
+    def __init__(self, transformer, data_before_apply, data_after_apply,
+                 **kwargs):
         self.transformer = transformer
-
-        if data_before_apply is None:
-            raise Exception('None data_before_apply, eh normal isso?')
-
         self.data_before_apply = data_before_apply
         self.data = data_after_apply  # WARN: mutable monkey patched field!
-        self._args = args
+        self._kwargs = kwargs
         self.models = None
 
-    def _use_impl(self, *args):  # WARN: mutable monkey patched method!
-        return self.transformer._use_impl(*args)
+    def _use_impl(self, data, **kwargs):  # WARN: mutable monkey patched method!
+        return self.transformer._use_impl(data, **kwargs)
 
     @property
     @lru_cache()
-    def args(self):
+    def kwargs(self):
         if self.models is None:
-            return self._args
+            return self._kwargs
         else:
-            return (self.models,) + self._args
+            _kwargs = {'models': self.models}
+            _kwargs.update(self._kwargs)
+            return _kwargs
 
     def _uuid_impl(self):
         return 'm', self.data_before_apply.uuid + self.transformer.uuid
@@ -90,7 +89,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         if data is None:
             return None
         if isinstance(data, Collection) and data.all_nones:
-            return data
+            return None
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -102,10 +101,10 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             # _apply_impl e repassar aos contidos. TODO: Mesmo p/ max_time?
 
             used = self._limit_by_time(
-                *self.args,
                 function=self._use_impl,
                 data=data,
-                max_time=self.transformer.max_time
+                max_time=self.transformer.max_time,
+                **self.kwargs
             )
             self._check_history(data, used, self.transformations('u'))
 

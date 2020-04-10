@@ -12,6 +12,6 @@ class Sink(LightConfigLess):
         from pjdata.specialdata import NoData
         return Model(self, data, NoData)
 
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         from pjdata.specialdata import NoData
         return NoData

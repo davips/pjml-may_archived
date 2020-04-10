@@ -40,7 +40,7 @@ class Source(LightTransformer, NoDataHandler, Storer):
                             'Use Sink before it if needed.')
         return Model(self, NoData, self.data)
 
-    def _use_impl(self, data, *args):
+    def _use_impl(self, data, **kwargs):
         from pjdata.specialdata import NoData
         if data is not NoData:
             raise Exception('Source component needs to be used with NoData. '
