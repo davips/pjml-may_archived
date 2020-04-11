@@ -5,6 +5,7 @@ from pjml.config.operator.reduction.rnd import rnd
 from pjml.config.operator.single import hold
 from pjml.macro import split
 from pjml.pipeline import Pipeline
+from pjml.tool.abc.mixin.timers import Timers
 from pjml.tool.chain import Chain
 from pjml.tool.collection.expand.expand import Expand
 from pjml.tool.collection.expand.partition import Partition
@@ -33,6 +34,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 from pjml.tool.meta.wrap import Wrap
 import numpy as np
 
+start = Timers._clock()
 disable_global_pretty_printing()
 np.random.seed(50)
 
@@ -53,7 +55,7 @@ expr = Pipeline(
     Map(
         Wrap(
             # select(SelectBest),  # slow??
-            ApplyUsing(select(DT, hold(RF, n_estimators=50), NB)),
+            Cache(ApplyUsing(select(DT, hold(RF, n_estimators=50), NB))),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))
@@ -101,3 +103,6 @@ model = c.apply(data)
 
 print('use .................')
 dataout = model.use(data)
+
+
+print('Tempo: ', '{:.2f}'.format(Timers._clock() - start))
