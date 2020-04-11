@@ -62,21 +62,21 @@ class Cache(Container1, Storer):
             try:
                 # model usável
                 sub_model = self.transformer.apply(data, exit_on_error=False)
-                output_data = sub_model.data
+                applied = sub_model.data
             except:
-                self.storage.unlock(data)
+                self.storage.unlock(hollow)
                 traceback.print_exc()
                 exit(0)
 
-            # TODO: quando 'output_data is None', está gravando sem matrizes!
-            #  Na hora de recuperar, isso precisa ser interpretado como None.
-            data_to_store = hollow if output_data is None else output_data
-            self.storage.store(data_to_store, self.fields, check_dup=False)
+            # TODO: quando grava um frozen, é preciso marcar isso dealguma forma
+            #  para que seja devidamente reconhecido como tal na hora do fetch.
+            self.storage.store(applied, self.fields, check_dup=False)
         else:
+            applied = output_data
             # model não usável
-            sub_model = CachedApplyModel(self.transformer, data, output_data)
+            sub_model = CachedApplyModel(self.transformer, data, applied)
 
-        return Model(self, data, output_data, model=sub_model)
+        return Model(self, data, applied, model=sub_model)
 
     def _use_impl(self, data, model=None, **kwargs):
         training_data = model.data_before_apply
@@ -86,7 +86,6 @@ class Cache(Container1, Storer):
             hollow, self.fields,
             training_data_uuid=training_data.uuid, lock=True
         )
-        print(self.name, output_data)
 
         # Use if still needed  ----------------------------------
         if output_data is None:
@@ -97,8 +96,8 @@ class Cache(Container1, Storer):
             if isinstance(model, CachedApplyModel):
                 print('It is possible that a previous apply() was successfully'
                       ' stored, but use() with current data wasn\'t.\n'
-                      'E.g. you are trying to use in new data, or use() never '
-                      'was stored before.\n')
+                      'E.g. you are trying to use with new data, or use() '
+                      'was never stored before.\n')
                 print('Recovering training data from model to reapply it.'
                       'The goal is to induce a model usable by use()...\n'
                       f'comp: {self.transformer.sid} '
@@ -106,22 +105,22 @@ class Cache(Container1, Storer):
                       f'training data: {training_data}')
                 # stored_train_data = self.storage.fetch(train_uuid)
                 model = self.transformer.apply(training_data)
-
             try:
-                output_data = model.use(data, exit_on_error=False)
+                used = model.use(data, exit_on_error=False)
             except:
-                self.storage.unlock(data, training_data_uuid=training_data.uuid)
+                self.storage.unlock(hollow,
+                                    training_data_uuid=training_data.uuid)
                 traceback.print_exc()
                 exit(0)
-
-            self.storage.store(output_data, self.fields,
+            self.storage.store(used, self.fields,
                                training_data_uuid=training_data.uuid,
                                check_dup=False)
-        return output_data
+        else:
+            used = output_data
+
+        return used
 
     def transformations(self, step, clean=True):
         """Cache produce no transformations by itself , so it needs to
         override the list of expected transformations."""
         return self.transformer.transformations(step, clean)
-
-

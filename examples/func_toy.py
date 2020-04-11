@@ -48,6 +48,7 @@ pipe = Pipeline(
     Partition(),
     Map(
         UnderS(sampling_strategy='not minority'),
+        # RF(),
         Cache(RF()),
         Metric()
     ),

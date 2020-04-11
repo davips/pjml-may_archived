@@ -30,7 +30,10 @@ from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.data.processing.instance.sampler.under.random import \
     UnderS
 from pjml.tool.meta.wrap import Wrap
+import numpy as np
+
 disable_global_pretty_printing()
+np.random.seed(50)
 
 # print(SelectKB.cs)
 # exit()

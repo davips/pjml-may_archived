@@ -81,18 +81,20 @@ class ExceptionHandler:
         _transformations() implementation provided by the current
         component."""
         from pjdata.specialdata import NoData
-        if dataout is NoData or dataout is None:
+        if dataout is NoData or dataout.isfrozen:
             return dataout
 
         recent = dataout.history.transformations[datain.history.size:]
-        transfs = transformations
 
-        if History(recent).id != History(transfs).id:
-            print('\nActual history:::::::::::::::::\n'
-                  f'{recent}\n'
-                  f'Expected history::::::::::::::::::::::::::::::::\n'
-                  f'{transfs}\n'
-                  'Transformed Data object history does not '
+        if History(recent).id != History(transformations).id:
+            print('\nActual history:::::::::::::::::')
+            for t in recent:
+                print(f'{t}')
+            print(f'\nExpected history::::::::::::::::::::::::::::::::')
+            for t in transformations:
+                print(f'{t}')
+            print()
+            print(f'Transformed Data object history does not '
                   'match expected transformation list.\n'
                   'Please override self._transformations() '
                   f'method for {self.name} or extend a proper parent class '

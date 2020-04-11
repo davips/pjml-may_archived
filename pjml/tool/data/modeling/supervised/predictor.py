@@ -15,7 +15,7 @@ class Predictor(HeavyAlgorithm, EnforceApply, ABC):
     def _apply_impl(self, data):
         sklearn_model = self.algorithm_factory()
         sklearn_model.fit(*data.Xy)
-        return Model(self, data, None, sklearn_model=sklearn_model)
+        return Model(self, data, data.frozen, sklearn_model=sklearn_model)
 
     def _use_impl(self, data, sklearn_model=None):
         return data.updated(

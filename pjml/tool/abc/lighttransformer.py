@@ -14,8 +14,7 @@ class LightTransformer(Transformer, ABC):
         return data
 
     def apply(self, data: Data = NoData, exit_on_error=True):
-        collection_all_nones = data.iscollection and data.all_nones
-        if data is None or collection_all_nones or data.failure:
+        if data.isfrozen or data.failure:
             return Model(self, data, data)
 
         self._check_nodata(data, self)

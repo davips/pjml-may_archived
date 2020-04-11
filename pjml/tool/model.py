@@ -84,12 +84,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         if data and data.failure:
             return data
         self._check_nodata(data, self.transformer)
-
-        # Detecting step.
         if data.isfrozen:
             return data
-        if data.iscollection and data.all_nones:
-            return None
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
