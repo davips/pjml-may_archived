@@ -19,8 +19,8 @@ class Multi(MinimalContainerN):
         return ContainerCS(Multi.name, Multi.path, transformers)
 
     def _apply_impl(self, collection):
-        isfinite = isinstance(collection, FiniteCollection)
-        if isfinite and self.size != collection.size:
+        # TODO: somehow enforce collection for all concurrent components.
+        if collection.isfinite and self.size != collection.size:
             raise Exception(
                 f'Config space and collection should have the same size '
                 f'{self.size} != collection {collection.size}'
@@ -41,8 +41,7 @@ class Multi(MinimalContainerN):
         return ContainerModel(self, collection, applied, models)
 
     def _use_impl(self, collection, models=None):
-        isfinite = isinstance(collection, FiniteCollection)
-        if isfinite and self.size != collection.size:
+        if collection.isfinite and self.size != collection.size:
             raise Exception(
                 'Config space and collection should have the same '
                 f'size {self.size} != collection {collection.size}'

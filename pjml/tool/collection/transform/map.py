@@ -18,7 +18,7 @@ class Map(MinimalContainer1):
         return ContainerCS(Map.name, Map.path, transformers)
 
     def _apply_impl(self, collection):
-        if isinstance(collection, InfiniteCollection):
+        if not collection.isfinite:
             raise Exception('Collection should be finite for Map!')
         models = []
         datas = []

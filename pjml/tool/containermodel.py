@@ -18,7 +18,7 @@ class ContainerModel(Model):
                          **kwargs)
 
         # ChainModel(ChainModel(a,b,c)) should be equal to ChainModel(a,b,c)
-        if len(models) == 1 and isinstance(models[0], ContainerModel):
+        if len(models) == 1 and models[0].iscontainer:
             models = models[0].models
 
         self.models = models

@@ -4,10 +4,6 @@ from pjdata.specialdata import NoData
 from pjml.config.description.cs.configlist import ConfigList
 
 
-# nonTODO: PEP 8 requires lowercase in function names; so is that ok to use a
-#  class instead? Or should we change all operators to function/lowercase?
-
-
 def full(cs, data=NoData, n=1, field='S'):
     """Exhaustive search to maximize value at 'field'.
 

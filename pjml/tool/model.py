@@ -86,9 +86,9 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         self._check_nodata(data, self.transformer)
 
         # Detecting step.
-        if data is None:
-            return None
-        if isinstance(data, Collection) and data.all_nones:
+        if data.isfrozen:
+            return data
+        if data.iscollection and data.all_nones:
             return None
 
         # Disable warnings, measure time and make the party happen.
@@ -133,6 +133,12 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     def transformations(self, step,
                         clean=True):  # WARN: mutable monkey patched method!
         return self.transformer.transformations(step, clean)
+
+    @property
+    @lru_cache()
+    def iscontainer(self):
+        from pjml.tool.containermodel import ContainerModel
+        return isinstance(self, ContainerModel)
 
     # def updated(self, transformer, data_before_apply=None,
     #             data_after_apply=None, args=None):

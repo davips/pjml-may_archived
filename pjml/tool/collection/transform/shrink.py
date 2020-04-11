@@ -12,5 +12,5 @@ class Shrink(ConfigLess):
         )
         if newcoll.size == 0:
             print('WW: All Nones')
-            return None
+            return ???
         return newcoll

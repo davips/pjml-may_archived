@@ -11,7 +11,7 @@ class HeavyTransformer(Transformer, ABC):
     from pjdata.specialdata import NoData
 
     def apply(self, data: Data = NoData, exit_on_error=True):
-        collection_all_nones = isinstance(data, Collection) and data.all_nones
+        collection_all_nones = data.iscollection and data.all_nones
         if data is None or collection_all_nones:
             return EarlyEndedModel(self, data, data)
 
