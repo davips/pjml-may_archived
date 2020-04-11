@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 from pjdata.aux.serialization import materialize
 from pjml.config.description.cs.abc.configspace import ConfigSpace
@@ -6,7 +6,7 @@ from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 
 
-class ComponentCS(ConfigSpace):
+class ComponentCS(ConfigSpace, ABC):
     def __init__(self, name, path, components, nodes):
         if nodes is None:
             nodes = []
@@ -23,11 +23,6 @@ class ComponentCS(ConfigSpace):
                 )
         self.name, self.path, self.nodes = name, path, nodes
         self.components = components
-
-    # @property  # Workaround to specify an abstract attribute.
-    # @abstractmethod
-    # def nodes(self):
-    #     pass
 
     @abstractmethod
     def _sample_cfg(self):
@@ -51,3 +46,7 @@ class ComponentCS(ConfigSpace):
             config.update(child_node.partial_sample())
 
         return materialize(self.name, self.path, config)
+
+    @abstractmethod
+    def updated(self, nodes):
+        pass

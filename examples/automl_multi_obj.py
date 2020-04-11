@@ -2,6 +2,7 @@ from pjdata.mixin.printable import disable_global_pretty_printing
 from pjml.config.operator.many import select
 from pjml.config.operator.reduction.full import full
 from pjml.config.operator.reduction.rnd import rnd
+from pjml.config.operator.single import hold
 from pjml.macro import split
 from pjml.pipeline import Pipeline
 from pjml.tool.chain import Chain
@@ -47,12 +48,12 @@ np.random.seed(50)
 # exit()
 
 expr = Pipeline(
-    OnlyApply(File("abalone3.arff"), Binarize()),
+    OnlyApply(File("abalone3.arff"), Cache(Binarize())),
     Partition(),
     Map(
         Wrap(
-            select(SelectBest),
-            ApplyUsing(select(DT, RF, NB)),
+            # select(SelectBest),  # slow??
+            ApplyUsing(select(DT, hold(RF, n_estimators=50), NB)),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))

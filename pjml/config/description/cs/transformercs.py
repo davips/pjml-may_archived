@@ -26,3 +26,6 @@ class TransformerCS(ComponentCS):
 
     def identified(self, name, path):
         return self.__class__(name, path, self.nodes)
+
+    def updated(self, nodes):
+        return self.__class__(self.name, self.path, nodes)

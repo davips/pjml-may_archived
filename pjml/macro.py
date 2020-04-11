@@ -22,6 +22,7 @@ def concat(*transformers):
 
 
 def fetch(path):
+    """list of files"""
     pass
 
 

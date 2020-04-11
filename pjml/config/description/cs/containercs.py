@@ -19,3 +19,6 @@ class ContainerCS(ComponentCS):
     def identified(self, name, path):
         """Useful to fill name/path after the component has the CS built."""
         return self.__class__(name, path, self.components, *self.nodes)
+
+    def updated(self, nodes):
+        return self.__class__(self.name, self.path, self.components, nodes)
