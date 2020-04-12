@@ -1,4 +1,3 @@
-import inspect
 import traceback
 
 from cururu.storer import Storer
@@ -11,8 +10,8 @@ from pjml.tool.model.specialmodel import Model, CachedApplyModel
 
 
 class Cache(Container1, Storer):
-    def __new__(cls, *args, fields=None, engine="dump", settings=None, seed=0,
-                transformers=None):
+    def __new__(cls, *args, fields=None, engine="dump", settings=None,
+                blocking=False, seed=0, transformers=None):
         """Shortcut to create a ConfigSpace."""
         if transformers is None:
             transformers = args
@@ -26,7 +25,7 @@ class Cache(Container1, Storer):
         return ContainerCS(Cache.name, Cache.path, transformers, nodes=[node])
 
     def __init__(self, *args, fields=None, engine="dump", settings=None,
-                 seed=0, transformers=None):
+                 blocking=False, seed=0, transformers=None):
         if transformers is None:
             transformers = args
         if fields is None:
@@ -38,8 +37,7 @@ class Cache(Container1, Storer):
         super().__init__(config, seed, transformers, deterministic=True)
 
         self.fields = fields
-        self._set_storage(engine, settings)
-        self.blocking=not True
+        self._set_storage(engine, settings, blocking)
 
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
@@ -71,8 +69,7 @@ class Cache(Container1, Storer):
 
             # TODO: quando grava um frozen, é preciso marcar isso dealguma forma
             #  para que seja devidamente reconhecido como tal na hora do fetch.
-            self.storage.store(applied, self.fields,
-                               check_dup=False, blocking=self.blocking)
+            self.storage.store(applied, self.fields, check_dup=False)
         else:
             applied = output_data
             # model não usável
@@ -88,7 +85,6 @@ class Cache(Container1, Storer):
             hollow, self.fields,
             training_data_uuid=training_data.uuid, lock=True
         )
-
 
         # Use if still needed  ----------------------------------
         if output_data is None:
@@ -117,7 +113,7 @@ class Cache(Container1, Storer):
                 exit(0)
             self.storage.store(used, self.fields,
                                training_data_uuid=training_data.uuid,
-                               check_dup=False, blocking=self.blocking)
+                               check_dup=False)
         else:
             used = output_data
 

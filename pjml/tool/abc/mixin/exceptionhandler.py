@@ -81,7 +81,7 @@ class ExceptionHandler:
         _transformations() implementation provided by the current
         component."""
         from pjdata.specialdata import NoData
-        if dataout is NoData or dataout.isfrozen:
+        if dataout is NoData or dataout.isfrozen or dataout.allfrozen:
             return dataout
 
         recent = dataout.history.transformations[datain.history.size:]

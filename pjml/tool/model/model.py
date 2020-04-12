@@ -86,6 +86,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         self._check_nodata(data, self.transformer)
         if data.isfrozen:
             return data
+        if data.allfrozen:
+            return data.frozen
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

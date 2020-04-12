@@ -1,6 +1,5 @@
 from abc import ABC
 
-from pjdata.collection import Collection
 from pjdata.data import Data
 from pjml.tool.abc.transformer import Transformer
 from pjml.tool.model.model import Model
@@ -16,6 +15,8 @@ class LightTransformer(Transformer, ABC):
     def apply(self, data: Data = NoData, exit_on_error=True):
         if data.isfrozen or data.failure:
             return Model(self, data, data)
+        if data.allfrozen:
+            return Model(self, data, data.frozen)
 
         self._check_nodata(data, self)
 

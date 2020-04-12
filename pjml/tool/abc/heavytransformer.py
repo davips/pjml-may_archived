@@ -13,7 +13,8 @@ class HeavyTransformer(Transformer, ABC):
     def apply(self, data: Data = NoData, exit_on_error=True):
         if data.isfrozen:
             return EarlyEndedModel(self, data, data)
-
+        if data.allfrozen:
+            return EarlyEndedModel(self, data, data.frozen)
         if data.failure:
             return FailedModel(self, data, data)
 
