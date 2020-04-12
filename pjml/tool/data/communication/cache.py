@@ -39,6 +39,7 @@ class Cache(Container1, Storer):
 
         self.fields = fields
         self._set_storage(engine, settings)
+        self.blocking=not True
 
     def _apply_impl(self, data):
         # TODO: CV() is too cheap to be recovered from storage, specially if
@@ -70,7 +71,8 @@ class Cache(Container1, Storer):
 
             # TODO: quando grava um frozen, é preciso marcar isso dealguma forma
             #  para que seja devidamente reconhecido como tal na hora do fetch.
-            self.storage.store(applied, self.fields, check_dup=False)
+            self.storage.store(applied, self.fields,
+                               check_dup=False, blocking=self.blocking)
         else:
             applied = output_data
             # model não usável
@@ -86,6 +88,7 @@ class Cache(Container1, Storer):
             hollow, self.fields,
             training_data_uuid=training_data.uuid, lock=True
         )
+
 
         # Use if still needed  ----------------------------------
         if output_data is None:
@@ -114,7 +117,7 @@ class Cache(Container1, Storer):
                 exit(0)
             self.storage.store(used, self.fields,
                                training_data_uuid=training_data.uuid,
-                               check_dup=False)
+                               check_dup=False, blocking=self.blocking)
         else:
             used = output_data
 
