@@ -22,7 +22,7 @@ class LightTransformer(Transformer, ABC):
 
         # Disable warnings, measure time and make the party happen.
         self._handle_warnings()  # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        start = self._clock()
+        start = self._cpu()
         try:
             # Aqui, passa-se _exit_on_error para self de forma que
             # implementadores de conteineres possam acessar o valor
@@ -50,7 +50,7 @@ class LightTransformer(Transformer, ABC):
             #  Caso sim, devemos gerar um ContainerModel aqui?
 
         # TODO: put time_spent inside data (as a "volatile" matrix)?
-        time_spent = self._clock() - start
+        time_spent = self._cpu() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
         # TODO: usar check_history aqui, to guide implementers whenever they

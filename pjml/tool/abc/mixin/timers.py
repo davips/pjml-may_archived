@@ -8,7 +8,7 @@ class Timers:
     """
 
     @staticmethod
-    def _clock():
+    def _cpu():
         """CPU time.
 
         Returns
@@ -17,6 +17,17 @@ class Timers:
         """
         t = os.times()
         return t[0] + t[1] + t[2] + t[3]
+
+    @staticmethod
+    def _clock():
+        """Wall clock time.
+
+        Returns
+        -------
+            Ellapsed time.
+        """
+        t = os.times()
+        return t[4]
 
     def _limit_by_time(self, function, data, max_time, **kwargs):
         if max_time is None:

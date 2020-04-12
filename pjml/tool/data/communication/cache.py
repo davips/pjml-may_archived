@@ -20,7 +20,9 @@ class Cache(Container1, Storer):
         node = Node(params={
             'fields': FixedP(fields),
             'engine': FixedP(engine),
-            'settings': FixedP(settings)
+            'settings': FixedP(settings),
+            'blocking': FixedP(blocking),
+            'seed': FixedP(seed),
         })
         return ContainerCS(Cache.name, Cache.path, transformers, nodes=[node])
 
