@@ -3,7 +3,7 @@ from itertools import dropwhile
 from pjml.config.description.cs.chaincs import ChainCS
 from pjml.tool.abc.minimalcontainer import MinimalContainerN
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.containermodel import FailedContainerModel, ContainerModel
+from pjml.tool.model.containermodel import FailedContainerModel, ContainerModel
 from pjml.tool.data.flow.sink import Sink
 from pjml.util import flatten
 

@@ -2,7 +2,7 @@ from pjdata.infinitecollection import InfiniteCollection
 
 from pjml.tool.abc.configless import LightConfigLess
 from pjml.tool.abc.invisible import Invisible
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Expand(LightConfigLess, Invisible):

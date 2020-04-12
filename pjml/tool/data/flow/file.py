@@ -11,7 +11,7 @@ from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 # Precisa herdar de Invisible, pois o mesmo Data pode vir de diferentes
 # caminhos de arquivo (File) ou servidores (Source) e essas informações são
 # irrelevantes para reprodutibilidade. Herdando de Invisible, o histórico é [].
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class File(LightTransformer, NoDataHandler):

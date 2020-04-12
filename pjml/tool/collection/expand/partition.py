@@ -1,7 +1,7 @@
 from pjml.tool.abc.heavytransformer import HeavyTransformer
 from pjml.tool.chain import Chain
 from pjml.tool.collection.expand.expand import Expand
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Partition(HeavyTransformer):

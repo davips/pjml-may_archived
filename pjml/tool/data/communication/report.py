@@ -4,7 +4,7 @@ import numpy as np
 
 from pjml.config.description.cs.emptycs import EmptyCS
 from pjml.tool.abc.invisible import Invisible
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 from pjml.util import flatten
 
 

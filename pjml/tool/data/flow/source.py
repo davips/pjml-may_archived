@@ -4,7 +4,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Source(LightTransformer, NoDataHandler, Storer):

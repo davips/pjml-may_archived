@@ -3,7 +3,7 @@ from abc import ABC
 from pjdata.collection import Collection
 from pjdata.data import Data
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class LightTransformer(Transformer, ABC):

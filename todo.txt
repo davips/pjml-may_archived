@@ -98,7 +98,7 @@
     LightTransformer: USE análogo a APPLY
 
 
-
+########################## Temporário ###############################
 # Exemplo da sugestão de soft unwrap que enviei pra Intellij:
 # specialpackage1, specialpackage2, SomeClass1, SomeClass2, SomeClass3, SomeClass4, SomeClass5, SomeClass6 = 0, 0, 0, 0, 0, 0, 0, 0
 #

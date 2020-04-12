@@ -10,7 +10,7 @@ from pjml.tool.abc.container1 import Container1
 #     node = Node(params={'engine': FixedP(engine), 'settings': FixedP(
 #     settings)})
 #     return SuperCS(Cache.name, Cache.path, components, node)
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 from pjml.tool.abc.transformer import Transformer
 
 

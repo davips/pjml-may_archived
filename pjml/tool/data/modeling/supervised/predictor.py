@@ -4,7 +4,7 @@ from pjdata.step.transformation import Transformation
 from pjml.tool.abc.mixin.enforceapply import EnforceApply
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
 from pjml.tool.data.algorithm import HeavyAlgorithm
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Predictor(HeavyAlgorithm, EnforceApply, ABC):

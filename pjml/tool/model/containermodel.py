@@ -8,7 +8,7 @@ from pjdata.mixin.identifyable import Identifyable
 from pjml.tool.abc.mixin.exceptionhandler import ExceptionHandler
 from pjml.tool.abc.mixin.nodatahandler import NoDataHandler
 from pjml.tool.abc.mixin.timers import Timers
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class ContainerModel(Model):

@@ -3,7 +3,7 @@ from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.minimalcontainer import MinimalContainer1
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class OnlyApply(MinimalContainer1):

@@ -3,8 +3,8 @@ from abc import ABC
 from pjdata.collection import Collection
 from pjdata.data import Data
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.model import Model
-from pjml.tool.specialmodel import FailedModel, EarlyEndedModel
+from pjml.tool.model.model import Model
+from pjml.tool.model.specialmodel import FailedModel, EarlyEndedModel
 
 
 class HeavyTransformer(Transformer, ABC):

@@ -1,6 +1,6 @@
 from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Copy(LightTransformer, FunctionInspector):

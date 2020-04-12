@@ -3,7 +3,7 @@ from abc import ABC
 from pjdata.step.transformation import Transformation
 from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.data.algorithm import LightAlgorithm
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Resampler(LightAlgorithm, ABC):

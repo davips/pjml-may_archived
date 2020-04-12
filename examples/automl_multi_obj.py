@@ -55,7 +55,7 @@ expr = Pipeline(
     Map(
         Wrap(
             # select(SelectBest),  # slow??
-            Cache(ApplyUsing(select(DT, hold(RF, n_estimators=50), NB))),
+            Cache(ApplyUsing(select(DT, hold(RF, n_estimators=30), NB))),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))
@@ -83,7 +83,7 @@ expr = Pipeline(
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')
 
 print('sample .................')
-pipe = full(rnd(expr, n=5), field='S', n=1).sample()
+pipe = full(rnd(expr, n=100), field='S', n=1).sample()
 
 #
 # pipes = rnd(expr, n=5)

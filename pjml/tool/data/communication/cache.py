@@ -7,7 +7,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import FixedP
 from pjml.tool.abc.container1 import Container1
 from pjml.tool.abc.transformer import Transformer
-from pjml.tool.specialmodel import Model, CachedApplyModel
+from pjml.tool.model.specialmodel import Model, CachedApplyModel
 
 
 class Cache(Container1, Storer):

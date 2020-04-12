@@ -1,5 +1,5 @@
 from pjml.tool.abc.configless import LightConfigLess
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class Sink(LightConfigLess):

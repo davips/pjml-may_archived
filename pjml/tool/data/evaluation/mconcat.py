@@ -6,7 +6,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
 from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class MConcat(LightTransformer, FunctionInspector):

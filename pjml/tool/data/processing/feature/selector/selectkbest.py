@@ -11,7 +11,7 @@ from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP, RealP
 from pjml.tool.abc.mixin.exceptionhandler import BadComponent
 from pjml.tool.data.algorithm import HeavyAlgorithm
-from pjml.tool.model import Model
+from pjml.tool.model.model import Model
 
 
 class SelectBest(HeavyAlgorithm):

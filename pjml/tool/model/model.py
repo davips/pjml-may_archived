@@ -133,9 +133,11 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     @property
     @lru_cache()
     def iscontainer(self):
-        from pjml.tool.containermodel import ContainerModel
+        from pjml.tool.model.containermodel import ContainerModel
         return isinstance(self, ContainerModel)
 
+    def __await__(self):
+        pass
     # def updated(self, transformer, data_before_apply=None,
     #             data_after_apply=None, args=None):
     #     return self._updated(transformer, data_before_apply, data_after_apply,
