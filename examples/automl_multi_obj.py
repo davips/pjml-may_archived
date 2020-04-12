@@ -1,3 +1,6 @@
+from time import sleep
+
+from cururu.persistence import Persistence
 from pjdata.mixin.printable import disable_global_pretty_printing
 from pjml.config.operator.many import select
 from pjml.config.operator.reduction.full import full
@@ -34,6 +37,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 from pjml.tool.meta.wrap import Wrap
 import numpy as np
 
+blocking =  False
 start = Timers._clock()
 disable_global_pretty_printing()
 np.random.seed(50)
@@ -48,7 +52,6 @@ np.random.seed(50)
 # s = cs.sample()
 # print(s)
 # exit()
-
 expr = Pipeline(
     OnlyApply(File("abalone3.arff"), Cache(Binarize())),
     Partition(),
@@ -61,21 +64,21 @@ expr = Pipeline(
             # AfterUse(Metric(function=['diversity']))
         ),
     ),
-    Report('HISTORY ... S: {history}'),
+    # Report('HISTORY ... S: {history}'),
     Summ(function='mean_std'),
-    Report('mean and std ... S: $S'),
+    # Report('mean and std ... S: $S'),
+    #
+    # OnlyApply(Copy(from_field="S", to_field="B")),
+    # OnlyApply(Report('copy S to B ... B: $B')),
+    # OnlyUse(MConcat(input_field1="B", input_field2="S",
+    #                 output_field="S", direction='vertical')),
+    # OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
+    # OnlyUse(Calc(functions=['flatten'])),
+    # OnlyUse(Report('flatten S ... S: $S')),
+    # OnlyUse(Calc(functions=['mean'])),
+    # OnlyUse(Report('mean S ... S: $S')),
 
-    OnlyApply(Copy(from_field="S", to_field="B")),
-    OnlyApply(Report('copy S to B ... B: $B')),
-    OnlyUse(MConcat(input_field1="B", input_field2="S",
-                    output_field="S", direction='vertical')),
-    OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
-    OnlyUse(Calc(functions=['flatten'])),
-    OnlyUse(Report('flatten S ... S: $S')),
-    OnlyUse(Calc(functions=['mean'])),
-    OnlyUse(Report('mean S ... S: $S')),
-
-    Report('End ...\n'),
+    # Report('End ...\n'),
 
 )
 
@@ -83,7 +86,7 @@ expr = Pipeline(
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')
 
 print('sample .................')
-pipe = full(rnd(expr, n=100), field='S', n=1).sample()
+pipe = full(rnd(expr, n=20), field='S', n=1).sample()
 
 #
 # pipes = rnd(expr, n=5)
@@ -104,5 +107,7 @@ model = c.apply(data)
 print('use .................')
 dataout = model.use(data)
 
-
 print('Tempo: ', '{:.2f}'.format(Timers._clock() - start))
+while Persistence.worker.running:
+    sleep(0.001)
+print('Tempo tot: ', '{:.2f}'.format(Timers._clock() - start))
