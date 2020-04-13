@@ -42,7 +42,7 @@ class Metric(LightTransformer, FunctionInspector):
         if self.target not in data.matrices:
             print(f'Impossible to calculate metric {self.functions}: \n'
                   f'Field {self.target} does not exist!\nAvailable fields:',
-                data.fields)
+                  data.field_names)
             raise Exception('Missing field!')
 
         if self.prediction not in data.matrices:
