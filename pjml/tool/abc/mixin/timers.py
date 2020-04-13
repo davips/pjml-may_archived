@@ -1,6 +1,7 @@
 import os
 import signal
 from contextlib import contextmanager
+import time
 
 
 class Timers:
@@ -15,6 +16,7 @@ class Timers:
         -------
             Sum of all SO times except wall time.
         """
+        #  return time.process_time()  # Does not include children processes.
         t = os.times()
         return t[0] + t[1] + t[2] + t[3]
 
@@ -26,8 +28,7 @@ class Timers:
         -------
             Ellapsed time.
         """
-        t = os.times()
-        return t[4]
+        return time.monotonic()
 
     def _limit_by_time(self, function, data, max_time, **kwargs):
         if max_time is None:
