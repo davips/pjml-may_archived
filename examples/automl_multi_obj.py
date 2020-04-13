@@ -54,31 +54,33 @@ np.random.seed(50)
 # exit()
 expr = Pipeline(
     OnlyApply(File("abalone3.arff"), Cache(Binarize())),
-    Partition(),
-    Map(
-        Wrap(
-            # select(SelectBest),  # slow??
-            Cache(ApplyUsing(select(hold(RF, n_estimators=40)))),
-            OnlyApply(Metric(functions=['length'])),
-            OnlyUse(Metric(functions=['accuracy', 'error'])),
-            # AfterUse(Metric(function=['diversity']))
+    Cache(
+        Partition(),
+        Map(
+            Wrap(
+                select(SelectBest),  # slow??
+                Cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
+                OnlyApply(Metric(functions=['length'])),
+                OnlyUse(Metric(functions=['accuracy', 'error'])),
+                # AfterUse(Metric(function=['diversity']))
+            ),
         ),
+        # Report('HISTORY ... S: {history}'),
+        Summ(function='mean_std')
     ),
-    # Report('HISTORY ... S: {history}'),
-    Summ(function='mean_std'),
-    # Report('mean and std ... S: $S'),
-    #
-    # OnlyApply(Copy(from_field="S", to_field="B")),
-    # OnlyApply(Report('copy S to B ... B: $B')),
-    # OnlyUse(MConcat(input_field1="B", input_field2="S",
-    #                 output_field="S", direction='vertical')),
-    # OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
-    # OnlyUse(Calc(functions=['flatten'])),
-    # OnlyUse(Report('flatten S ... S: $S')),
-    # OnlyUse(Calc(functions=['mean'])),
-    # OnlyUse(Report('mean S ... S: $S')),
+    Report('mean and std ... S: $S'),
 
-    # Report('End ...\n'),
+    OnlyApply(Copy(from_field="S", to_field="B")),
+    OnlyApply(Report('copy S to B ... B: $B')),
+    OnlyUse(MConcat(input_field1="B", input_field2="S",
+                    output_field="S", direction='vertical')),
+    OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
+    OnlyUse(Calc(functions=['flatten'])),
+    OnlyUse(Report('flatten S ... S: $S')),
+    OnlyUse(Calc(functions=['mean'])),
+    OnlyUse(Report('mean S ... S: $S')),
+
+    Report('End ...\n'),
 
 )
 
@@ -86,7 +88,7 @@ expr = Pipeline(
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')
 
 print('sample .................')
-pipe = full(rnd(expr, n=20), field='S', n=1).sample()
+pipe = full(rnd(expr, n=10), field='S', n=1).sample()
 
 #
 # pipes = rnd(expr, n=5)
