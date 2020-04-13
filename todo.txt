@@ -84,6 +84,19 @@
     "Microotimizadores" (heurísticas):
         Random, Scree-Plot %,	Scree-Plot GAP,	Kaiser Guttman,	Broken Stick e Rho-Score.
 
+8a) Cada transformer informar de quais matrizes depende.
+    O Cache se baseia no data.uuid, o uuid é diferente caso uma simples matriz inútil extra estiver presente.
+    É possível fazer com que o cache se baseie apenas nas matrizes efetivamente usadas;
+    mas é necessário que cada transformer informe de quais matrizes depende.
+    Não é tão crítico, pois espera-se que data tenha apenas matrizes necessárias,
+    mas, p. ex., durante a elaboração do automlmultiobj, a cada nova extensão da expressão do CS,
+    os modelos eram redundantemente regerados, devido à nova identidade do data que saía do apply do pipeline e
+    entrava no use do cache.
+
+8b) Cada transformer informar quais matrizes gera ou altera.
+    Permite otimizar tráfego e armazenamento, reduzindo-o a apenas o essencial.
+    Atualmente isso é feito pelo usuário, no param fields do Cache.
+
 ########################## Apêndice ###############################
 
 1)

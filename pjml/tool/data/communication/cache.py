@@ -98,12 +98,12 @@ class Cache(Container1, Storer):
                 print('It is possible that a previous apply() was successfully'
                       ' stored, but use() with current data wasn\'t.\n'
                       'E.g. you are trying to use with new data, or use() '
-                      'was never stored before.\n')
+                      'was never stored before.')
                 print('Recovering training data from model to reapply it.'
                       'The goal is to induce a model usable by use()...\n'
                       f'comp: {self.transformer.sid} '
                       f'data: {data.sid}'
-                      f'training data: {training_data}')
+                      f'training data: {training_data}\n')
                 # stored_train_data = self.storage.fetch(train_uuid)
                 model = self.transformer.apply(training_data)
             try:
