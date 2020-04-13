@@ -21,5 +21,5 @@ w.put(partial(f, 0, 1))
 w.put(partial(f, 2, 0))
 
 print('Tempo: ', '{:.2f}'.format(Timers._clock() - start))
-w.lock.acquire()
+w.join()
 print('Tempo tot: ', Timers._clock() - start)

@@ -57,7 +57,7 @@ expr = Pipeline(
     Map(
         Wrap(
             # select(SelectBest),  # slow??
-            Cache(ApplyUsing(select(DT, hold(RF, n_estimators=30), NB))),
+            Cache(ApplyUsing(select(hold(RF, n_estimators=40)))),
             OnlyApply(Metric(functions=['length'])),
             OnlyUse(Metric(functions=['accuracy', 'error'])),
             # AfterUse(Metric(function=['diversity']))
@@ -107,6 +107,5 @@ print('use .................')
 dataout = model.use(data)
 
 print('Tempo: ', '{:.2f}'.format(Timers._clock() - start))
-while Persistence.worker.running:
-    sleep(0.001)
+Persistence.worker.join()
 print('Tempo tot: ', '{:.2f}'.format(Timers._clock() - start))
