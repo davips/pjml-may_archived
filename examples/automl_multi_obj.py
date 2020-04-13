@@ -1,6 +1,7 @@
 from time import sleep
 
 from cururu.persistence import Persistence
+from cururu.worker import Worker
 from pjdata.mixin.printable import disable_global_pretty_printing
 from pjml.config.operator.many import select
 from pjml.config.operator.reduction.full import full
@@ -107,5 +108,5 @@ print('use .................')
 dataout = model.use(data)
 
 print('Tempo: ', '{:.2f}'.format(Timers._clock() - start))
-Persistence.worker.join()
+Worker.join()
 print('Tempo tot: ', '{:.2f}'.format(Timers._clock() - start))

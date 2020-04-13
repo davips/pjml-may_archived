@@ -109,7 +109,7 @@
 #
 # class MyClass(SomeClass1, SomeClass2, SomeClass3, SomeClass4, SomeClass5,
 #               SomeClass6):
-#     def __init__(self, arg1, arg2, func, *args, kwarg1=None, kwarg2="text",
+#     def __init__(cls, arg1, arg2, func, *args, kwarg1=None, kwarg2="text",
 #                  kwarg3=None, kwarg4=None, **kwargs):
 #         """
 #         This class is a contrived example supposedly copming from third party.
@@ -131,7 +131,7 @@
 #
 #         # Dictionary with one item per line (it can be set to be untouched). <-
 #         # wrapped comment (probably not safe to unwrap by default).
-#         self.dictionary = {
+#         cls.dictionary = {
 #             'orange': func(arg1, arg2, kwarg1, kwarg2, kwarg3, kwarg4,
 #                            'called at start with this long string'),
 #             'apple': ['list with',
@@ -153,7 +153,7 @@
 #
 #
 # class MyClass(SomeClass1, SomeClass2, SomeClass3, SomeClass4, SomeClass5, SomeClass6):
-#     def __init__(self, arg1, arg2, func, *args, kwarg1=None, kwarg2="text", kwarg3=None, kwarg4=None, **kwargs):
+#     def __init__(cls, arg1, arg2, func, *args, kwarg1=None, kwarg2="text", kwarg3=None, kwarg4=None, **kwargs):
 #         """
 #         This class is a contrived example supposedly copming from third party.
 #         This text will span several lines.
@@ -169,7 +169,7 @@
 #             raise Exception('Very bad alignment of lots of circunstances lead to this sudden crash!')
 #
 #         # Dictionary with one item per line (it can be set to be untouched). <- wrapped comment (probably not safe to unwrap by default).
-#         self.dictionary = {
+#         cls.dictionary = {
 #             'orange': func(arg1, arg2, kwarg1, kwarg2, kwarg3, kwarg4, 'called at start with this long string'),
 #             'apple': ['list with',
 #                       'one item',
