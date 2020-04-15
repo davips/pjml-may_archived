@@ -107,10 +107,37 @@
 
 ########################## Apêndice ###############################
 
-1)
-    UUID Proof:
-    APPLY  D    --> T1     --> D1, M1      --> T2        --> D2, M2
-           (d)  --> (t1)   --> (d+t1)      --> (t1)      --> (d+t1+t2)
+1)  UUID Proof:
+
+    Na realidade, no histórico só há transformações.
+    Aqui, por simplicidade, file1/file2 serão d/e.
+
+    APPLY---------------------------------------
+    (histórico de Data entre colchetes; d=training data)
+    File1  ->   A   ->    B    ->     C      ->
+          Mf[d]   Ma[d+a]   Mb[d+a+b]    Mc[d+a+b+c]
+
+    USE-----------------------------------------
+    (e = testing data)
+    File2  ->  Ma   ->     Mb    ->     Mc    ->
+           [e]    [e+Ma]       [e+Mb]       [e=Mc²]
+           [e]    [e+(d+a)]  [e+(d+a+b)]  [e+d+a+b+c]
+
+
+    Incluindo componente promíscuo (NoiseReduction):
+
+    APPLY---------------------------------------
+    File1  ->   A   ->    NR     ->      C      ->
+          Mf[d]   Ma[d+a]    Mnr[d+a+nr]   Mc[d+a+nr+c]
+
+    USE-----------------------------------------
+    File2  ->  Ma   ->     Mnr   ->    Mc    ->
+           [e]    [e+Ma]       [e+Ma]      [e+Mc]
+           [e]    [e+(d+a)]   [e+(d+a)]  [e+(d+a+b+c)]
+
+
+
+
     USE    D'   --> M1     --> D'1         --> M2        --> D'2
            (d') --> (d+t1) --> (d'+d+t1)   --> (d+t1+t2) --> (d'+d+t1+d+t1+t2)
            (d') --> (m1)   --> (d'+m1)     --> (m1+t2) --> (d'+m1+m1+t2)
