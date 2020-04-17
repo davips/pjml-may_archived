@@ -104,6 +104,7 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         """Each component should implement its own 'cs'. The parent class
         takes care of 'name' and 'path' arguments of ConfigSpace"""
 
+    # TODO: Is unbounded lrucache a source of memory leak?
     @lru_cache()
     def transformations(self, step, clean=True):
         """Expected transformation described as a list of Transformation
