@@ -34,8 +34,17 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 from cururu.pickleserver import PickleServer
 from pjml.tool.meta.wrap import Wrap
 from pjml.tool.chain import Chain
+from pjml.tool.data.manipulation.head import Head
+from pjml.tool.data.evaluation.mconcat import MConcat
 
 disable_global_pretty_printing()
+
+#dataout = File('iris.arff').apply().data
+#chain = Cache(Chain(Head(), MConcat(input_field1="X", input_field2="Y", output_field="H", direction="vertical")))
+#print(chain.apply(dataout).data.H)
+
+#exit()
+
 
 print('Storing iris...')
 try:
@@ -62,6 +71,8 @@ expr = Pipeline(
     )
 )
 
+
+
 # {history.last.config['function']}
 print(expr)
 print('sample .................')
@@ -80,7 +91,8 @@ model = pipe.apply()
 
 
 print('use .................')
-dataout = model.use()
+
+
 # print(3333333333333333, dataout.history)
 # RUS desaparece no use()
 
