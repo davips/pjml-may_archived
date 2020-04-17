@@ -69,3 +69,5 @@ class Chain(MinimalContainerN):
         for t in self.transformers:
             txts.append(t.__str__(depth))
         return '\n'.join(txts)
+
+#TODO: Chain should override uuid by merging uuids of its subtransformers

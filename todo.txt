@@ -5,6 +5,21 @@
     É impossível setar o random_state do mutual_info_classif, sem ser globalmente.
 
 ############# Prioridades #############
+-1a) Fazer (ou confirmar que) UUID ser cumulativo:
+    Se      d2 = A.use(d1)
+    Então   d2.uuid = uuid(d1.uuid + A.uuid)
+    Basta saber o uuid do dado atual e os uuids das transformações vindouras,
+    para calcular qual será o uuid do futuro dado final.
+
+-1b) Idealmente a operação de mesclagem de uuids seria reversível.
+    Podemos usar um XOR pra isso.
+    Se      d2 = A.use(d1)
+    Então   d2.uuid = d1.uuid XOR A.uuid
+    Basta saber o uuid do dado atual e os uuids das transformações vindouras,
+    para calcular qual será o uuid do futuro dado final.
+
+0) Individualizar uuids por matriz, assim evitar calculo inútil comprimindo pra hashear.
+
 1) Fazer o pai dos Transformers [DONE]
 
 2) Criar modulo proprio para o Sklean []
@@ -15,7 +30,9 @@
 
 5) Historico [Done]
 
-6) Cache []
+6a) Cache [done]
+
+6b) Cache SQL [ ]
 
 7) Por que a msg de erro [done]
     'AttributeError: type object 'NoData' has no attribute 'Xt''
@@ -104,6 +121,9 @@
 8b) Cada transformer informar quais matrizes gera ou altera.
     Permite otimizar tráfego e armazenamento, reduzindo-o a apenas o essencial.
     Atualmente isso é feito pelo usuário, no param fields do Cache.
+
+9) Deixar Cache só pro essencial e criar componente Exp pra armazenar pipeline e
+outras coisas relacionadas a experimento.
 
 ########################## Apêndice ###############################
 
