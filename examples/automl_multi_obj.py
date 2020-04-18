@@ -38,6 +38,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 from pjml.tool.meta.wrap import Wrap
 import numpy as np
 
+arq = "abalone3.arff"
 start = Timers._clock()
 disable_global_pretty_printing()
 np.random.seed(50)
@@ -53,7 +54,7 @@ np.random.seed(50)
 # print(s)
 # exit()
 expr = Pipeline(
-    OnlyApply(File("abalone3.arff"), Cache(Binarize())),
+    OnlyApply(File(arq), Cache(Binarize())),
     Cache(
         Partition(),
         Map(
@@ -101,7 +102,7 @@ pipe = full(rnd(expr, n=10), field='S', n=1).sample()
 
 
 print('apply .................')
-data = Pipeline(File("abalone3.arff"), Binarize()).apply().data
+data = Pipeline(File(arq), Binarize()).apply().data
 
 c = Chain(pipe.wrapped, Report())
 model = c.apply(data)
