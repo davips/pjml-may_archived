@@ -116,6 +116,16 @@ outras coisas relacionadas a experimento.
 
 10) Adotar tuplas, onde possível, devido à imutabilidade?
 
+11) Oferecer compactconfig como parâmetro opcional em alguns componentes?
+    Assumindo um máximo de 256 parâmetros e cada parâmetro discretizado em até 16777216 valores,
+    bastariam 7 bytes para representar unicamente uma config.
+    Havendo um máximo de 16777216 componentes, 3 bytes são suficientes pra identificar a classe do Transformer.
+    Entretanto, há configs aninhadas, o que torna a listagem de parâmetros imprevisível.
+    Alternativa: um componente poderia fornecer voluntariamente a opção de compactconfig como argumento secreto,
+    equivalente ao config, mas representada de maneira binária ótima.
+    Haveria um pretty printing para descompactá-lo e imprimí-lo de forma human-friendly.
+
+12) Adotar compressão com dicionário.
 ########################## Apêndice ###############################
 
 1)  UUID Proof:
@@ -235,3 +245,5 @@ outras coisas relacionadas a experimento.
 #                       'per line'],
 #             'pine': [1, 3, 5, 6, 8, 2, 4, 5, 8, 34, 67, 2, 4, 5, 67, 8, 89, 3, 45, 6, 78, 34, 2, 45]  # Wrapped list (more than one item per line.) <- wrapped comment (same as above)
 #         }
+
+
