@@ -1,4 +1,5 @@
 from pjdata.aux.compression import pack_data
+from pjdata.aux.encoders import md5digest, digest2pretty, UUID
 from pjdata.aux.serialization import serialize
 
 from pjdata.specialdata import NoData
@@ -16,10 +17,10 @@ class New(LightTransformer, NoDataHandler):
     """Source of Data object from provided matrices."""
 
     def __init__(self, **matrices):
-        actual_hashes = {
-            k: prettydigest(pack_data(v)) for k, v in matrices.items()
-        }
-        self._digest = md5digest(serialize(actual_hashes).encode())
+        # actual_hashes = {
+        #     k: UUID(md5digest(pack_data(v))) for k, v in matrices.items()
+        # }
+        # self._digest = md5digest(serialize(actual_hashes).encode())
         # TODO: will the matrices inside config break JSON, or cause other
         #  problems?
         super().__init__(matrices, deterministic=True)
@@ -35,8 +36,10 @@ class New(LightTransformer, NoDataHandler):
         self._enforce_nodata(data, 'u')
         return self.data
 
-    def _uuid_impl00(self):
-        return UUID(self._digest)
+    # TIP: commented out because uuid should include name@path,
+    # parent Transformer already do that.
+    # def _uuid_impl00(self):
+    #     return UUID(self._digest)
 
     @classmethod
     def _cs_impl(cls):

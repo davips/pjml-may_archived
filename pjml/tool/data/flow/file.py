@@ -55,7 +55,7 @@ class File(LightTransformer, NoDataHandler):
             'description': description,
             'hashes': actual_hashes
         }
-        self._digest = md5digest(serialize(actual_hashes).encode())
+        # self._digest = md5digest(serialize(actual_hashes).encode())
 
         super().__init__(config, deterministic=True)
         self.data = data
@@ -81,5 +81,5 @@ class File(LightTransformer, NoDataHandler):
     def transformations(self, step, clean=True):
         return [Transformation(self, 'u')]
 
-    def _uuid_impl00(self):
-        return UUID(self._digest)
+    # def _uuid_impl00(self):
+    #     return UUID(self._digest)

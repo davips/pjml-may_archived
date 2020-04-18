@@ -12,12 +12,12 @@ from pjml.tool.abc.mixin.timers import Timers
 
 class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     """A possibly interpretable ML model able to make predictions, or,
-    more generally, a data transformation.
+    more generally, data transformation.
 
-    data_before_apply can be a data object or directly its uuid
+    data_before_apply is a data object
 
     transformer is needed to define the following model members/values
-    (besides direct calls to trans):
+    (besides direct calls to transformer):
         use_impl, uuid, max_time, nodata_handler, transformations,
         name (based on transformer.longname)
     """
@@ -45,12 +45,20 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             return _kwargs
 
     def _uuid_impl00(self):
-        from pjdata.aux.encoders import uuid00
-        # Put mark 'm' to differentiate from uuid of applied data.
-        mark = uuid00(b'm')
-        return self.data_before_apply.uuid00 + self.transformer.uuid00 + mark
+        # Needless to put mark 'm' to differentiate from uuid of applied data,
+        # since applied data uuid is merged with transformation uuid, not
+        # transformer uuid.
+        return self.data_before_apply.uuid00 + self.transformer.uuid00
         # TODO: Should Container transformers override uuid in some cases?
         #  E.g. to avoid storing the same model twice in SGBD?
+        #  Chain(NB()) could have the same uuid as NB()
+        #  Chain(NB(), Report()) could have the same uuid as NB()
+        #  Regarding storage of duplicate Data, it seems not a problem, since
+        #  resulting Data is identified by transformations at the lowest level,
+        #  i.e. without NoOps like Report.
+        #  Should Transformer have a uuid2 based on transformations, we would
+        #  avoid duplicate models for "different" (i.e. containing different
+        #  NoOps) pipelines.
 
     @property
     @lru_cache()
