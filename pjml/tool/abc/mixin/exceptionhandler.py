@@ -3,7 +3,7 @@ from abc import abstractmethod
 import numpy
 
 from pjdata.aux.decorator import classproperty
-from pjdata.aux.encoders import UUID
+from pjml.tool.abc.mixin.timers import Timers
 
 
 class ExceptionHandler:
@@ -79,6 +79,8 @@ class ExceptionHandler:
         """Check consistency between resulting Data object and
         _transformations() implementation provided by the current
         component."""
+        #TODO: global(?) option to disable history checking (takes 0.2ms at most)
+        # st = Timers._clock()
         from pjdata.specialdata import NoData
         if dataout is NoData or dataout.isfrozen or dataout.allfrozen:
             return dataout
@@ -119,6 +121,7 @@ class ExceptionHandler:
 
             raise BadComponent(f'Inconsistent Data object history!')
 
+        # print((Timers._clock() - st)*1000, 'ms')
         return dataout
 
 

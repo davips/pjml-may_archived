@@ -35,7 +35,6 @@ class HeavyTransformer(Transformer, ABC):
                 data=data,
                 max_time=self.max_time
             )
-            self._check_history(data, model.data, self.transformations('a'))
 
             # Check result type.
             if not isinstance(model, Model):
@@ -45,6 +44,7 @@ class HeavyTransformer(Transformer, ABC):
             applied = data.updated(
                 self.transformations('a'), failure=str(e)
             )
+            self._check_history(data, applied, self.transformations('a'))
             return FailedModel(self, data, applied)
             # TODO: é possível que um container não complete o try acima?
             #  Caso sim, devemos gerar um ContainerModel aqui?
@@ -53,4 +53,5 @@ class HeavyTransformer(Transformer, ABC):
         time_spent = self._cpu() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+        self._check_history(data, model.data, self.transformations('a'))
         return model

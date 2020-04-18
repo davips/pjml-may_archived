@@ -35,7 +35,6 @@ class LightTransformer(Transformer, ABC):
                 data=data,
                 max_time=self.max_time
             )
-            self._check_history(data, model.data, self.transformations('a'))
 
             # Check result type.
             if not isinstance(model, Model):
@@ -53,7 +52,5 @@ class LightTransformer(Transformer, ABC):
         time_spent = self._cpu() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        # TODO: usar check_history aqui, to guide implementers whenever they
-        #  need to implement transformations()
-
+        self._check_history(data, model.data, self.transformations('a'))
         return model

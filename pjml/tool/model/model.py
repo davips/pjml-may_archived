@@ -107,7 +107,6 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
                 max_time=self.transformer.max_time,
                 **self.kwargs
             )
-            self._check_history(data, used, self.transformations('u'))
 
             # Check result type.
             isdata_or_collection = isinstance(used, AbstractData)
@@ -126,10 +125,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         time_spent = self._cpu() - start
         self._dishandle_warnings()  # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-        # TODO: check_history to guide implementers whenever they need to
-        #  implement transformations()
-
-        return used
+        return self._check_history(data, used, self.transformations('u'))
 
     def transformations(self, step,
                         clean=True):  # WARN: mutable monkey patched method!

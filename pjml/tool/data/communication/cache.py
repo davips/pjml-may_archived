@@ -85,7 +85,7 @@ class Cache(Container1, Storer):
         hollow = data.hollow_extended(transformations=transformations)
         output_data = self.storage.fetch(
             hollow, self.fields,
-            training_data_uuid=training_data.uuid, lock=True
+            training_data_uuid=training_data.uuid00, lock=True
         )
 
         # Use if still needed  ----------------------------------
@@ -110,11 +110,11 @@ class Cache(Container1, Storer):
                 used = model.use(data, exit_on_error=False)
             except:
                 self.storage.unlock(hollow,
-                                    training_data_uuid=training_data.uuid)
+                                    training_data_uuid=training_data.uuid00)
                 traceback.print_exc()
                 exit(0)
             self.storage.store(used, self.fields,
-                               training_data_uuid=training_data.uuid,
+                               training_data_uuid=training_data.uuid00,
                                check_dup=False)
         else:
             used = output_data
