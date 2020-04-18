@@ -4,8 +4,13 @@ from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
 from pjml.config.description.node import Node
 from pjml.config.description.parameter import CatP
+from pjml.pipeline import Pipeline
 from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.abc.mixin.functioninspector import FunctionInspector
+from pjml.tool.data.communication.report import Report
+from pjml.tool.data.flow.applyusing import ApplyUsing
+from pjml.tool.data.flow.file import File
+from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.model.model import Model
 
 
@@ -25,15 +30,16 @@ class MConcat(LightTransformer, FunctionInspector):
         Name of the matrix to be evaluated.
     """
 
-    def __init__(self, input_field1, input_field2, output_field, direction):
+    def __init__(self, fields, output_field, direction='horizontal'):
         super().__init__(self._to_config(locals()), deterministic=True)
-        self.input_field1, self.input_field2 = input_field1, input_field2
+        self.fields = fields
         self.output_field = output_field
 
         if direction == 'vertical':
-            self.direction = 1
-        elif direction == 'horizontal':
             self.direction = 0
+        elif direction == 'horizontal':
+            self.direction = 1
+
         else:
             raise Exception(
                 f"Wrong parameter: "
@@ -45,11 +51,10 @@ class MConcat(LightTransformer, FunctionInspector):
         return Model(self, data, applied)
 
     def _use_impl(self, data, step='u'):
-        m1 = data.field(self.input_field1, self)
-        m2 = data.field(self.input_field2, self)
+        mats = [data.field(f, self) for f in self.fields]
         dic = {
             self.output_field: np.concatenate(
-                (m1, m2), axis=self.direction
+                tuple(mats), axis=self.direction
             )
         }
         return data.updated(
@@ -66,3 +71,13 @@ class MConcat(LightTransformer, FunctionInspector):
             'output_field': CatP(choice, items=['S'])
         }
         return TransformerCS(Node(params=params))
+
+# TODO: create a proper test?
+# p = Pipeline(
+#     File('iris.arff'),
+#     ApplyUsing(NB()),
+#     Report('$X $Y $Z'),
+#     MConcat(fields=['X','Y','Z'], output_field='A'),
+#     Report('$A')
+# )
+# p.apply()

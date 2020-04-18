@@ -26,15 +26,24 @@ class Report(Invisible):
 
         return Model(self, data, data)
 
-    def _use_impl(self, data, **kwargs):
+    def _use_impl(self, data, *args):
         print('[use] ', self._interpolate(self.text, data))
         return data
 
     @classmethod
     def _interpolate(cls, text, data):
+        # TODO: global(?) option to reprettify line breaks from numpy arrays
+        def samerow(M):
+            return np.array_repr(M).replace('\n      ', '').replace('  ', '')
+
         def f(obj_match):
-            M = data.field(obj_match.group(1), cls)
-            return np.array_repr(np.round(M, decimals=4)).replace('\n      ', '').replace('  ', '')
+            field = obj_match.group(1)
+            M = data.field(field, cls)
+            try:
+                if np.issubdtype(M, np.number):
+                    return samerow(np.round(M, decimals=4))
+            finally:
+                return samerow(M)
 
         p = re.compile(r'\$([a-zA-Z]+)')
         return cls._eval(p.sub(f, text), data)
