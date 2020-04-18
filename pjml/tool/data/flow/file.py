@@ -39,7 +39,7 @@ class File(LightTransformer, NoDataHandler):
             raise Exception('Path should end with /', path)
         if name.endswith('arff'):
             data = read_arff(path + name, description)
-            actual_hashes = data.all_uuids
+            actual_hashes = data.uuids
         else:
             raise Exception('Unrecognized file extension:', name)
         if hashes:

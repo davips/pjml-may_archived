@@ -11,4 +11,5 @@ class Expand(LightConfigLess, Invisible):
         return Model(self, data, applied)
 
     def _use_impl(self, data, **kwargs):
-        return InfiniteCollection(data, data.history, data.failure)
+        return InfiniteCollection(data, data.history, data.failure,
+                                  data.uuid00 + self.transformations('u')[0].uuid00)

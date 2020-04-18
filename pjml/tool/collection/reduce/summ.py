@@ -2,6 +2,7 @@ import numpy
 from numpy import mean
 from numpy import std
 from pjdata.data import Data
+from pjdata.specialdata import NoData
 
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
@@ -34,8 +35,8 @@ class Summ(Reduce):
                 "Warning: You shuld use 'Shirink()' to handling collections "
                 "with None. ")
 
-        data = Data(
-            History(collection.history.transformations),
+        data = NoData.updated(
+            collection.history.transformations,
             failure=collection.failure,
             **collection.original_data.matrices
         )
