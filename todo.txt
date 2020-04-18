@@ -58,6 +58,14 @@
 
 17) Incluir versão no config
 
+18) Remodelar (levemente) hierarquia de classes para que o implementador de
+    componentes componha sua herança com mixins. Ideia futura(0) é parecida.
+    Há vários eixos independentes a se fazer escolhas:
+    apply==use?             ex. Metric, Expand
+    configless?             ex. Expand
+    invisible?              ex. Report
+    use depende de apply?   ex. Predictor
+
 ############# Ideias futuras #############
 
 0) Dividir componentes entre MonoTransformer, LightTransformer e HeavyTransformer
@@ -126,6 +134,7 @@ outras coisas relacionadas a experimento.
     Haveria um pretty printing para descompactá-lo e imprimí-lo de forma human-friendly.
 
 12) Adotar compressão com dicionário.
+
 ########################## Apêndice ###############################
 
 1)  UUID Proof:

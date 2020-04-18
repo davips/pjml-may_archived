@@ -17,7 +17,7 @@ class HeavyConfigLess(HeavyTransformer, ABC):
 
 
 class LightConfigLess(LightTransformer, ABC):
-    """Parent class of all transformers without config."""
+    """Parent class of all transformers without config. Also, apply==use."""
 
     def __init__(self):
         super().__init__({}, deterministic=True)
@@ -25,3 +25,6 @@ class LightConfigLess(LightTransformer, ABC):
     @classmethod
     def _cs_impl(cls):
         return EmptyCS()
+
+    def transformations(self, step, clean=True):
+        return super().transformations('u')

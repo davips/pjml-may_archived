@@ -28,15 +28,15 @@ class Summ(Reduce):
         super().__init__(self._to_config(locals()), deterministic=True)
         self.field = field
 
-    def _use_impl(self, collection, step='u'):
+    def _use_impl(self, collection, **kwargs):
         if collection.has_nones:
             # collection = Shrink().apply(collection)
             raise Exception(
-                "Warning: You shuld use 'Shirink()' to handling collections "
+                "Warning: You shuld use 'Shrink()' to handling collections "
                 "with None. ")
 
         data = NoData.updated(
-            collection.history.transformations,
+            collection.history,
             failure=collection.failure,
             **collection.original_data.matrices
         )
@@ -44,9 +44,9 @@ class Summ(Reduce):
         res = self.function(collection)
         if isinstance(res, tuple):
             summ = numpy.array(res)
-            return data.updated(self.transformations(step), S=summ)
+            return data.updated(self.transformations('u'), S=summ)
         else:
-            return data.updated(self.transformations(step), s=res)
+            return data.updated(self.transformations('u'), s=res)
 
     @classmethod
     def _cs_impl(cls):

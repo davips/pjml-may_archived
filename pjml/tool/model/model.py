@@ -44,8 +44,11 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
             _kwargs.update(self._kwargs)
             return _kwargs
 
-    def _uuid_impl(self):
-        return 'm', self.data_before_apply.uuid + self.transformer.uuid
+    def _uuid_impl00(self):
+        from pjdata.aux.encoders import uuid00
+        # Put mark 'm' to differentiate from uuid of applied data.
+        mark = uuid00(b'm')
+        return self.data_before_apply.uuid00 + self.transformer.uuid00 + mark
         # TODO: Should Container transformers override uuid in some cases?
         #  E.g. to avoid storing the same model twice in SGBD?
 

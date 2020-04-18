@@ -39,7 +39,7 @@ from pjml.tool.meta.wrap import Wrap
 import numpy as np
 
 start = Timers._clock()
-disable_global_pretty_printing()
+# disable_global_pretty_printing()
 np.random.seed(50)
 
 # print(SelectKB.cs)
@@ -53,21 +53,23 @@ np.random.seed(50)
 # print(s)
 # exit()
 expr = Pipeline(
-    OnlyApply(File("abalone3.arff"), Cache(Binarize())),
-    Cache(
+    OnlyApply(File("abalone3.arff"), Binarize()),
+    # OnlyApply(File("abalone3.arff"), Cache(Binarize())),
+    # Cache(
         Partition(),
         Map(
             Wrap(
                 select(SelectBest),  # slow??
-                Cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
+                ApplyUsing(select(DT, NB, hold(RF, n_estimators=40))),
+                # Cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
                 OnlyApply(Metric(functions=['length'])),
                 OnlyUse(Metric(functions=['accuracy', 'error'])),
                 # AfterUse(Metric(function=['diversity']))
             ),
         ),
         # Report('HISTORY ... S: {history}'),
-        Summ(function='mean_std')
-    ),
+        Summ(function='mean_std'),
+    # ),
     Report('mean and std ... S: $S'),
 
     OnlyApply(Copy(from_field="S", to_field="B")),

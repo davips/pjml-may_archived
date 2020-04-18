@@ -3,6 +3,7 @@ from abc import abstractmethod
 import numpy
 
 from pjdata.aux.decorator import classproperty
+from pjdata.aux.encoders import UUID
 
 
 class ExceptionHandler:
@@ -83,19 +84,27 @@ class ExceptionHandler:
             return dataout
 
         # Revert all presumed transformations.
-        previous_uuid = dataout.uuid
-        for transformation in transformations:
-            # TODO: catch past uuidzero subtraction.
-            previous_uuid -= transformation
+        previous_uuid = dataout.uuid00
+        # print(transformations)
+        # print('9999999999999999999999999999999999999999')
+        for transformation in reversed(transformations):
+            # TODO: catch past uuidzero subtraction and alert user of
+            #  transformations in excess.
+            # print('sai', previous_uuid, 'do', transformation.uuid00, transformation.name)
+            previous_uuid -= transformation.uuid00
+            # print('entrou', previous_uuid)
+            # print()
 
         # Check if reverted uuid is the same as the one from original data.
-        if previous_uuid != datain.uuid:
-            recent = dataout.history.transformations[datain.history.size:]
-            print('\nActual history:::::::::::::::::')
+        if previous_uuid != datain.uuid00:
+            recent = dataout.history[len(datain.history):]
+            print('\nActual history::::::::::::::: [estimated datain:',
+                  previous_uuid)
             for t in recent:
                 print(f'{t}')
 
-            print(f'\nExpected history::::::::::::::::::::::::::::::::')
+            print(f'\nExpected history:::::::::::::::: [datain:',
+                  datain.uuid00)
             for t in transformations:
                 print(f'{t}')
 

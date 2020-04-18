@@ -1,33 +1,20 @@
-import os
-from pathlib import Path
-
 import numpy
 
-from cururu.disk import save, load
-from cururu.persistence import DuplicateEntryException
 from pjdata.data import Data
-from pjdata.data_creation import read_arff
-from pjdata.dataset import Dataset
-from pjdata.fastdata import FastData
-from pjml.macro import evaluator
 from pjml.pipeline import Pipeline
 from pjml.tool.data.communication.cache import Cache
 from pjml.tool.data.communication.report import Report
 from pjml.tool.data.evaluation.metric import Metric
 from pjml.tool.data.evaluation.split import Split
-from pjml.tool.data.flow.save import Save
 from pjml.tool.data.flow.applyusing import ApplyUsing
 from pjml.tool.data.flow.file import File
-from pjml.tool.data.flow.source import Source
-from pjml.tool.data.flow.store import Store
-from pjml.tool.data.manipulation.keep import Keep
+from pjml.tool.data.flow.save import Save
 from pjml.tool.data.modeling.supervised.classifier.dt import DT
 from pjml.tool.data.modeling.supervised.classifier.nb import NB
 from pjml.tool.data.modeling.supervised.classifier.svmc import SVMC
 from pjml.tool.data.processing.feature.binarize import Binarize
 from pjml.tool.data.processing.instance.sampler.over.random import OverS
 from pjml.tool.meta.mfe import MFE
-from pjdata import data
 
 # ML 1 ========================================================================
 # # Armazenar dataset, sem depender do pacote pjml.
@@ -37,15 +24,13 @@ from pjdata import data
 #     PickleServer().store(read_arff('iris.arff'))
 # except DuplicateEntryException:
 #     pass
-from pjml.tool.meta.wrap import Wrap
 
 pipe = Pipeline(
     File('bank.arff'),
     Binarize(),
     Report('$X')
 )
-print(pipe.apply())
-# exit(0)
+pipe.apply()
 
 #     # Source('messedup-dataset'),
 #     Keep(evaluator(
@@ -79,11 +64,11 @@ print(pipe.apply())
 # print(pipe)
 
 print(111111)
-dout = pipe.apply()
+m = pipe.apply()
 # print(dout.history)
 # save('/tmp/cururu/pipea', pipe)
 print(222222)
-dout = pipe.use()
+dout = m.use()
 print(333333)
 
 exit(0)
@@ -94,7 +79,7 @@ print('Testing nominal data...')
 o = numpy.array([['a', 1], ['b', 2], ['c', 3], ['d', 4], ['e', 5]])
 print(o, '<- all')
 print()
-d = Data(Dataset('asd', 'dsa'), X=o, Y=numpy.array([o[:, 1]]).T)
+d = Data(X=o, Y=numpy.array([o[:, 1]]).T)
 print(Split(partition=0).apply(d).X, '<- split 0')
 print(Split(partition=1).apply(d).X, '<- split 1')
 
@@ -121,8 +106,8 @@ pipe = Pipeline(
     Metric(functions='accuracy'),
     Report('Accuracy: $r'),
 )
-dataout = pipe.apply()
-dataout2 = pipe.use()
+m = pipe.apply()
+dataout2 = m.use()
 
 # ML 3 ========================================================================
 pipe = Pipeline(
@@ -131,7 +116,7 @@ pipe = Pipeline(
     Cache(MFE()),
     Report('\nMeta-features Names: $Md \nMeta-features Values: $M \n  {name}')
 )
-dataout = pipe.apply()
+dataout = pipe.apply().data
 
 """
 Problemas filosoficos

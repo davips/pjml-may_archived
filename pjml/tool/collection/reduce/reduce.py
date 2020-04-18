@@ -11,5 +11,8 @@ class Reduce(LightTransformer, FunctionInspector, ABC):
         self.function = self.function_from_name[config['function']]
 
     def _apply_impl(self, collection):
-        applied = self._use_impl(collection, step='a')
+        applied = self._use_impl(collection)
         return Model(self, collection, applied)
+
+    def transformations(self, step, clean=True):
+        return super().transformations('u')

@@ -79,4 +79,4 @@ class Metric(LightTransformer, FunctionInspector):
 
     @staticmethod
     def _fun_length(data, target, prediction):
-        return data.history.size
+        return len(data.history)
