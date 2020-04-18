@@ -2,7 +2,6 @@ import numpy
 from numpy import mean
 from numpy import std
 from pjdata.data import Data
-from pjdata.history import History
 
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice

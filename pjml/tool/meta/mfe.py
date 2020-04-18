@@ -2,11 +2,11 @@ import numpy as np
 import pymfe.mfe
 
 from pjml.config.description.cs.emptycs import EmptyCS
-from pjml.tool.abc.transformer import Transformer
+from pjml.tool.abc.lighttransformer import LightTransformer
 from pjml.tool.model.model import Model
 
 
-class MFE(Transformer):
+class MFE(LightTransformer):
     """Uniformly distribute examples along each attribute to make them
     independent of scale and unit measure.
 

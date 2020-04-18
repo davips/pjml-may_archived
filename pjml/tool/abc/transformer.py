@@ -169,8 +169,8 @@ class Transformer(Printable, Identifyable, ExceptionHandler, Timers, ABC):
         del config['__class__']
         return config
 
-    def _uuid_impl(self):
-        return 't', self.serialized
+    def _uuid_impl00(self):
+        return self.serialized
 
     @classproperty
     @lru_cache()

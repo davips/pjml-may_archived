@@ -1,5 +1,5 @@
-from functools import lru_cache
-
+from pjdata.aux.encoders import md5digest, UUID
+from pjdata.aux.serialization import serialize
 from pjdata.data_creation import read_arff
 from pjdata.step.transformation import Transformation
 from pjml.config.description.cs.transformercs import TransformerCS
@@ -32,31 +32,30 @@ class File(LightTransformer, NoDataHandler):
     def __init__(self,
                  name, path='./',
                  description='No description.',
-                 matrices_hash=None):
+                 hashes=None):
 
         # Some checking.
         if not path.endswith('/'):
             raise Exception('Path should end with /', path)
         if name.endswith('arff'):
             data = read_arff(path + name, description)
+            actual_hashes = data.all_uuids
         else:
             raise Exception('Unrecognized file extension:', name)
-        if matrices_hash:
-            if 'f' + matrices_hash != data.history[0].transformer_uuid:
+        if hashes:
+            if hashes != actual_hashes:
                 raise Exception(
-                    f'Provided hash f{matrices_hash} differs from actual hash '
-                    f'{data.history[0].transformer_uuid}!')
-        else:
-            matrices_hash = data.history[0].transformer_uuid[1:]
+                    f'Provided hashes f{hashes} differs from actual hashes '
+                    f'{actual_hashes}!')
 
         # Unique config for this file.
         config = {
             'name': name,
             'path': path,
             'description': description,
-            'matrices_hash': matrices_hash
+            'hashes': actual_hashes
         }
-        self.matrices_hash = matrices_hash
+        self._digest = md5digest(serialize(actual_hashes).encode())
 
         super().__init__(config, deterministic=True)
         self.data = data
@@ -71,17 +70,16 @@ class File(LightTransformer, NoDataHandler):
 
     @classmethod
     def _cs_impl(cls):
-        from pjdata.mixin.identifyable import Identifyable
         params = {
             'path': FixedP('./'),
             'name': FixedP('iris.arff'),
             'description': FixedP('No description.'),
-            'matrices_hash': Identifyable.nothing
+            'matrices_hash': FixedP('1234567890123456789')
         }
         return TransformerCS(Node(params=params))
 
     def transformations(self, step, clean=True):
         return [Transformation(self, 'u')]
 
-    def _uuid_impl(self):
-        return 'uuid', 'f' + self.matrices_hash
+    def _uuid_impl00(self):
+        return UUID(self._digest)
