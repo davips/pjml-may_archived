@@ -73,8 +73,7 @@ expr = Pipeline(
 
     OnlyApply(Copy(from_field="S", to_field="B")),
     OnlyApply(Report('copy S to B ... B: $B')),
-    OnlyUse(MConcat(input_field1="B", input_field2="S",
-                    output_field="S", direction='vertical')),
+    OnlyUse(MConcat(fields=["B", "S"], output_field="S")),
     OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
     OnlyUse(Calc(functions=['flatten'])),
     OnlyUse(Report('flatten S ... S: $S')),
