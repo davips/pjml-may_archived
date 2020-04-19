@@ -55,8 +55,8 @@ np.random.seed(50)
 # s = cs.sample()
 # print(s)
 # exit()
-# cache = partial(Cache, engine='dump', blocking=not True)
-cache = partial(Cache, engine='sqlite', blocking=not True)
+cache = partial(Cache, engine='dump', blocking=not True)
+# cache = partial(Cache, engine='sqlite', blocking=not True)
 
 expr = Pipeline(
     OnlyApply(File(arq), cache(Binarize())),
