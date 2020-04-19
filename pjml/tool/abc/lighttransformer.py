@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Union
 
 from pjdata.data import Data
 from pjml.tool.abc.transformer import Transformer
@@ -12,7 +13,7 @@ class LightTransformer(Transformer, ABC):
         """Each component should implement its core 'apply' functionality."""
         return data
 
-    def apply(self, data: Data = NoData, exit_on_error=True):
+    def apply(self, data: Union[type, Data] = NoData, exit_on_error=True):
         if data.isfrozen or data.failure:
             return Model(self, data, data)
         if data.allfrozen:

@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Union
 
 from pjdata.collection import Collection
 from pjdata.data import Data
@@ -10,7 +11,7 @@ from pjml.tool.model.specialmodel import FailedModel, EarlyEndedModel
 class HeavyTransformer(Transformer, ABC):
     from pjdata.specialdata import NoData
 
-    def apply(self, data: Data = NoData, exit_on_error=True):
+    def apply(self, data: Union[type, Data] = NoData, exit_on_error=True):
         if data.isfrozen:
             return EarlyEndedModel(self, data, data)
         if data.allfrozen:

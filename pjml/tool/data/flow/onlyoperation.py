@@ -1,3 +1,5 @@
+from typing import Union
+
 from pjdata.data import Data
 from pjml.config.description.cs.containercs import ContainerCS
 from pjml.tool.abc.lighttransformer import LightTransformer
@@ -29,7 +31,8 @@ class OnlyApply(MinimalContainer1):
     def _use_impl(self, data, **kwargs):
         return data
 
-    def apply(self, data: Data = NoData, exit_on_error=True):
+    def apply(self: LightTransformer, data: Union[type, Data] = NoData,
+              exit_on_error=True):
         # We are using here the 'apply()' method from LightTransformer since
         # OnlyApply is less harsh than a real HeavyTransformer.
         return LightTransformer.apply(self, data, exit_on_error=exit_on_error)
@@ -59,7 +62,8 @@ class OnlyUse(MinimalContainer1):
     def _use_impl(self, data, **kwargs):
         return self.transformer._use_impl(data, )
 
-    def apply(self, data: Data = NoData, exit_on_error=True):
+    def apply(self: LightTransformer, data: Union[type, Data] = NoData,
+              exit_on_error=True):
         # We are using here the 'apply()' method from LightTransformer since
         # OnlyUse is less harsh than a real HeavyTransformer.
         return LightTransformer.apply(self, data, exit_on_error=exit_on_error)

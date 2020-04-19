@@ -1,5 +1,6 @@
 from abc import ABC
 from functools import lru_cache
+from typing import Union
 
 from pjdata.abc.abstractdata import AbstractData
 from pjdata.collection import Collection
@@ -65,7 +66,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     def name(self):
         return f'Model[{self.transformer.longname}]'
 
-    def use(self, data: Data = NoData, own_data=False, exit_on_error=True):
+    def use(self, data: Union[type, Data] = NoData, own_data=False, exit_on_error=True):
         """Testing step (usually). Predict/transform/do nothing/evaluate/... Data.
 
         Parameters
