@@ -14,7 +14,9 @@ from pjml.tool.model.model import Model
 
 
 class New(LightTransformer, NoDataHandler):
-    """Source of Data object from provided matrices."""
+    """Source of Data object from provided matrices.
+
+    It is still unclear what is the use case for this transformer."""
 
     def __init__(self, **matrices):
         # actual_hashes = {
