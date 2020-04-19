@@ -1,3 +1,5 @@
+from functools import partial
+
 from time import sleep
 
 from cururu.persistence import Persistence
@@ -53,21 +55,23 @@ np.random.seed(50)
 # s = cs.sample()
 # print(s)
 # exit()
+cache = partial(Cache, engine='sqlite', blocking=not True)
+
 expr = Pipeline(
-    OnlyApply(File(arq), Cache(Binarize())),
-    Cache(
+    OnlyApply(File(arq), cache(Binarize())),
+    cache(
         Partition(),
         Map(
             Wrap(
                 select(SelectBest),  # slow??
-                Cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
+                cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
                 OnlyApply(Metric(functions=['length'])),
                 OnlyUse(Metric(functions=['accuracy', 'error'])),
                 # AfterUse(Metric(function=['diversity']))
             ),
         ),
         # Report('HISTORY ... S: {history}'),
-        Summ(function='mean_std')
+        Summ(function='mean_std'),
     ),
     Report('mean and std ... S: $S'),
 

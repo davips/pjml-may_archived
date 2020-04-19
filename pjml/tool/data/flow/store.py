@@ -47,7 +47,8 @@ class Store(Invisible, Storer):
         dataset = Dataset(self.model[0] + uuid_, self.model[1])
         new_data = Data(dataset, **data.matrices)
         try:
-            self.storage.store(new_data, fields=self.fields)
+            self.storage.store(new_data, fields=self.fields,
+                               training_data_uuid=, check_dup=)
         except DuplicateEntryException as e:
             print(e)
         return data
