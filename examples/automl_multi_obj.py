@@ -58,6 +58,10 @@ np.random.seed(50)
 cache = partial(Cache, engine='dump', blocking=not True)
 # cache = partial(Cache, engine='sqlite', blocking=not True)
 
+# cache = partial(Cache,
+#                 engine='mysql', db='paje:@143.107.183.114/paje',
+#                 blocking=not True)
+
 expr = Pipeline(
     OnlyApply(File(arq), cache(Binarize())),
     cache(
