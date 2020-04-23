@@ -97,6 +97,11 @@ class ExceptionHandler:
             transformed_uuid -= transformation.uuid00
             print('entrou', transformed_uuid)
             print()
+            # print('sai', transformed_uuid, 'do', transformation.uuid00,
+            #       transformation.name)
+            transformed_uuid -= transformation.uuid00
+            # print('entrou', transformed_uuid)
+            # print()
 
         # Check if reverted uuid is the same as the one from original data.
         if transformed_uuid != datain.uuid00:
