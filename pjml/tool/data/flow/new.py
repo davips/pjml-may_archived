@@ -1,4 +1,4 @@
-from pjdata.aux.compression import pack_data
+from pjdata.aux.compression import pack
 from pjdata.aux.encoders import md5digest, digest2pretty, UUID
 from pjdata.aux.serialization import serialize
 

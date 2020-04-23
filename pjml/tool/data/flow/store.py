@@ -1,6 +1,6 @@
 from cururu.persistence import DuplicateEntryException
 from cururu.storer import Storer
-from pjdata.aux.compression import pack_data
+from pjdata.aux.compression import pack
 from pjdata.data import Data
 from pjml.config.description.cs.transformercs import TransformerCS
 from pjml.config.description.distributions import choice
@@ -41,7 +41,7 @@ class Store(Invisible, Storer):
         # Enforce a unique name.
         uuid_ = ''
         for name in self.fields:
-            uuid_ += uuid(pack_data(data.field(name, self)))
+            uuid_ += uuid(pack(data.field(name, self)))
         uuid_ = uuid(uuid_.encode())[:7]
 
         dataset = Dataset(self.model[0] + uuid_, self.model[1])
