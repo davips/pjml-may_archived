@@ -33,6 +33,8 @@ class Cache(Container1):
             transformers = args
         if fields is None:
             fields = ['X', 'Y', 'Z']
+            # TODO: fields: 'all', 'new', ['X', 'Y', 'Z']
+
         if settings is None:
             settings = {}
         config = self._to_config(locals())
@@ -49,7 +51,7 @@ class Cache(Container1):
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
 
         transformations = self.transformer.transformations('a')
-        hollow = data.hollow_extended(transformations=transformations)
+        hollow = data.mockup(transformations=transformations)
         output_data = self.storage.fetch(hollow, self.fields, lock=True)
 
         # pra carregar modelo [outdated code here!!]:
@@ -85,15 +87,15 @@ class Cache(Container1):
     def _use_impl(self, data, model=None, **kwargs):
         training_data = model.data_before_apply
         transformations = self.transformer.transformations('u')
-        hollow = data.hollow_extended(transformations=transformations)
+        mockup = data.mockup(transformations=transformations)
         output_data = self.storage.fetch(
-            hollow, self.fields,
+            mockup, self.fields,
             training_data_uuid=training_data.uuid00, lock=True
         )
 
         # Use if still needed  ----------------------------------
         if output_data is None:
-            # If the apply step was simulated by cache, but the use step is
+            # If the apply step was bypassed by cache, but the use step is
             # not fetchable, the internal model is not usable. We need to
             # create a usable Model resurrecting the internal transformer or
             # loading it from a previously dumped model.
@@ -112,7 +114,7 @@ class Cache(Container1):
             try:
                 used = model.use(data, exit_on_error=False)
             except:
-                self.storage.unlock(hollow,
+                self.storage.unlock(mockup,
                                     training_data_uuid=training_data.uuid00)
                 traceback.print_exc()
                 exit(0)

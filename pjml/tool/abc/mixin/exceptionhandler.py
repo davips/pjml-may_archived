@@ -89,20 +89,15 @@ class ExceptionHandler:
 
         # Revert all presumed transformations.
         transformed_uuid = dataout.uuid00
-        # print(transformations)
-        # print('9999999999999999999999999999999999999999')
         for transformation in reversed(transformations):
             # TODO: catch past uuidzero subtraction and alert user of
             #  transformations in excess.
-            print('sai', transformed_uuid, 'do', transformation,
-                  transformation.name)
+            oldtransformed_uuid = transformed_uuid
             transformed_uuid -= transformation.uuid00
             print('entrou', transformed_uuid)
+            print('saiu', oldtransformed_uuid)
+            print('do', transformation, )
             print()
-            # print('sai', transformed_uuid, 'do', transformation.uuid00,
-            #       transformation.name)
-            # print('entrou', transformed_uuid)
-            # print()
 
         # Check if reverted uuid is the same as the one from original data.
         if transformed_uuid != datain.uuid00:
