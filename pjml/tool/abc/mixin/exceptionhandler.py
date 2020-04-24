@@ -101,7 +101,6 @@ class ExceptionHandler:
             print()
             # print('sai', transformed_uuid, 'do', transformation.uuid00,
             #       transformation.name)
-            transformed_uuid -= transformation.uuid00
             # print('entrou', transformed_uuid)
             # print()
 
