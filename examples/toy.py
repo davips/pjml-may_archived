@@ -26,9 +26,10 @@ from pjml.tool.meta.mfe import MFE
 #     pass
 
 pipe = Pipeline(
-    File('bank.arff'),
-    Binarize(),
-    Report('$X')
+    Cache(File('bank.arff'),
+          Binarize(),
+          Report('$X')
+          )
 )
 pipe.apply()
 
@@ -73,7 +74,6 @@ print(333333)
 
 exit(0)
 
-
 print()
 print('Testing nominal data...')
 o = numpy.array([['a', 1], ['b', 2], ['c', 3], ['d', 4], ['e', 5]])
@@ -85,7 +85,6 @@ print(Split(partition=1).apply(d).X, '<- split 1')
 
 exit(0)
 Save('lixo.arff').apply(dout)
-
 
 # ML 2 ========================================================================
 pipe = Pipeline(
