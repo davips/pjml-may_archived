@@ -1,3 +1,4 @@
+import json
 from abc import abstractmethod
 
 import numpy
@@ -52,7 +53,8 @@ class ExceptionHandler:
 
             # HINTS
             if str(e).__contains__('cannot perform reduce with flexible type') \
-                    or str(e).__contains__('could not convert string to float'):
+                    or str(e).__contains__(
+                'could not convert string to float'):
                 from pjml.tool.data.processing.feature.binarize import Binarize
                 print(f'HINT: your pipeline may be missing a '
                       f'{Binarize.name} component')
@@ -79,7 +81,7 @@ class ExceptionHandler:
         """Check consistency between resulting Data object and
         _transformations() implementation provided by the current
         component."""
-        #TODO: global(?) option to disable history checking (takes 0.2ms at most)
+        # TODO: global(?) option to disable history checking (takes 0.2ms at most)
         # st = Timers._clock()
         from pjdata.specialdata import NoData
         if dataout is NoData or dataout.isfrozen or dataout.allfrozen:

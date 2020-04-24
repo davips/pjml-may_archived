@@ -28,10 +28,18 @@ from pjml.tool.meta.mfe import MFE
 pipe = Pipeline(
     Cache(File('bank.arff'),
           Binarize(),
+          NB(),
+          Metric(),
           Report('$X')
           )
 )
-pipe.apply()
+print('aaaaaaaa')
+m = pipe.apply()
+print(m.data)
+print('uuuuuuuuuuuuuuu')
+d = m.use()
+print(d)
+exit()
 
 #     # Source('messedup-dataset'),
 #     Keep(evaluator(
