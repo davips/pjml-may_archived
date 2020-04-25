@@ -40,7 +40,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 from pjml.tool.meta.wrap import Wrap
 import numpy as np
 
-arq = "abalone3.arff"
+arq = "iris.arff"
 start = Timers._clock()
 disable_global_pretty_printing()
 np.random.seed(50)
@@ -55,43 +55,50 @@ np.random.seed(50)
 # s = cs.sample()
 # print(s)
 # exit()
-# cache = partial(Cache, engine='dump', blocking=not True)
+# cache = partial(Cache, engine='dump', blocking=True)
 cache = partial(Cache, engine='sqlite', blocking=not True)
 
 # cache = partial(Cache,
 #                 engine='mysql', db='paje:@143.107.183.114/paje',
 #                 blocking=not True)
 
-expr = Pipeline(
-    OnlyApply(File(arq), cache(Binarize())),
-    cache(
-        Partition(),
-        Map(
-            Wrap(
-                select(SelectBest),  # slow??
-                cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
-                OnlyApply(Metric(functions=['length'])),
-                OnlyUse(Metric(functions=['accuracy', 'error'])),
-                # AfterUse(Metric(function=['diversity']))
-            ),
-        ),
-        # Report('HISTORY ... S: {history}'),
-        Summ(function='mean_std'),
-    ),
-    Report('mean and std ... S: $S'),
+# cache = partial(Cache, engine='amnesia', blocking=True)
 
-    OnlyApply(Copy(from_field="S", to_field="B")),
-    OnlyApply(Report('copy S to B ... B: $B')),
-    OnlyUse(MConcat(fields=["B", "S"], output_field="S")),
-    OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
-    OnlyUse(Calc(functions=['flatten'])),
-    OnlyUse(Report('flatten S ... S: $S')),
-    OnlyUse(Calc(functions=['mean'])),
-    OnlyUse(Report('mean S ... S: $S')),
+expr = Pipeline(File(arq), cache(ApplyUsing(NB())))
+p = expr
+p.apply()
+exit()
+#     expr = Pipeline(
+#     OnlyApply(File(arq), cache(Binarize())),
+#     cache(
+#         Partition(),
+#         Map(
+#             Wrap(
+#                 select(SelectBest),  # slow??
+#                 cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
+#                 OnlyApply(Metric(functions=['length'])),
+#                 OnlyUse(Metric(functions=['accuracy', 'error'])),
+#                 # AfterUse(Metric(function=['diversity']))
+#             ),
+#         ),
+#         # Report('HISTORY ... S: {history}'),
+#         Summ(function='mean_std'),
+#     ),
+#     Report('mean and std ... S: $S'),
+#
+#     OnlyApply(Copy(from_field="S", to_field="B")),
+#     OnlyApply(Report('copy S to B ... B: $B')),
+#     OnlyUse(MConcat(fields=["B", "S"], output_field="S")),
+#     OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
+#     OnlyUse(Calc(functions=['flatten'])),
+#     OnlyUse(Report('flatten S ... S: $S')),
+#     OnlyUse(Calc(functions=['mean'])),
+#     OnlyUse(Report('mean S ... S: $S')),
+#
+#     Report('End ...\n'),
+#
+# )
 
-    Report('End ...\n'),
-
-)
 
 # diversidade,
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')

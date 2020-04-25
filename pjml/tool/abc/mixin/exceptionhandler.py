@@ -87,30 +87,35 @@ class ExceptionHandler:
         if dataout is NoData or dataout.isfrozen or dataout.allfrozen:
             return dataout
 
-        # Revert all presumed transformations.
-        transformed_uuid = dataout.uuid00
-        for transformation in reversed(transformations):
-            # TODO: catch past uuidzero subtraction and alert user of
-            #  transformations in excess.
-            oldtransformed_uuid = transformed_uuid
-            transformed_uuid -= transformation.uuid00
-            print('entrou', transformed_uuid)
-            print('saiu', oldtransformed_uuid)
-            print('do', transformation, )
-            print()
+        # Predict output UUID.
+        expected = datain.uuid00
+        for trf in transformations:
+            expected += trf.uuid00
 
-        # Check if reverted uuid is the same as the one from original data.
-        if transformed_uuid != datain.uuid00:
+        # # Traverse actual history.
+        # actual = datain.uuid00
+        # print('actul', actual)
+        # print(33333333333333333333333333333333333333)
+        # print(datain.history)
+        # print(4444444444444444444444444444444444444)
+        # print(dataout.history)
+        # print(5555555555555555555555555555)
+        # for trf in dataout.history[len(datain.history):]:
+        #     print(trf)
+        #     actual += trf.uuid00
+        #     print(actual)
+        # print('-==========================')
+
+        # Check if expected uuid is the same as the one from original data.
+        if expected != dataout.uuid00:
             recent = dataout.history[len(datain.history):]
-            print('\nActual history::::::::::::::: [estimated datain:',
-                  transformed_uuid)
-            for t in recent:
-                print(f'{t}')
+            print('\nActual history::::::::::::::: data:', dataout.uuid00)
+            for trf in recent:
+                print(f'{trf}')
 
-            print(f'\nExpected history:::::::::::::::: [datain:',
-                  datain.uuid00)
-            for t in transformations:
-                print(f'{t}')
+            print(f'\nExpected history:::::::::::::::: data:', expected)
+            for trf in transformations:
+                print(f'{trf}')
 
             print(f'\nTransformed Data object history does not '
                   'match expected transformation list.\n'

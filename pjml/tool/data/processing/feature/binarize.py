@@ -8,10 +8,10 @@ from pjml.tool.model.model import Model
 
 class Binarize(LightConfigLess):
     def _apply_impl(self, data):
-        applied = self._use_impl(data, step='a')
+        applied = self._use_impl(data)
         return Model(self, data, applied)
 
-    def _use_impl(self, data, step='u'):
+    def _use_impl(self, data, **kwargs):
         # TODO: check Data object compatibility with applied one.
         # TODO: update Xt/Xd.
         data_nominal_idxs = nominal_idxs(data.Xt)
@@ -25,4 +25,4 @@ class Binarize(LightConfigLess):
                             data_nominal_idxs, axis=1).astype(float)
             matrices['X'] = np.column_stack((nom, num))
 
-        return data.updated(self.transformations(step), **matrices)
+        return data.updated(self.transformations('u'), **matrices)
