@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from itertools import dropwhile
 
 from pjml.config.description.cs.chaincs import ChainCS
@@ -69,3 +72,7 @@ class Chain(MinimalContainerN):
         for t in self.transformers:
             txts.append(t.__str__(depth))
         return '\n'.join(txts)
+
+    def _uuid_impl00(self):
+        # TODO: override _uuid for other containerNs (Multi)?
+        return reduce(operator.mul, [t.uuid00 for t in self.transformers])
