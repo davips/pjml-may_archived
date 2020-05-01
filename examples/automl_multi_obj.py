@@ -64,40 +64,39 @@ cache = partial(Cache, engine='dump', blocking=True)
 
 # cache = partial(Cache, engine='amnesia', blocking=True)
 
-expr = Pipeline(File(arq), cache(ApplyUsing(NB())))
-p = expr
-p.apply()
-exit()
-#     expr = Pipeline(
-#     OnlyApply(File(arq), cache(Binarize())),
-#     cache(
-#         Partition(),
-#         Map(
-#             Wrap(
-#                 select(SelectBest),  # slow??
-#                 cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
-#                 OnlyApply(Metric(functions=['length'])),
-#                 OnlyUse(Metric(functions=['accuracy', 'error'])),
-#                 # AfterUse(Metric(function=['diversity']))
-#             ),
-#         ),
-#         # Report('HISTORY ... S: {history}'),
-#         Summ(function='mean_std'),
-#     ),
-#     Report('mean and std ... S: $S'),
-#
-#     OnlyApply(Copy(from_field="S", to_field="B")),
-#     OnlyApply(Report('copy S to B ... B: $B')),
-#     OnlyUse(MConcat(fields=["B", "S"], output_field="S")),
-#     OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
-#     OnlyUse(Calc(functions=['flatten'])),
-#     OnlyUse(Report('flatten S ... S: $S')),
-#     OnlyUse(Calc(functions=['mean'])),
-#     OnlyUse(Report('mean S ... S: $S')),
-#
-#     Report('End ...\n'),
-#
-# )
+# expr = Pipeline(File(arq), cache(ApplyUsing(NB())))
+# p = expr
+# p.apply()
+expr = Pipeline(
+    OnlyApply(File(arq), cache(Binarize())),
+    cache(
+        Partition(),
+        Map(
+            Wrap(
+                select(SelectBest),  # slow??
+                cache(ApplyUsing(select(DT, NB, hold(RF, n_estimators=40)))),
+                OnlyApply(Metric(functions=['length'])),
+                OnlyUse(Metric(functions=['accuracy', 'error'])),
+                # AfterUse(Metric(function=['diversity']))
+            ),
+        ),
+        # Report('HISTORY ... S: {history}'),
+        Summ(function='mean_std'),
+    ),
+    Report('mean and std ... S: $S'),
+
+    OnlyApply(Copy(from_field="S", to_field="B")),
+    OnlyApply(Report('copy S to B ... B: $B')),
+    OnlyUse(MConcat(fields=["B", "S"], output_field="S")),
+    OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
+    OnlyUse(Calc(functions=['flatten'])),
+    OnlyUse(Report('flatten S ... S: $S')),
+    OnlyUse(Calc(functions=['mean'])),
+    OnlyUse(Report('mean S ... S: $S')),
+
+    Report('End ...\n'),
+
+)
 
 
 # diversidade,
