@@ -14,7 +14,7 @@ class LightTransformer(Transformer, ABC):
         return data
 
     def apply(self, data: Union[type, Data] = NoData, exit_on_error=True):
-        if data.isfrozen or data.failure:
+        if data.isfrozen:
             return Model(self, data, data)
         if data.allfrozen:
             return Model(self, data, data.frozen)
@@ -43,7 +43,7 @@ class LightTransformer(Transformer, ABC):
         except Exception as e:
             self._handle_exception(e, exit_on_error)
             applied = data.updated(
-                self.transformations('a'), failure=str(e)
+                self.transformations('a'), failure=str(e), frozen=True
             )
             model = Model(self, data, applied)
             # TODO: é possível que um container não complete o try acima?

@@ -43,7 +43,7 @@ class HeavyTransformer(Transformer, ABC):
         except Exception as e:
             self._handle_exception(e, exit_on_error)
             applied = data.updated(
-                self.transformations('a'), failure=str(e)
+                self.transformations('a'), failure=str(e), frozen=True
             )
             self._check_history(data, applied, self.transformations('a'))
             return FailedModel(self, data, applied)

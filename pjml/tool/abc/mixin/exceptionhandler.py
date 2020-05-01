@@ -39,6 +39,7 @@ class ExceptionHandler:
             'subtransformer failed',  # nested failure
             'specified nu is infeasible',  # SVM
             'excess of neurons',
+            'max_depth must be greater than zero'
             ]
     transformer = None
 

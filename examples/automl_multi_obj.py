@@ -40,7 +40,7 @@ from pjml.tool.data.processing.instance.sampler.under.random import \
 from pjml.tool.meta.wrap import Wrap
 import numpy as np
 
-arq = "iris.arff"
+arq = "abalone3.arff"
 start = Timers._clock()
 disable_global_pretty_printing()
 np.random.seed(50)
@@ -97,7 +97,6 @@ expr = Pipeline(
     Report('End ...\n'),
 
 )
-
 
 # diversidade,
 # Lambda(function='$R[0][0] * $R[0][1]', field='r')

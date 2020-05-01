@@ -1,4 +1,5 @@
-from pjdata.mixin.printable import Printable, disable_global_pretty_printing, enable_global_pretty_printing
+from pjdata.mixin.printable import Printable, disable_global_pretty_printing, \
+    enable_global_pretty_printing
 from pjml.pipeline import Pipeline
 from pjml.tool.chain import Chain
 from pjml.tool.collection.expand.partition import Partition
@@ -57,8 +58,8 @@ pipe = Pipeline(
 
     Report('mean S --> $S'),
     OnlyApply(Copy(from_field="S", to_field="B")),
-    OnlyUse(MConcat(input_field1="S", input_field2="S",
-                    output_field="S", direction='vertical')),
+    OnlyUse(
+        MConcat(fields=["S", "S"], output_field="S", direction='vertical')),
     Calc(functions=['flatten']),
     Report('mean S --> $S')
 )

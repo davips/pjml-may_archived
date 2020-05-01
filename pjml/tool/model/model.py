@@ -127,7 +127,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         except Exception as e:
             self._handle_exception(e, exit_on_error)
             used = data.updated(
-                self.transformations('u'), failure=str(e)
+                self.transformations('u'), failure=str(e), frozen=True
             )
 
         # TODO: put time_spent inside data (as a "volatile" matrix)?

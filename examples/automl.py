@@ -64,7 +64,7 @@ expr = Pipeline(
     Wrap(
         shuffle(Std, MinMax),
         # shuffle(Std, select(UnderS, OverS), MinMax),
-        ApplyUsing(select(DT, NB, SVMC)),
+        ApplyUsing(select(DT, NB)),
     ),
     Metric(functions=['accuracy'])
     )
@@ -76,7 +76,7 @@ expr = Pipeline(
 # {history.last.config['function']}
 print(expr)
 print('sample .................')
-pipe = full(rnd(expr), field='S').sample()
+pipe = full(rnd(expr, n=10), field='S').sample()
 pipe.enable_pretty_printing()
 print(f'Pipe:\n{pipe}')
 print(f'Wrapped:\n{pipe.unwrap}')
