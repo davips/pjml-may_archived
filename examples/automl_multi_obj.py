@@ -48,15 +48,17 @@ np.random.seed(50)
 # print(SelectKB.cs)
 # exit()
 #
-# cs = Pipeline(SelectKB)
-# print(cs)
-# exit()
+cache = partial(Cache, engine='sqlite', blocking=True)
+
+Pipeline(File(arq), cache(Binarize())).apply()
+
+exit()
 #
 # s = cs.sample()
 # print(s)
 # exit()
-cache = partial(Cache, engine='dump', blocking=True)
-# cache = partial(Cache, engine='sqlite', blocking=not True)
+# cache = partial(Cache, engine='dump', blocking=True)
+cache = partial(Cache, engine='sqlite', blocking=not True)
 
 # cache = partial(Cache,
 #                 engine='mysql', db='paje:@143.107.183.114/paje',

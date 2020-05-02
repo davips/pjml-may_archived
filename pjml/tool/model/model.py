@@ -49,7 +49,7 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         # Needless to put mark 'm' to differentiate from uuid of applied data,
         # since applied data uuid is merged with transformation uuid, not
         # transformer uuid.
-        return self.data_before_apply.uuid00 + self.transformer.uuid00
+        return self.data_before_apply.uuid + self.transformer.uuid
         # TODO: Should Container transformers override uuid in some cases?
         #  E.g. to avoid storing the same model twice in SGBD?
         #  Chain(NB()) could have the same uuid as NB()

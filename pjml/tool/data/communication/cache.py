@@ -53,6 +53,12 @@ class Cache(Container1):
         transformations = self.transformer.transformations('a')
         hollow = data.mockup(transformations=transformations)
         output_data = self.storage.fetch(hollow, self.fields, lock=True)
+        # print()
+        # print('--------------  ------------------')
+        # print(hollow.id)
+        # if output_data:
+        #     print(output_data.id)
+        # print()
 
         # pra carregar modelo [outdated code here!!]:
         # self.transformer = self.storage.fetch_transformer(
@@ -90,7 +96,7 @@ class Cache(Container1):
         mockup = data.mockup(transformations=transformations)
         output_data = self.storage.fetch(
             mockup, self.fields,
-            training_data_uuid=training_data.uuid00, lock=True
+            training_data_uuid=training_data.uuid, lock=True
         )
 
         # Use if still needed  ----------------------------------
@@ -115,11 +121,11 @@ class Cache(Container1):
                 used = model.use(data, exit_on_error=False)
             except:
                 self.storage.unlock(mockup,
-                                    training_data_uuid=training_data.uuid00)
+                                    training_data_uuid=training_data.uuid)
                 traceback.print_exc()
                 exit(0)
             self.storage.store(used, self.fields,
-                               training_data_uuid=training_data.uuid00,
+                               training_data_uuid=training_data.uuid,
                                check_dup=False)
         else:
             used = output_data

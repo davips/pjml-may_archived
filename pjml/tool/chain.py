@@ -75,4 +75,4 @@ class Chain(MinimalContainerN):
 
     def _uuid_impl00(self):
         # TODO: override _uuid for other containerNs (Multi)?
-        return reduce(operator.mul, [t.uuid00 for t in self.transformers])
+        return reduce(operator.mul, [t.uuid for t in self.transformers])
