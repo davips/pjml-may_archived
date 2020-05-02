@@ -91,7 +91,7 @@ class ExceptionHandler:
         # Predict output UUID.
         expected = datain.uuid
         for trf in transformations:
-            expected += trf.uuid
+            expected *= trf.uuid
 
         # # Traverse actual history.
         # actual = datain.uuid

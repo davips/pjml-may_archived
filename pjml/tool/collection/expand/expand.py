@@ -15,5 +15,5 @@ class Expand(LightConfigLess):
             data,
             data.history + [transformation],
             data.failure,
-            data.uuid + transformation.uuid
+            data.uuid * transformation.uuid
         )

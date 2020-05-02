@@ -60,7 +60,7 @@ class OnlyUse(MinimalContainer1):
         return Model(self, data, data)
 
     def _use_impl(self, data, **kwargs):
-        return self.transformer._use_impl(data, )
+        return self.transformer._use_impl(data)
 
     def apply(self: LightTransformer, data: Union[type, Data] = NoData,
               exit_on_error=True):

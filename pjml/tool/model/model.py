@@ -32,7 +32,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
         self._kwargs = kwargs
         self.models = None
 
-    def _use_impl(self, data, **kwargs):  # WARN: mutable monkey patched method!
+    # WARN: mutable monkey patched method!
+    def _use_impl(self, data, **kwargs):
         return self.transformer._use_impl(data, **kwargs)
 
     @property
@@ -66,7 +67,8 @@ class Model(Identifyable, NoDataHandler, ExceptionHandler, Timers, ABC):
     def name(self):
         return f'Model[{self.transformer.longname}]'
 
-    def use(self, data: Union[type, Data] = NoData, own_data=False, exit_on_error=True):
+    def use(self, data: Union[type, Data] = NoData, own_data=False,
+            exit_on_error=True):
         """Testing step (usually). Predict/transform/do nothing/evaluate/... Data.
 
         Parameters

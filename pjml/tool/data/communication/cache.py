@@ -51,8 +51,8 @@ class Cache(Container1):
         #  it is a LOO. Maybe transformers could inform whether they are cheap.
 
         transformations = self.transformer.transformations('a')
-        hollow = data.mockup(transformations=transformations)
-        output_data = self.storage.fetch(hollow, self.fields, lock=True)
+        mockup = data.mockup(transformations=transformations)
+        output_data = self.storage.fetch(mockup, self.fields, lock=True)
         # print()
         # print('--------------  ------------------')
         # print(hollow.id)
@@ -76,7 +76,7 @@ class Cache(Container1):
                 sub_model = self.transformer.apply(data, exit_on_error=False)
                 applied = sub_model.data
             except:
-                self.storage.unlock(hollow)
+                self.storage.unlock(mockup)
                 traceback.print_exc()
                 exit(0)
 
@@ -124,6 +124,7 @@ class Cache(Container1):
                                     training_data_uuid=training_data.uuid)
                 traceback.print_exc()
                 exit(0)
+
             self.storage.store(used, self.fields,
                                training_data_uuid=training_data.uuid,
                                check_dup=False)

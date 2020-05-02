@@ -45,20 +45,12 @@ start = Timers._clock()
 disable_global_pretty_printing()
 np.random.seed(50)
 
-# print(SelectKB.cs)
-# exit()
-#
-cache = partial(Cache, engine='sqlite', blocking=True)
-
-Pipeline(File(arq), cache(Binarize())).apply()
-
-exit()
 #
 # s = cs.sample()
 # print(s)
 # exit()
 # cache = partial(Cache, engine='dump', blocking=True)
-cache = partial(Cache, engine='sqlite', blocking=not True)
+cache = partial(Cache, engine='sqlite', blocking=False)
 
 # cache = partial(Cache,
 #                 engine='mysql', db='paje:@143.107.183.114/paje',
@@ -89,6 +81,8 @@ expr = Pipeline(
 
     OnlyApply(Copy(from_field="S", to_field="B")),
     OnlyApply(Report('copy S to B ... B: $B')),
+    # OnlyUse(Report('>>>>>>  B: {B.shape}')),
+    # Report('>>>>>>  S: {S.shape}'),
     OnlyUse(MConcat(fields=["B", "S"], output_field="S")),
     OnlyUse(Report('comcat B with S (vertical) ... S: $S')),
     OnlyUse(Calc(functions=['flatten'])),
