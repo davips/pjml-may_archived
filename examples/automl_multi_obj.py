@@ -50,11 +50,19 @@ np.random.seed(50)
 # print(s)
 # exit()
 # cache = partial(Cache, engine='dump', blocking=True)
-cache = partial(Cache, engine='sqlite', blocking=False)
 
-# cache = partial(Cache,
-#                 engine='mysql', db='paje:@143.107.183.114/paje',
-#                 blocking=not True)
+def cache(*args):
+    return Cache(
+        Cache(
+            *args,
+            engine='mysql',
+            db='paje:XXXXXX@143.107.183.114/paje',
+            blocking=not True
+        ),
+        engine='dump', blocking=True
+    )
+
+cache = partial(Cache, engine='sqlite', blocking=False)
 
 # cache = partial(Cache, engine='amnesia', blocking=True)
 
