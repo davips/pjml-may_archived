@@ -2,7 +2,7 @@
 
 Machine learning related stuff.
 
-For a broader scope including non related directly related code refer to:
+For a broader scope including non directly related code refer to:
 
 https://github.com/davips/cururu_archived
 
