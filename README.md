@@ -2,4 +2,12 @@
 
 Machine learning related stuff.
 
-Refer to https://github.com/davips/pjml-and-previous-version for a broader scope including non related git histories.
+For a broader scope including non related directly related code refer to:
+
+https://github.com/davips/cururu_archived
+
+https://github.com/davips/pjdata_archived
+
+https://github.com/davips/pjml-and-previous-version_archived
+
+https://github.com/davips/automl-paje_archived
