@@ -1,8 +1,8 @@
-# pjml - [this repository is kept here only for historic reasons]
+# pjml - [old project kept for openness]
 
 Machine learning related stuff.
 
-For a broader scope including non directly related code refer to:
+For a broader scope including non directly related code, please refer to:
 
 https://github.com/davips/cururu_archived
 
